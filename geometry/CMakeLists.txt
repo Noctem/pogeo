@@ -2,7 +2,7 @@ project(s2 CXX)
 set(PROJECT_NAME s2)
 set(PROJECT_VERSION 0.1.0)
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
-add_definitions(-DS2_USE_EXACTFLOAT -DHASH_NAMESPACE=std -DNDEBUG)
+add_definitions(-DS2_USE_EXACTFLOAT -DNDEBUG)
 set_property(GLOBAL PROPERTY CXX_STANDARD 11)
 set_property(GLOBAL PROPERTY CXX_STANDARD_REQUIRED ON)
 
@@ -25,7 +25,6 @@ set(s2util_files
 	strings/strutil.cc
 	util/coding/coder.cc
 	util/coding/varint.cc
-	util/hash/hash.cc
 	util/math/exactfloat/exactfloat.cc
 	util/math/mathlimits.cc
 	util/math/mathutil.cc
@@ -119,7 +118,6 @@ set(s2includes_util_endian
 )
 
 set(s2includes_util_hash
-	util/hash/hash.h
 	util/hash/hash_jenkins_lookup2.h
 )
 

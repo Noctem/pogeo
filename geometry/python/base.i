@@ -53,13 +53,8 @@
 
 %{
 #include <vector>
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_map>
-#include <ext/hash_set>
-#else
-#include <hash_map>
-#include <hash_set>
-#endif
+#include <unordered_map>
+#include <unordered_set>
 #include <set>
 #include <map>
 #include <string>

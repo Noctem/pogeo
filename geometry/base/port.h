@@ -916,21 +916,6 @@ struct PortableHashBase { };
 #define gethostbyname gethostbyname_is_not_thread_safe_DO_NOT_USE
 #endif
 
-// create macros in which the programmer should enclose all specializations
-// for hash_maps and hash_sets. This is necessary since these classes are not
-// STL standardized. Depending on the STL implementation they are in different
-// namespaces. Right now the right namespace is passed by the Makefile
-// Examples: gcc3: -DHASH_NAMESPACE=__gnu_cxx
-//           icc:  -DHASH_NAMESPACE=std
-//           gcc2: empty
-
-#ifndef HASH_NAMESPACE
-#  define HASH_NAMESPACE_DECLARATION_START
-#  define HASH_NAMESPACE_DECLARATION_END
-#else
-#  define HASH_NAMESPACE_DECLARATION_START  namespace HASH_NAMESPACE {
-#  define HASH_NAMESPACE_DECLARATION_END    }
-#endif
 
 // Our STL-like classes use __STD.
 #if defined(COMPILER_GCC3) || defined(COMPILER_ICC) || defined(__APPLE__) || defined(COMPILER_MSVC)

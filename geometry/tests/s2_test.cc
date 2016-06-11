@@ -6,22 +6,18 @@ using std::max;
 using std::swap;
 using std::reverse;
 
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_set>
-#else
-#include <hash_set>
-#endif
-using __gnu_cxx::hash_set;
+#include <unordered_set>
+using std::unordered_set;
 
 #include <functional>
 using std::binary_function;
+using std::hash;
 
 #include "s2.h"
 #include "base/logging.h"
 #include "s2latlng.h"
 #include "s2testing.h"
 #include "util/math/matrix3x3-inl.h"
-#include "util/hash/hash.h"
 #include <gtest/gtest.h>
 
 static inline int SwapAxes(int ij) {
@@ -448,7 +444,7 @@ class RobustCCWTest : public testing::Test {
     // should be CCW.
     EXPECT_EQ(n * (n-1) / 2, total_num_ccw);
   }
-      
+
   static void AddNormalized(S2Point const& a, vector<S2Point>* points) {
     points->push_back(a.Normalize());
   }
@@ -712,9 +708,9 @@ TEST(S2, Frames) {
 
 TEST(S2, S2PointHashSpreads) {
   int kTestPoints = 1 << 16;
-  hash_set<size_t> set;
-  hash_set<S2Point> points;
-  __gnu_cxx::hash<S2Point> hasher;
+  unordered_set<size_t> set;
+  unordered_set<S2Point> points;
+  hash<S2Point> hasher;
   S2Point base = S2Point(1, 1, 1);
   for (int i = 0; i < kTestPoints; ++i) {
     // All points in a tiny cap to test avalanche property of hash
@@ -735,7 +731,7 @@ TEST(S2, S2PointHashCollapsesZero) {
   double minus_zero = -zero;
   EXPECT_NE(*reinterpret_cast<uint64 const*>(&zero),
             *reinterpret_cast<uint64 const*>(&minus_zero));
-  hash_map<S2Point, int> map;
+  unordered_map<S2Point, int> map;
   S2Point zero_pt(zero, zero, zero);
   S2Point minus_zero_pt(minus_zero, minus_zero, minus_zero);
 

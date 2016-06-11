@@ -73,61 +73,6 @@ struct identity {
   inline const T& operator()(const T& t) const { return t; }
 };
 
-// Copied from STLport
-template <class _Pair>
-struct select1st : public std::unary_function<_Pair, typename _Pair::first_type> {
-  const typename _Pair::first_type& operator()(const _Pair& __x) const {
-    return __x.first;
-  }
-};
-
-template <class _Pair>
-struct select2nd : public std::unary_function<_Pair, typename _Pair::second_type>
-{
-  const typename _Pair::second_type& operator()(const _Pair& __x) const {
-    return __x.second;
-  }
-};
-
-
-#if _MSC_VER >= 1300
-
-// If you compile on Windows and get a compile-time error because
-// some google3 code specifies a 3rd or 4th parameter to one of
-// these template classes, then you have to put in some #ifdefs
-// and use the NATIVE_HASH_NAMESPACE::hash_(set|map) implementation.
-namespace msvchash {
-  template <typename Key>
-  struct hash;
-
-  template <class Key,
-            class HashFcn = hash<Key> >
-  class hash_set;
-
-  template <class Key, class Val,
-            class HashFcn = hash<Key> >
-  class hash_map;
-
-  template <class Key,
-            class HashFcn = hash<Key> >
-  class hash_multiset;
-
-  template <class Key, class Val,
-            class HashFcn = hash<Key> >
-  class hash_multimap;
-}  // end namespace  msvchash
-
-using msvchash::hash_set;
-using msvchash::hash_map;
-using msvchash::hash;
-using msvchash::hash_multimap;
-using msvchash::hash_multiset;
-
-#else
-#define hash_map map
-#define hash_set set
-#endif
-
 using namespace std;
 
 #endif   /* #ifdef _STL_DECL_MSVC_H */
