@@ -1,6 +1,8 @@
-#!/bin/sh -x
-# Continuous integration script for Travis
+#!/bin/sh
 
+set -e
+
+# Continuous integration script for Travis
 echo "## Building and installing libs2..."
 cmake -Ds2_build_testing=ON -Ds2_build_python=ON geometry
 make -j3
