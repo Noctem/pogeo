@@ -435,11 +435,6 @@ class ExactFloat {
     return Unimplemented();
   }
 
-  // A synonym for remainder().
-  friend ExactFloat drem(const ExactFloat& a, const ExactFloat& b) {
-    return remainder(a, b);
-  }
-
   // Break the argument "a" into integer and fractional parts, each of which
   // has the same sign as "a".  The fractional part is returned, and the
   // integer part is stored in the output parameter "i_ptr".  Both output
