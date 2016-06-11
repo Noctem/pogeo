@@ -94,7 +94,6 @@
 #ifndef UTIL_MATH_EXACTFLOAT_EXACTFLOAT_H_
 #define UTIL_MATH_EXACTFLOAT_EXACTFLOAT_H_
 
-#include <limits.h>
 #include <iostream>
 using std::ostream;
 using std::cout;
