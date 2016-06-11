@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
-if (NOT EXISTS "googletest/googletest/CMakeLists.txt")
-	message(FATAL_ERROR "Cannot find googletest directory.")
+set(GOOGLE_TEST_DIR "${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest")
+if (NOT EXISTS "${GOOGLE_TEST_DIR}/CMakeLists.txt")
+	message(FATAL_ERROR "Cannot find googletest directory: ${GOOGLE_TEST_DIR}/CMakeLists.txt does not exist.")
 endif()
 
 include_directories(
