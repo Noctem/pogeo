@@ -4,16 +4,7 @@
 
 #include "strutil.h"
 
-#include <ctype.h>
-#include <errno.h>
-#include <float.h>          // for DBL_DIG and FLT_DIG
-#include <math.h>           // for HUGE_VAL
 #include <pthread.h>        // for gmtime_r (on Windows)
-#include <stdarg.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>           // for FastTimeToBuffer()
 
 #include <algorithm>
 using std::min;

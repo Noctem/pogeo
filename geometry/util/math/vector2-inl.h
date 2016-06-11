@@ -28,7 +28,7 @@
 
 #include "util/math/vector2.h"
 
-#include <math.h>
+#include <cmath>
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/template_util.h"

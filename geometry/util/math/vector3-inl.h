@@ -36,7 +36,7 @@ using std::reverse;
 
 using std::abs;
 
-#include <math.h>
+#include <cmath>
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/template_util.h"

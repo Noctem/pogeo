@@ -695,9 +695,6 @@ extern inline void prefetch(const char *x) {}
 #include <windows.h>
 #undef ERROR
 
-#include <float.h>  // for nextafter functionality on windows
-#include <math.h>  // for HUGE_VAL
-
 #ifndef HUGE_VALF
 #define HUGE_VALF (static_cast<float>(HUGE_VAL))
 #endif
