@@ -289,7 +289,9 @@ void S2Testing::CheckCovering(S2Region const& region,
 
   if (!region.MayIntersect(S2Cell(id))) {
     // If region does not intersect id, then neither should the covering.
-    if (check_tight) CHECK(!covering.Intersects(id));
+    if (check_tight) {
+        CHECK(!covering.Intersects(id));
+    }
 
   } else if (!covering.Contains(id)) {
     // The region may intersect id, but we can't assert that the covering

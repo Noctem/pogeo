@@ -42,7 +42,9 @@ S2Polyline::~S2Polyline() {
 }
 
 void S2Polyline::Init(vector<S2Point> const& vertices) {
-  if (FLAGS_s2debug) CHECK(IsValid(vertices));
+  if (FLAGS_s2debug) {
+    CHECK(IsValid(vertices));
+  }
 
   delete[] vertices_;
   num_vertices_ = vertices.size();
