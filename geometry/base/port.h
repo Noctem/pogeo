@@ -702,8 +702,6 @@ extern inline void prefetch(const char *x) {}
 #define HUGE_VALF (static_cast<float>(HUGE_VAL))
 #endif
 
-using namespace std;
-
 // VC++ doesn't understand "uint"
 #ifndef HAVE_UINT
 #define HAVE_UINT 1

@@ -40,8 +40,6 @@ using std::vector;
 #endif
 #include <ctype.h>      // not needed, but removing it will break the build
 
-using namespace std;
-
 // A buffer size which is large enough for all the FastToBuffer functions, as
 // well as DoubleToBuffer and FloatToBuffer.  We define this here in case other
 // string headers depend on it.

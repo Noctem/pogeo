@@ -26,9 +26,6 @@ using std::unordered_map;
 #include <unordered_set>
 using std::unordered_set;
 
-
-using namespace std;
-
 // ----------------------------------------------------------------------
 // SplitStringAllowEmpty()
 // SplitStringToHashsetAllowEmpty()

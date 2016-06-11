@@ -4,6 +4,9 @@
 using std::numeric_limits;
 #include <stdint.h>
 
+#include <iterator>
+using std::back_insert_iterator;
+
 
 #include "base/commandlineflags.h"
 #include "base/integral_types.h"

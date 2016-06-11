@@ -7,10 +7,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # set(CMAKE_FIND_FRAMEWORK LAST)
 
 find_package(SWIG REQUIRED)
-find_package(PkgConfig REQUIRED)
 find_package(PythonInterp 2.7 REQUIRED)
 
-pkg_search_module(PYTHON REQUIRED python-2.7 python)
+find_package(PkgConfig)
+if(PKG_CONFIG_FOUND)
+  pkg_search_module(PYTHON python-2.7 python)
+endif()
+
+if(NOT PYTHON_FOUND)
+  find_package(PythonLibs 2.7 REQUIRED)
+endif()
+
 include_directories(${PYTHON_INCLUDE_DIRS})
 link_directories(${PYTHON_LIBRARY_DIRS})
 
