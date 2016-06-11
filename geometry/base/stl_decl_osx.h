@@ -23,6 +23,9 @@ using std::max;
 using std::swap;
 using std::reverse;
 
+#include <cmath>
+using std::abs;
+
 #include <string>
 using std::string;
 

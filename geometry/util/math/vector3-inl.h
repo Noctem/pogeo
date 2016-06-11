@@ -34,6 +34,8 @@ using std::max;
 using std::swap;
 using std::reverse;
 
+using std::abs;
+
 #include <math.h>
 #include "base/basictypes.h"
 #include "base/logging.h"
@@ -100,9 +102,9 @@ bool Vector3<VType>::operator!=(const Self& vb) const {
 
 template <typename VType>
 bool Vector3<VType>::aequal(const Self &vb, FloatType margin) const {
-  return (fabs(c_[0] - vb.c_[0]) < margin)
-      && (fabs(c_[1] - vb.c_[1]) < margin)
-      && (fabs(c_[2] - vb.c_[2]) < margin);
+  return (abs(c_[0] - vb.c_[0]) < margin)
+      && (abs(c_[1] - vb.c_[1]) < margin)
+      && (abs(c_[2] - vb.c_[2]) < margin);
 }
 
 template <typename VType>
@@ -341,7 +343,7 @@ Vector3<VType> Vector3<VType>::Sqrt() const {
 
 template <typename VType>
 Vector3<VType> Vector3<VType>::Fabs() const {
-  return Self(fabs(c_[0]), fabs(c_[1]), fabs(c_[2]));
+  return Self(abs(c_[0]), abs(c_[1]), abs(c_[2]));
 }
 
 template <typename VType>
