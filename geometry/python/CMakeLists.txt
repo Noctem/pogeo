@@ -31,7 +31,7 @@ swig_add_module(s2 python s2.i)
 swig_link_libraries(s2 s2 s2cellid s2util ${PYTHON_LIBRARIES})
 
 execute_process(
-  COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; from os.path import join; print join(get_python_lib(), 's2')"
+  COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
   OUTPUT_VARIABLE s2_python_install_dir
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
