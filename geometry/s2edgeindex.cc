@@ -67,6 +67,9 @@ using std::multiset;
 using std::pair;
 using std::make_pair;
 
+#include <memory>
+using std::unique_ptr;
+
 
 #include "base/commandlineflags.h"
 #include "base/logging.h"

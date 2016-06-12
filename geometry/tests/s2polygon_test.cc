@@ -21,7 +21,6 @@ using std::vector;
 #include "base/commandlineflags.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/scoped_ptr.h"
 #include "strings/stringprintf.h"
 #include <gtest/gtest.h>
 #include "util/coding/coder.h"
@@ -151,11 +150,11 @@ class S2PolygonTestBase : public testing::Test {
 };
 
 static S2Polygon* MakePolygon(string const& str) {
-  scoped_ptr<S2Polygon> polygon(S2Testing::MakePolygon(str));
+  unique_ptr<S2Polygon> polygon(S2Testing::MakePolygon(str));
   Encoder encoder;
   polygon->Encode(&encoder);
   Decoder decoder(encoder.base(), encoder.length());
-  scoped_ptr<S2Polygon> decoded_polygon(new S2Polygon);
+  unique_ptr<S2Polygon> decoded_polygon(new S2Polygon);
   decoded_polygon->Decode(&decoder);
   return decoded_polygon.release();
 }
@@ -163,14 +162,14 @@ static S2Polygon* MakePolygon(string const& str) {
 static void CheckContains(string const& a_str, string const& b_str) {
   S2Polygon* a = MakePolygon(a_str);
   S2Polygon* b = MakePolygon(b_str);
-  scoped_ptr<S2Polygon> delete_a(a);
-  scoped_ptr<S2Polygon> delete_b(b);
+  unique_ptr<S2Polygon> delete_a(a);
+  unique_ptr<S2Polygon> delete_b(b);
   EXPECT_TRUE(a->Contains(b));
   EXPECT_TRUE(a->ApproxContains(b, S1Angle::Radians(1e-15)));
 }
 
 static void CheckContainsPoint(string const& a_str, string const& b_str) {
-  scoped_ptr<S2Polygon> a(S2Testing::MakePolygon(a_str));
+  unique_ptr<S2Polygon> a(S2Testing::MakePolygon(a_str));
   EXPECT_TRUE(a->VirtualContainsPoint(S2Testing::MakePoint(b_str)))
     << " " << a_str << " did not contain " << b_str;
 }
@@ -323,7 +322,7 @@ static void TestUnion(S2Polygon const* a, S2Polygon const* b) {
   polygons.back()->Copy(a);
   polygons.push_back(new S2Polygon);
   polygons.back()->Copy(b);
-  scoped_ptr<S2Polygon> c_destructive_union(
+  unique_ptr<S2Polygon> c_destructive_union(
       S2Polygon::DestructiveUnion(&polygons));
 
   CheckEqual(&c_union, c_destructive_union.get());
@@ -576,11 +575,11 @@ TEST_F(S2PolygonTestBase, Operations) {
   for (int i = 0; i < arraysize(test_cases); ++i) {
     SCOPED_TRACE(StringPrintf("Polygon operation test case %d", i));
     TestCase* test = test_cases + i;
-    scoped_ptr<S2Polygon> a(MakePolygon(test->a));
-    scoped_ptr<S2Polygon> b(MakePolygon(test->b));
-    scoped_ptr<S2Polygon> expected_a_and_b(MakePolygon(test->a_and_b));
-    scoped_ptr<S2Polygon> expected_a_or_b(MakePolygon(test->a_or_b));
-    scoped_ptr<S2Polygon> expected_a_minus_b(MakePolygon(test->a_minus_b));
+    unique_ptr<S2Polygon> a(MakePolygon(test->a));
+    unique_ptr<S2Polygon> b(MakePolygon(test->b));
+    unique_ptr<S2Polygon> expected_a_and_b(MakePolygon(test->a_and_b));
+    unique_ptr<S2Polygon> expected_a_or_b(MakePolygon(test->a_or_b));
+    unique_ptr<S2Polygon> expected_a_minus_b(MakePolygon(test->a_minus_b));
 
     // The intersections in the "expected" data were computed in lat-lng
     // space, while the actual intersections are computed using geodesics.
@@ -671,9 +670,9 @@ TEST_F(S2PolygonTestBase, PolylineIntersection) {
   for (int i = 0; i < arraysize(test_cases); ++i) {
     SCOPED_TRACE(StringPrintf("Polyline intersection test case %d", i));
     TestCase* test = test_cases + i;
-    scoped_ptr<S2Polygon> a(MakePolygon(test->a));
-    scoped_ptr<S2Polygon> b(MakePolygon(test->b));
-    scoped_ptr<S2Polygon> expected_a_and_b(MakePolygon(test->a_and_b));
+    unique_ptr<S2Polygon> a(MakePolygon(test->a));
+    unique_ptr<S2Polygon> b(MakePolygon(test->b));
+    unique_ptr<S2Polygon> expected_a_and_b(MakePolygon(test->a_and_b));
 
     vector<S2Point> points;
     vector<S2Polyline *> polylines;
@@ -768,8 +767,8 @@ static void SplitAndAssemble(S2Polygon const* polygon) {
     // because this always joins a single original piece to the current union
     // rather than doing the unions according to a random tree structure.
     while (pieces.size() > 1) {
-      scoped_ptr<S2Polygon> a(ChoosePiece(&pieces));
-      scoped_ptr<S2Polygon> b(ChoosePiece(&pieces));
+      unique_ptr<S2Polygon> a(ChoosePiece(&pieces));
+      unique_ptr<S2Polygon> b(ChoosePiece(&pieces));
       S2Polygon* c = new S2Polygon;
       c->InitToUnion(a.get(), b.get());
       pieces.push_back(c);
@@ -777,9 +776,9 @@ static void SplitAndAssemble(S2Polygon const* polygon) {
               << "\n  With piece b: " << S2Testing::ToString(b.get())
               << "\n  To get piece c: " << S2Testing::ToString(c);
     }
-    scoped_ptr<S2Polygon> result(pieces[0]);
+    unique_ptr<S2Polygon> result(pieces[0]);
     pieces.pop_back();
- 
+
     // The moment of truth!
     EXPECT_TRUE(expected.BoundaryNear(result.get()))
         << "\nActual:\n" << S2Testing::ToString(result.get())
@@ -881,7 +880,7 @@ TEST(S2Polygon, TestS2CellConstructorAndContains) {
 }
 
 TEST(S2PolygonTest, Project) {
-  scoped_ptr<S2Polygon> polygon(MakePolygon(kNear0 + kNear2));
+  unique_ptr<S2Polygon> polygon(MakePolygon(kNear0 + kNear2));
   S2Point point;
   S2Point projected;
 
@@ -979,7 +978,7 @@ class S2PolygonSimplifierTest : public ::testing::Test {
     original = poly;
 
     simplified = new S2Polygon();
-    return simplified->InitToSimplified(original, 
+    return simplified->InitToSimplified(original,
                                         S1Angle::Degrees(tolerance_in_degrees));
   }
 
@@ -1055,7 +1054,7 @@ TEST_F(S2PolygonSimplifierTest, EdgesOverlap) {
   // Two loops, One edge of the second one ([0:1 - 0:2]) is part of an
   // edge of the first one..
   SetInput("0:0, 0:3, 1:0; 0:1, -1:1, 0:2", 0.01);
-  scoped_ptr<S2Polygon> true_poly(
+  unique_ptr<S2Polygon> true_poly(
       S2Testing::MakePolygon("0:3, 1:0, 0:0, 0:1, -1:1, 0:2"));
   EXPECT_TRUE(simplified->BoundaryApproxEquals(true_poly.get()));
 }

@@ -16,6 +16,9 @@ using std::unordered_map;
 using std::set;
 using std::multiset;
 
+#include <memory>
+using std::unique_ptr;
+
 #include <vector>
 using std::vector;
 

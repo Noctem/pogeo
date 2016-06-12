@@ -9,6 +9,8 @@ using std::unordered_map;
 #include <unordered_set>
 using std::unordered_set;
 
+#include <memory>
+using std::unique_ptr;
 
 #include <set>
 using std::set;
@@ -22,7 +24,6 @@ using std::make_pair;
 using std::vector;
 
 #include "base/basictypes.h"
-#include "base/scoped_ptr.h"
 #include "s2.h"
 #include "s1angle.h"
 #include "util/math/matrix3x3.h"
@@ -278,7 +279,7 @@ class S2PolygonBuilder {
   S2PolygonBuilderOptions options_;
 
   // This is only used for debugging purposes.
-  scoped_ptr<Matrix3x3_d> debug_matrix_;
+  unique_ptr<Matrix3x3_d> debug_matrix_;
 
   // The current set of edges, grouped by origin.  The set of destination
   // vertices is a multiset so that the same edge can be present more than
@@ -286,7 +287,7 @@ class S2PolygonBuilder {
   // but this representation is a bit more convenient.
   typedef multiset<S2Point> VertexSet;
   typedef unordered_map<S2Point, VertexSet> EdgeSet;
-  scoped_ptr<EdgeSet> edges_;
+  unique_ptr<EdgeSet> edges_;
 
   // Unique collection of the starting (first) vertex of all edges,
   // in the order they are added to edges_.

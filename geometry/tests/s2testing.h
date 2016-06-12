@@ -3,6 +3,9 @@
 #ifndef UTIL_GEOMETRY_S2TESTING_H__
 #define UTIL_GEOMETRY_S2TESTING_H__
 
+#include <memory>
+using std::unique_ptr;
+
 #include <string>
 using std::string;
 
@@ -15,7 +18,6 @@ using std::vector;
 using std::ostringstream;
 using std::hex;
 
-#include "base/scoped_ptr.h"
 
 class S2LatLngRect;
 class S2Loop;

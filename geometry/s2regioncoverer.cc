@@ -13,7 +13,6 @@ using std::reverse;
 #include <functional>
 using std::less;
 
-
 #include <unordered_set>
 using std::unordered_set;
 
