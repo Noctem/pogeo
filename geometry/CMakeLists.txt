@@ -25,7 +25,6 @@ add_library(
   base/logging.cc
   base/stringprintf.cc
   base/strtoint.cc
-  strings/ascii_ctype.cc
   strings/split.cc
   strings/stringprintf.cc
   strings/strutil.cc
