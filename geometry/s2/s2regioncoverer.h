@@ -6,6 +6,9 @@
 #include <queue>
 using std::priority_queue;
 
+#include <memory>
+using std::unique_ptr;
+
 #include <utility>
 using std::pair;
 using std::make_pair;
@@ -14,7 +17,6 @@ using std::make_pair;
 using std::vector;
 
 #include "base/macros.h"
-#include "base/scoped_ptr.h"
 #include "s2cell.h"
 #include "s2cellid.h"
 
@@ -186,7 +188,7 @@ class S2RegionCoverer {
 
   // A temporary variable used by GetCovering() that holds the cell ids that
   // have been added to the covering so far.
-  scoped_ptr<vector<S2CellId> > result_;
+  unique_ptr<vector<S2CellId> > result_;
 
   // We keep the candidates in a priority queue.  We specify a vector to hold
   // the queue entries since for some reason priority_queue<> uses a deque by
@@ -195,7 +197,7 @@ class S2RegionCoverer {
   typedef pair<int, Candidate*> QueueEntry;
   typedef priority_queue<QueueEntry, vector<QueueEntry>,
                          CompareQueueEntries> CandidateQueue;
-  scoped_ptr<CandidateQueue> pq_;
+  unique_ptr<CandidateQueue> pq_;
 
   // True if we're computing an interior covering.
   bool interior_covering_;

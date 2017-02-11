@@ -8,7 +8,7 @@ using std::ostream;
 using std::cout;
 using std::endl;
 
-#include <math.h>
+#include <cmath>
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "util/math/vector2-inl.h"

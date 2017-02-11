@@ -94,8 +94,6 @@
 #ifndef UTIL_MATH_EXACTFLOAT_EXACTFLOAT_H_
 #define UTIL_MATH_EXACTFLOAT_EXACTFLOAT_H_
 
-#include <math.h>
-#include <limits.h>
 #include <iostream>
 using std::ostream;
 using std::cout;
@@ -433,11 +431,6 @@ class ExactFloat {
     // Note that it is possible to implement this operation exactly, it just
     // hasn't been done.
     return Unimplemented();
-  }
-
-  // A synonym for remainder().
-  friend ExactFloat drem(const ExactFloat& a, const ExactFloat& b) {
-    return remainder(a, b);
   }
 
   // Break the argument "a" into integer and fractional parts, each of which

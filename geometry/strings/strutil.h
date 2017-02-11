@@ -15,21 +15,6 @@
 #include <functional>
 using std::less;
 
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_map>
-#else
-#include <hash_map>
-#endif
-using __gnu_cxx::hash_map;
-
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_set>
-#else
-#include <hash_set>
-#endif
-using __gnu_cxx::hash_set;
-
-
 #include <set>
 using std::set;
 using std::multiset;
@@ -55,9 +40,6 @@ using std::vector;
 #endif
 #include <ctype.h>      // not needed, but removing it will break the build
 
-using namespace std;
-using namespace __gnu_cxx;
-
 // A buffer size which is large enough for all the FastToBuffer functions, as
 // well as DoubleToBuffer and FloatToBuffer.  We define this here in case other
 // string headers depend on it.
@@ -67,14 +49,8 @@ static const int kFastToBufferSize =       32;
 #include "base/logging.h"  // for CHECK
 #include "base/strtoint.h"
 #include "base/int128.h"
-#include "ascii_ctype.h"
-//#include "charset.h"
-//#include "escaping.h"
-//#include "host_port.h"
 #include "stringprintf.h"
-#include "base/stl_decl.h"
 #include "base/port.h"
-//#include "endian.h"
 
 // ----------------------------------------------------------------------
 // FloatToString()

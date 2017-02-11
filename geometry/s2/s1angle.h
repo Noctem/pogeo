@@ -5,8 +5,7 @@
 
 #include <iosfwd>
 using std::ostream;
-   // to forward declare ostream
-#include <math.h>
+
 #include "base/basictypes.h"
 #include "util/math/mathutil.h"
 #include "s2.h"

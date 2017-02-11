@@ -13,13 +13,8 @@ using std::reverse;
 #include <functional>
 using std::less;
 
-
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_set>
-#else
-#include <hash_set>
-#endif
-using __gnu_cxx::hash_set;
+#include <unordered_set>
+using std::unordered_set;
 
 #include <queue>
 using std::priority_queue;
@@ -119,8 +114,9 @@ S2RegionCoverer::Candidate* S2RegionCoverer::NewCandidate(S2Cell const& cell) {
   if (!is_terminal) {
     size += sizeof(Candidate*) << max_children_shift();
   }
-  Candidate* candidate = static_cast<Candidate*>(malloc(size));
-  memset(candidate, 0, size);
+  void* candidateStorage = malloc(size);
+  memset(candidateStorage, 0, size);
+  Candidate* candidate = new(candidateStorage) Candidate;
   candidate->cell = cell;
   candidate->is_terminal = is_terminal;
   ++candidates_created_counter_;
@@ -327,7 +323,7 @@ void S2RegionCoverer::GetInteriorCellUnion(S2Region const& region,
 
 void S2RegionCoverer::FloodFill(
     S2Region const& region, S2CellId const& start, vector<S2CellId>* output) {
-  hash_set<S2CellId> all;
+  unordered_set<S2CellId> all;
   vector<S2CellId> frontier;
   output->clear();
   all.insert(start);

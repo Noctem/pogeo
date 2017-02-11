@@ -34,7 +34,9 @@ using std::max;
 using std::swap;
 using std::reverse;
 
-#include <math.h>
+using std::abs;
+
+#include <cmath>
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/template_util.h"
@@ -100,9 +102,9 @@ bool Vector3<VType>::operator!=(const Self& vb) const {
 
 template <typename VType>
 bool Vector3<VType>::aequal(const Self &vb, FloatType margin) const {
-  return (fabs(c_[0] - vb.c_[0]) < margin)
-      && (fabs(c_[1] - vb.c_[1]) < margin)
-      && (fabs(c_[2] - vb.c_[2]) < margin);
+  return (abs(c_[0] - vb.c_[0]) < margin)
+      && (abs(c_[1] - vb.c_[1]) < margin)
+      && (abs(c_[2] - vb.c_[2]) < margin);
 }
 
 template <typename VType>
@@ -285,7 +287,7 @@ typename Vector3<VType>::FloatType Vector3<VType>::Norm(void) const {
 
 template <typename VType>
 Vector3<VType> Vector3<VType>::Normalize() const {
-  COMPILE_ASSERT(!base::is_integral<VType>::value, must_be_floating_point);
+  static_assert(!base::is_integral<VType>::value, "must_be_floating_point");
   VType n = Norm();
   if (n != 0) {
     n = 1.0 / n;
@@ -341,14 +343,14 @@ Vector3<VType> Vector3<VType>::Sqrt() const {
 
 template <typename VType>
 Vector3<VType> Vector3<VType>::Fabs() const {
-  return Self(fabs(c_[0]), fabs(c_[1]), fabs(c_[2]));
+  return Self(abs(c_[0]), abs(c_[1]), abs(c_[2]));
 }
 
 template <typename VType>
 Vector3<VType> Vector3<VType>::Abs() const {
-  COMPILE_ASSERT(base::is_integral<VType>::value, use_Fabs_for_float_types);
-  COMPILE_ASSERT(static_cast<VType>(-1) == -1, type_must_be_signed);
-  COMPILE_ASSERT(sizeof(VType) <= sizeof(int), Abs_truncates_to_int);
+  static_assert(base::is_integral<VType>::value, "use_Fabs_for_float_types");
+  static_assert(static_cast<VType>(-1) == -1, "type_must_be_signed");
+  static_assert(sizeof(VType) <= sizeof(int), "Abs_truncates_to_int");
   return Self(abs(c_[0]), abs(c_[1]), abs(c_[2]));
 }
 

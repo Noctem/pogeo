@@ -3,20 +3,14 @@
 #ifndef UTIL_GEOMETRY_S2POLYGONBUILDER_H__
 #define UTIL_GEOMETRY_S2POLYGONBUILDER_H__
 
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_map>
-#else
-#include <hash_map>
-#endif
-using __gnu_cxx::hash_map;
+#include <unordered_map>
+using std::unordered_map;
 
-#if defined __GNUC__ || defined __APPLE__
-#include <ext/hash_set>
-#else
-#include <hash_set>
-#endif
-using __gnu_cxx::hash_set;
+#include <unordered_set>
+using std::unordered_set;
 
+#include <memory>
+using std::unique_ptr;
 
 #include <set>
 using std::set;
@@ -30,7 +24,6 @@ using std::make_pair;
 using std::vector;
 
 #include "base/basictypes.h"
-#include "base/scoped_ptr.h"
 #include "s2.h"
 #include "s1angle.h"
 #include "util/math/matrix3x3.h"
@@ -273,7 +266,7 @@ class S2PolygonBuilder {
   // current position to a new position, and also returns a spatial index
   // containing all of the vertices that do not need to be moved.
   class PointIndex;
-  typedef hash_map<S2Point, S2Point> MergeMap;
+  typedef unordered_map<S2Point, S2Point> MergeMap;
   void BuildMergeMap(PointIndex* index, MergeMap* merge_map);
 
   // Moves a set of vertices from old to new positions.
@@ -286,15 +279,15 @@ class S2PolygonBuilder {
   S2PolygonBuilderOptions options_;
 
   // This is only used for debugging purposes.
-  scoped_ptr<Matrix3x3_d> debug_matrix_;
+  unique_ptr<Matrix3x3_d> debug_matrix_;
 
   // The current set of edges, grouped by origin.  The set of destination
   // vertices is a multiset so that the same edge can be present more than
   // once.  We could have also used a multiset<pair<S2Point, S2Point> >,
   // but this representation is a bit more convenient.
   typedef multiset<S2Point> VertexSet;
-  typedef hash_map<S2Point, VertexSet> EdgeSet;
-  scoped_ptr<EdgeSet> edges_;
+  typedef unordered_map<S2Point, VertexSet> EdgeSet;
+  unique_ptr<EdgeSet> edges_;
 
   // Unique collection of the starting (first) vertex of all edges,
   // in the order they are added to edges_.

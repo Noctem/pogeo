@@ -14,14 +14,11 @@ cmake .
 make -j3
 sudo make install
 
-if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
-	sudo ldconfig -v | grep libs2
-fi
+set -e
 
-# Build and run the C++ tests
-echo "## Building and running the C++ tests..."
-cd tests
-cmake .
+# Continuous integration script for Travis
+echo "## Building and installing libs2..."
+cmake -Ds2_build_testing=ON geometry
 make -j3
 ./tests || exit 1
 
@@ -58,4 +55,3 @@ fi
 echo "## Running the Python tests..."
 python2.7 -v -c 'import s2'
 python2.7 test.py || exit 1
-

@@ -1,6 +1,5 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
-#include <math.h>
 #include <stdio.h>
 #include <iostream>
 using std::ostream;
