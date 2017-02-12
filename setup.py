@@ -21,8 +21,9 @@ if platform == 'win32':
     ssl_name = 'ssleay32'
 else:
     if platform == 'darwin':
-        extra_args.append('-Wno-unused-local-typedef')
+        extra_args = ['-stdlib=libc++', '-Wno-unused-local-typedef']
     extra_args.append('-std=c++11')
+    extra_args.append('-Wno-ignore-qualifiers')
     libraries = ['ssl', 'crypto']
     ssl_name = 'ssl'
 
@@ -45,7 +46,7 @@ else:
 openssl_headers = join(openssl_dir, 'include')
 
 pogeo = Extension('pogeo',
-                  define_macros = [('S2_USE_EXACTFLOAT', None)],
+                  define_macros = [('S2_USE_EXACTFLOAT', None), ('ARCH_K8', None)],
                   library_dirs = [openssl_libs],
                   libraries = libraries,
                   extra_compile_args = extra_args,
