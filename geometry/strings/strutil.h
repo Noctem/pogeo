@@ -35,7 +35,7 @@ using std::vector;
 // for strcasecmp (check SuSv3 -- this is the only header it's in!)
 // MSVC doesn't have <strings.h>. Luckily, it defines equivalent
 // functions (see port.h)
-#ifndef COMPILER_MSVC
+#ifndef _WIN32
 #include <strings.h>
 #endif
 #include <ctype.h>      // not needed, but removing it will break the build

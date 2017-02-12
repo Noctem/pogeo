@@ -6,6 +6,25 @@ except ImportError:
 from ctypes.util import find_library
 from os.path import isdir, join, dirname
 from os import environ
+from sys import platform
+
+extra_args = []
+
+if platform == 'win32':
+    from setuptools import Distribution
+
+    class BinaryDistribution(Distribution):
+        def has_ext_modules(foo):
+            return True
+
+    libraries = ['libeay32', 'ssleay32', 'pthreadVC2']
+    ssl_name = 'ssleay32'
+else:
+    if platform == 'darwin':
+        extra_args.append('-Wno-unused-local-typedef')
+    extra_args.append('-std=c++11')
+    libraries = ['ssl', 'crypto']
+    ssl_name = 'ssl'
 
 if 'OPENSSL_ROOT_DIR' in environ:
     openssl_dir = environ['OPENSSL_ROOT_DIR']
@@ -17,7 +36,7 @@ elif isdir('/usr/local/opt/openssl'):
     openssl_dir = '/usr/local/opt/openssl'
     openssl_libs = join(openssl_dir, 'lib')
 else:
-    openssl_lib = find_library('ssl')
+    openssl_lib = find_library(ssl_name)
     if not openssl_lib:
         raise OSError('Could not find OpenSSL, please set OPENSSL_ROOT_DIR environment variable.')
     openssl_libs = dirname(openssl_lib)
@@ -28,9 +47,9 @@ openssl_headers = join(openssl_dir, 'include')
 pogeo = Extension('pogeo',
                   define_macros = [('S2_USE_EXACTFLOAT', None)],
                   library_dirs = [openssl_libs],
-                  libraries = ['ssl', 'crypto'],
-                  extra_compile_args = ['-std=c++11', '-Wno-unused-local-typedef'],
-                  extra_link_args = ['-std=c++11'],
+                  libraries = libraries,
+                  extra_compile_args = extra_args,
+                  extra_link_args = extra_args,
                   sources = [
                       'geometry/base/int128.cc',
                       'geometry/base/logging.cc',

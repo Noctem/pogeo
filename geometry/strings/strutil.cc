@@ -4,7 +4,6 @@
 
 #include "strutil.h"
 
-#include <pthread.h>        // for gmtime_r (on Windows)
 
 #include <algorithm>
 using std::min;
@@ -34,8 +33,7 @@ using std::vector;
 //#include "util/hash/hash.h"
 #include "split.h"
 
-#ifdef OS_WINDOWS
-#include <pthread.h>        // for gmtime_r
+#ifdef _WIN32
 #ifdef min  // windows.h defines this to something silly
 #undef min
 #endif
@@ -346,23 +344,28 @@ static inline void PutTwoDigits(int i, char* p) {
 }
 
 char* FastTimeToBuffer(time_t s, char* buffer) {
+#ifndef _WIN32
   if (s == 0) {
     time(&s);
   }
+#endif
 
   struct tm tm;
+#ifndef _WIN32
   if (gmtime_r(&s, &tm) == NULL) {
     // Error message must fit in 30-char buffer.
     memcpy(buffer, "Invalid:", sizeof("Invalid:"));
     FastInt64ToBufferLeft(s, buffer+strlen(buffer));
     return buffer;
   }
+#endif
 
   // strftime format: "%a, %d %b %Y %H:%M:%S GMT",
   // but strftime does locale stuff which we do not want
   // plus strftime takes > 10x the time of hard code
 
   const char* weekday_name = "Xxx";
+ #ifndef _WIN32
   switch (tm.tm_wday) {
     default: { DCHECK(false); } break;
     case 0:  weekday_name = "Sun"; break;
@@ -373,8 +376,11 @@ char* FastTimeToBuffer(time_t s, char* buffer) {
     case 5:  weekday_name = "Fri"; break;
     case 6:  weekday_name = "Sat"; break;
   }
+#endif
+
 
   const char* month_name = "Xxx";
+#ifndef _WIN32
   switch (tm.tm_mon) {
     default:  { DCHECK(false); } break;
     case 0:   month_name = "Jan"; break;
@@ -390,6 +396,7 @@ char* FastTimeToBuffer(time_t s, char* buffer) {
     case 10:  month_name = "Nov"; break;
     case 11:  month_name = "Dec"; break;
   }
+#endif
 
   // Write out the buffer.
 
