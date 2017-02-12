@@ -13,7 +13,8 @@ const double kEarthCircumferenceMeters = 6371008.8 * M_PI * 2;
 static PyObject *GetCellIDs(PyObject *self, PyObject *args) {
   double lat, lon;
   unsigned short int radius;
-  if (!PyArg_ParseTuple(args, "ddH", &lat, &lon, &radius))
+  radius = 500;
+  if (!PyArg_ParseTuple(args, "dd|H", &lat, &lon, &radius))
     return NULL;
   const S2Cap region = S2Cap::FromAxisAngle(
       S2LatLng::FromDegrees(lat, lon).ToPoint(),
