@@ -22,8 +22,9 @@ if platform == 'win32':
 else:
     if platform == 'darwin':
         extra_args = ['-stdlib=libc++', '-Wno-unused-local-typedef']
+    else:
+        extra_args.append('-Wno-ignore-qualifiers')
     extra_args.append('-std=c++11')
-    extra_args.append('-Wno-ignore-qualifiers')
     libraries = ['ssl', 'crypto']
     ssl_name = 'ssl'
 

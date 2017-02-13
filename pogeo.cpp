@@ -6,19 +6,55 @@
 #include "s2latlng.h"
 #include "s2regioncoverer.h"
 
-const double kEarthCircumferenceMeters = 6371008.8 * M_PI * 2;
+const double kEarthRadiusKilometers = 6371.0088;
+const double kEarthRadiusMeters = kEarthRadiusKilometers * 1000;
+const double kEarthRadiusMiles = kEarthRadiusKilometers * 0.621371;
+
+double RadiansToDistance(double radians, char *unit) {
+  const double *radius;
+
+  switch(*unit) {
+    case 1 :
+      radius = &kEarthRadiusMiles;
+      break;
+    case 2 :
+      radius = &kEarthRadiusKilometers;
+      break;
+    case 3 :
+      radius = &kEarthRadiusMeters;
+      break;
+  }
+
+  return (radians * *radius);
+}
+
+// Returns the distance between two locations.
+static PyObject *GetDistance(PyObject *self, PyObject *args) {
+  double lat1, lon1, lat2, lon2;
+  char unit = 3;
+
+  if (!PyArg_ParseTuple(args, "(dd)(dd)|b:GetDistance", &lat1, &lon1, &lat2, &lon2, &unit))
+    return NULL;
+
+  S2LatLng latlon1 = S2LatLng::FromDegrees(lat1, lon1);
+  S2LatLng latlon2 = S2LatLng::FromDegrees(lat2, lon2);
+
+  PyObject *distance;
+  distance = PyFloat_FromDouble(RadiansToDistance(latlon1.GetDistance(latlon2).radians(), &unit));
+
+  return distance;
+}
 
 // Generates a list of cells at the target s2 cell levels which cover
 // a cap of radius 'radius_meters' with center at lat & lng.
 static PyObject *GetCellIDs(PyObject *self, PyObject *args) {
   double lat, lon;
-  unsigned short int radius;
-  radius = 500;
-  if (!PyArg_ParseTuple(args, "dd|H", &lat, &lon, &radius))
+  unsigned short int radius = 500;
+  if (!PyArg_ParseTuple(args, "dd|H:GetCellIDs", &lat, &lon, &radius))
     return NULL;
   const S2Cap region = S2Cap::FromAxisAngle(
       S2LatLng::FromDegrees(lat, lon).ToPoint(),
-      S1Angle::Degrees(360 * radius / kEarthCircumferenceMeters));
+      S1Angle::Degrees(360 * radius / (kEarthRadiusMeters * M_PI * 2)));
   S2RegionCoverer coverer;
   coverer.set_min_level(15);
   coverer.set_max_level(15);
@@ -38,6 +74,8 @@ static PyObject *GetCellIDs(PyObject *self, PyObject *args) {
 static PyMethodDef PogeoMethods[] = {
     {"get_cell_ids", GetCellIDs, METH_VARARGS,
      "Get the cell IDs for the given coordinates."},
+    {"get_distance", GetDistance, METH_VARARGS,
+     "Get the distance between two points."},
     {NULL, NULL, 0, NULL} /* sentinel */
 };
 
