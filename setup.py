@@ -8,21 +8,20 @@ from os.path import isdir, join, dirname
 from os import environ
 from sys import platform
 
-extra_args = []
 
 macros = [('S2_USE_EXACTFLOAT', None), ('ARCH_K8', None)]
 include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math']
 
 if platform == 'win32':
+    extra_args = []
     macros.append(('PTW32_STATIC_LIB', None))
     libraries = ['libeay32', 'pthreadVC2', 'Advapi32', 'User32']
     ssl_name = 'ssleay32'
 else:
     if platform == 'darwin':
-        extra_args = ['-stdlib=libc++', '-Wno-unused-local-typedef']
+        extra_args = ['-stdlib=libc++', '-Wno-unused-local-typedef', '-std=c++11']
     else:
-        extra_args.append('-Wno-ignore-qualifiers', '-fpermissive')
-    extra_args.append('-std=c++11')
+        extra_args = ['-Wno-ignore-qualifiers', '-fpermissive', '-std=c++11']
     libraries = ['ssl', 'crypto']
     ssl_name = 'ssl'
 
