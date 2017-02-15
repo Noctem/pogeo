@@ -10,20 +10,18 @@ from sys import platform
 
 extra_args = []
 
+macros = [('S2_USE_EXACTFLOAT', None), ('ARCH_K8', None)]
+include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math']
+
 if platform == 'win32':
-    from setuptools import Distribution
-
-    class BinaryDistribution(Distribution):
-        def has_ext_modules(foo):
-            return True
-
-    libraries = ['libeay32', 'ssleay32', 'pthreadVC2']
+    macros.append(('PTW32_STATIC_LIB', None))
+    libraries = ['libeay32', 'pthreadVC2', 'Advapi32', 'User32']
     ssl_name = 'ssleay32'
 else:
     if platform == 'darwin':
         extra_args = ['-stdlib=libc++', '-Wno-unused-local-typedef']
     else:
-        extra_args.append('-Wno-ignore-qualifiers')
+        extra_args.append('-Wno-ignore-qualifiers', '-fpermissive')
     extra_args.append('-std=c++11')
     libraries = ['ssl', 'crypto']
     ssl_name = 'ssl'
@@ -40,15 +38,22 @@ elif isdir('/usr/local/opt/openssl'):
 else:
     openssl_lib = find_library(ssl_name)
     if not openssl_lib:
-        raise OSError('Could not find OpenSSL, please set OPENSSL_ROOT_DIR environment variable.')
-    openssl_libs = dirname(openssl_lib)
-    openssl_dir = dirname(openssl_libs)
+        if platform != 'win32':
+            raise OSError('Could not find OpenSSL, please set OPENSSL_ROOT_DIR environment variable.')
+        openssl_dir = None
+    else:
+        openssl_libs = dirname(openssl_lib)
+        openssl_dir = dirname(openssl_libs)
 
-openssl_headers = join(openssl_dir, 'include')
+if openssl_dir:
+    library_dirs = [openssl_libs]
+    include_dirs.append(join(openssl_dir, 'include'))
+else:
+    library_dirs = []
 
 pogeo = Extension('pogeo',
-                  define_macros = [('S2_USE_EXACTFLOAT', None), ('ARCH_K8', None)],
-                  library_dirs = [openssl_libs],
+                  define_macros = macros,
+                  library_dirs = library_dirs,
                   libraries = libraries,
                   extra_compile_args = extra_args,
                   extra_link_args = extra_args,
@@ -88,10 +93,10 @@ pogeo = Extension('pogeo',
                       'geometry/s2regionunion.cc',
                       'pogeo.cpp'
                   ],
-                  include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math', openssl_headers],
+                  include_dirs = include_dirs,
                   language='c++')
 
 setup (name = 'pogeo',
-       version = '0.1',
+       version = '0.1.1',
        description = 'Fast C++ extension for calculating cell IDs.',
        ext_modules = [pogeo])
