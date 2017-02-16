@@ -1,8 +1,15 @@
-class PythonAT35 < Formula
+class Python35 < Formula
   desc "Interpreted, interactive, object-oriented programming language"
   homepage "https://www.python.org/"
   url "https://www.python.org/ftp/python/3.5.3/Python-3.5.3.tar.xz"
   sha256 "eefe2ad6575855423ab630f5b51a8ef6e5556f774584c06beab4926f930ddbb0"
+
+  bottle do
+    root_url "https://github.com/Noctem/pogeo-toolchain/releases/download/1.0"
+    sha256 "45f98e2ff7cb32c9df4c8722b41fce205c92fa036785262c496a97ead296af99" => :yosemite
+    sha256 "119eb28941008b67680214de0ef10b11bce873686f95becdb9cf79bdedae6d55" => :el_capitan
+    sha256 "b8a69a491e8058e5fdf34605d13440c7f65ac2372a2eb55625867166bb735400" => :sierra
+  end
 
   option :universal
   option "with-tcl-tk", "Use Homebrew's Tk instead of macOS Tk (has optional Cocoa and threads support)"
