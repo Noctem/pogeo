@@ -1,3 +1,5 @@
+secure: "NKh/i8QkAnZ2eK09Qpn1dgqlWzY+BNJGuduhbBPTOJ56iF5tEpbZKfu1fQKnyMG2LH6O9V1360Maw5YwHVMMSKRbTsSS0L1wQXEJI0O5Zh+cvjX1aUsHelQRiLysVyboSSGjNezeTPqv/LtQtjrXCOajvC9AzVYxX0EmwelVlbnVZCRO0o+eyH6ZdMzxnQA06fP1DO++Lc0qvrzEkbg8q674A5eSrQrg6sMVNHNGC1mETEbGi0fXHaN1dl2xjHxoFpIKrL5kxqmNm2xB/UBWCdfu4OMslTlm+afN/1flGqJIUYCxnWJJgFkuUojI4nQaPNx1vtwIyzGVwJnGmV+TQJRJa0uwME9w57QELQNHEWukIyKmq9l8csfGvlnwqzCV6JIj/bWKnqIBTkrsK4EVJNyHuZ14bt/TMNeBGgMvMEijV/Bn98ZA17onkWTCq8vGQ+Q5fKizsSltRmwMTYMNOo07Lf3Zk6mo72jXecBI01fSC3eymKimjmGE6fcXY+J29mHdjGcp/YTS/gLZQgRJ0k5r+B7xkGuAAGjQpK4KwOcGCM/uOCeqasMsWkArybfNRNiTccSkGU8mLvdPqTGcQKFkQvQWlb/m7BxNZ1Yg/F5uKKUfBD36LL7J9Rmlo4CgNx3bSCb6KmKISAsGJ/8EgrxhPOuFxtgOm5+mGwxQ8Rc="
+
 matrix:
   include:
     - services: docker
@@ -6,10 +8,13 @@ matrix:
       python: 3.6
       sudo: required
       env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+      addons:
+        apt:
+          packages:
+            - 'gnupg2'
     - os: linux
       dist: trusty
       python: 3.5
-      sudo: required
       language: python
       compiler: clang
       env: COMPILER='clang++-3.9'
@@ -22,7 +27,6 @@ matrix:
     - os: linux
       dist: trusty
       python: 3.6
-      sudo: required
       language: python
       compiler: g++
       env: COMPILER='g++-6'
@@ -48,10 +52,12 @@ before_install:
   - if [[ -n "$DOCKER_IMAGE" ]]; then docker pull $DOCKER_IMAGE; fi
   - pip3 install -U setuptools
 
-install:
-  - if [[ -z "$DOCKER_IMAGE" ]]; then python3 setup.py install; fi
-  - if [[ -n "$DOCKER_IMAGE" ]]; then docker run --rm -v `pwd`:/io $DOCKER_IMAGE /io/travis/manylinux-build.sh; fi
+install: if [[ -z "$DOCKER_IMAGE" ]]; then python3 setup.py install; else docker run --rm -v `pwd`:/io $DOCKER_IMAGE /io/travis/manylinux-build.sh; fi
 
 script: if [[ -z "$DOCKER_IMAGE" ]]; then python3 test.py; else ls wheelhouse/*; fi
 
-after_success: travis/distribute.sh
+deploy:
+  provider: script
+  script: travis/deploy.sh
+  on:
+    condition: '-n "$DOCKER_IMAGE" || "$TRAVIS_OS_NAME" == "osx"'
