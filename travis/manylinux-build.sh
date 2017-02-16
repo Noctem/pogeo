@@ -25,5 +25,5 @@ done
 # Install packages and test
 for PYBIN in /opt/python/cp3*/bin; do
 	"${PYBIN}/pip" install pogeo --no-index -f /io/wheelhouse
-	"${PYBIN}/python" test.py
+	"${PYBIN}/python" /io/test.py
 done
