@@ -1,5 +1,11 @@
 matrix:
   include:
+    - services: docker
+      os: linux
+      dist: trusty
+      python: 3.6
+      sudo: required
+      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
     - os: linux
       dist: trusty
       python: 3.5
@@ -32,13 +38,18 @@ matrix:
     - os: osx
       osx_image: xcode8.2
       language: generic
+      env: DIST=TRUE
 
 before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update && brew install python3; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo update-alternatives --install /usr/bin/gcc gcc "/usr/bin/${COMPILER}" 1; sudo update-alternatives --install /usr/bin/g++ g++ "/usr/bin/${COMPILER}" 1; export CC="${COMPILER}"; export CXX="${COMPILER}"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" && -z "$DOCKER_IMAGE" ]]; then sudo update-alternatives --install /usr/bin/gcc gcc "/usr/bin/${COMPILER}" 1; sudo update-alternatives --install /usr/bin/g++ g++ "/usr/bin/${COMPILER}" 1; export CC="${COMPILER}"; export CXX="${COMPILER}"; fi
+  - if [[ -n "$DOCKER_IMAGE" ]]; then docker pull $DOCKER_IMAGE; fi
+  - pip3 install -U setuptools
 
 install:
-  - pip3 install -U setuptools wheel
-  - python3 setup.py install
+  - if [[ -z "$DOCKER_IMAGE" ]]; then python3 setup.py install; fi
+  - if [[ -n "$DOCKER_IMAGE" ]]; then docker run --rm -v `pwd`:/io $DOCKER_IMAGE /io/travis/manylinux-build.sh; fi
 
-script: python3 test.py
+script: if [[ -z "$DOCKER_IMAGE" ]]; then python3 test.py; else ls wheelhouse/*; fi
+
+after_success: travis/distribute.sh
