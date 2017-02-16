@@ -3,7 +3,7 @@
 set -e
 
 macbuild() {
-	pip3 install -U install twine setuptools wheel
+	pip3 install -U twine setuptools wheel
 	rm -rf dist build
 	if [[ "$1" = "sdist" ]]; then
 		python3 setup.py sdist bdist_wheel
