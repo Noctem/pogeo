@@ -97,5 +97,20 @@ pogeo = Extension('pogeo',
 
 setup (name = 'pogeo',
        version = '0.1.1',
-       description = 'Fast C++ extension for calculating cell IDs.',
+       description = 'Fast geography package.',
+       long_description = 'A fast C++ extension for calculating cell IDs and distances.'
+       url="https://github.com/Noctem/pogeo",
+       author='David Christenson',
+       author_email='mail@noctem.xyz',
+       classifiers=[
+           'Development Status :: 4 - Beta',
+           'Intended Audience :: Developers',
+           'Operating System :: OS Independent',
+           'Programming Language :: C',
+           'Programming Language :: Python :: 3',
+           'Programming Language :: Python :: 3.4',
+           'Programming Language :: Python :: 3.5',
+           'Programming Language :: Python :: 3.6',
+       ],
+       keywords='pogeo geography S2 distance geo',
        ext_modules = [pogeo])
