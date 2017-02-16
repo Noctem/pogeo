@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 try:
     from setuptools import setup, Extension
 except ImportError:
@@ -22,8 +24,8 @@ else:
         extra_args = ['-stdlib=libc++', '-Wno-unused-local-typedef', '-std=c++11']
     else:
         extra_args = ['-Wno-ignore-qualifiers', '-fpermissive', '-std=c++11']
-    libraries = ['ssl', 'crypto']
-    ssl_name = 'ssl'
+    libraries = ['crypto']
+    ssl_name = 'crypto'
 
 if 'OPENSSL_ROOT_DIR' in environ:
     openssl_dir = environ['OPENSSL_ROOT_DIR']

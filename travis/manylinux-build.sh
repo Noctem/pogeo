@@ -6,10 +6,11 @@ curl -L 'https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/centos5
 
 tar -C / -xf toolchain.tar.bz2
 
-export PATH="${TOOLCHAIN_DIR}/bin:${PATH}"
-export LD_LIBRARY_PATH="${TOOLCHAIN_DIR}/lib64:${TOOLCHAIN_DIR}/lib:${LD_LIBRARY_PATH}"
-export CFLAGS="-I${TOOLCHAIN_DIR}/include -static-libgcc -static-libstdc++"
-export CXXFLAGS="-I${TOOLCHAIN_DIR}/include -static-libgcc -static-libstdc++"
+export PATH="/toolchain/bin:${PATH}"
+export LD_LIBRARY_PATH="/toolchain/lib64:/toolchain/lib:${LD_LIBRARY_PATH}"
+export CFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++"
+export CXXFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++"
+export OPENSSL_ROOT_DIR="/toolchain"
 
 # Compile wheels
 for PIP in /opt/python/cp3*/bin/pip; do
