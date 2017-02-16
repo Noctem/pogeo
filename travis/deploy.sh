@@ -13,7 +13,7 @@ macbuild() {
 	python3 setup.py install
 	python3 test.py
 	for FILE in dist/*.whl dist/*.tar.gz; do
-		gpg2 --batch --passphrase "$GPG_PASSPHRASE" -u 0x7F327613EF1E6B94 --yes --no-tty -o "${FILE}.asc" --sign "$FILE"
+		gpg2 --batch --passphrase "$GPG_PASSPHRASE" -u 9095FC64 --yes --no-tty -o "${FILE}.asc" --sign "$FILE"
 	done
 	twine upload --config-file .pypirc -r pypi dist/*.whl dist/*.asc dist/*.tar.gz
 }
@@ -25,7 +25,7 @@ if [[ "$DOCKER_IMAGE" ]]; then
 	pip3 install -U twine
 	gpg2 --fast-import signing.asc
 	for FILE in wheelhouse/*.whl; do
-		gpg2 --batch --passphrase "$GPG_PASSPHRASE" -u 0x7F327613EF1E6B94 --yes --no-tty -o "${FILE}.asc" --sign "$FILE"
+		gpg2 --batch --passphrase "$GPG_PASSPHRASE" -u 9095FC64 --yes --no-tty -o "${FILE}.asc" --sign "$FILE"
 	done
 	twine upload --config-file .pypirc -r pypi wheelhouse/*.whl wheelhouse/*.asc
 	echo "Successfully uploaded Linux wheels."
