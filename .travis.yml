@@ -1,5 +1,3 @@
-secure: "o3Y+zClteHezpOGqPIHX7zI9WNscH0id4qAWC2B/Qn1zzflOftuqTtPt+/y9s2hUjzpU26BHNKaVUDZxWrGUA7QTDHHqeG3nZN51mhhmLJVd/Yb9/0NkKc/0fX+AJcODTii617Nv6GA8LgJ2CO+XaQMuW68cySjhi8Y8onxwSMS93sxZALGwtq7/bn4Uk2AyWWCJKg6AO8MbtRXvGEgr5aZ7lF4ukL1xpK5y/k6RxM3FKQJEXnf4DRNp7gnFjLKspC524j6QwluqbK7Oy+Rrd63Ac4iat0oYzuxjICQNpXmxX9YyzXnq4lgyH8rx3uKZE0tEDn0y5ob6YWzRjwm3cv16k3J9JL3shFylrHpVWIj/hFpN0mhSTaoPBo0Kje2SzmD0OMA9b/C03KygTDZfkRZ0OxV6l9d2ooHJ4eEQrhyaRGeXBQYSYeuqoPkDxe3/xj7AI8ZTbmNGux1NXtygI7Q2+sTjqeGp5CgVDuexEpQv1Dm3MwJwa5xaxJQK/YagA2MfWsyMo6hZtXUSEQXb5gmEyBuw4DmvqHaN5qrEKTnaSyfT457S7RWLN3rjp4iPRab8txchxdLbs3aIR1F4fZDSTaaGrP+IjAhGScTDVek7Uid2X4ccvRbidLBFwPSXWmoEhr4m0DHIcoNz2zIvfo00vQVZYC1T8T6rgkXerwo="
-
 matrix:
   include:
     - services: docker
@@ -8,10 +6,6 @@ matrix:
       python: 3.6
       sudo: required
       env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
-      addons:
-        apt:
-          packages:
-            - 'gnupg2'
     - os: linux
       dist: trusty
       python: 3.5
