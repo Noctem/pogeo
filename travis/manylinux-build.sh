@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-set -e
+set -e -x
 
-curl 'https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/centos5-toolchain.tar.bz2' -o toolchain.tar.bz2
+curl -L 'https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/centos5-toolchain.tar.bz2' -o toolchain.tar.bz2
 
 tar -C / -xf toolchain.tar.bz2
 
