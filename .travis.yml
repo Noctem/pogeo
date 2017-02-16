@@ -54,5 +54,4 @@ deploy:
   provider: script
   script: travis/deploy.sh
   on:
-    tags: true
     condition: '-n "$DOCKER_IMAGE" || "$TRAVIS_OS_NAME" == "osx"'
