@@ -98,7 +98,7 @@ pogeo = Extension('pogeo',
                   language='c++')
 
 setup (name = 'pogeo',
-       version = '0.1.1',
+       version = '0.2.0',
        description = 'Fast geography package.',
        long_description = 'A fast C++ extension for calculating cell IDs and distances.',
        url="https://github.com/Noctem/pogeo",
