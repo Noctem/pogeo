@@ -4,14 +4,6 @@ class PythonAT35 < Formula
   url "https://www.python.org/ftp/python/3.5.3/Python-3.5.3.tar.xz"
   sha256 "eefe2ad6575855423ab630f5b51a8ef6e5556f774584c06beab4926f930ddbb0"
 
-  # Patch for pyport.h macro issue
-  # https://bugs.python.org/issue10910
-  # https://trac.macports.org/ticket/44288
-  patch do
-    url "https://bugs.python.org/file30805/issue10910-workaround.txt"
-    sha256 "c075353337f9ff3ccf8091693d278782fcdff62c113245d8de43c5c7acc57daf"
-  end
-
   option :universal
   option "with-tcl-tk", "Use Homebrew's Tk instead of macOS Tk (has optional Cocoa and threads support)"
   option "with-quicktest", "Run `make quicktest` after the build"
@@ -69,6 +61,17 @@ class PythonAT35 < Formula
   # The HOMEBREW_PREFIX location of site-packages.
   def site_packages
     HOMEBREW_PREFIX/"lib/python#{xy}/site-packages"
+  end
+
+  # setuptools remembers the build flags python is built with and uses them to
+  # build packages later. Xcode-only systems need different flags.
+  pour_bottle? do
+    reason <<-EOS.undent
+    The bottle needs the Apple Command Line Tools to be installed.
+      You can install them, if desired, with:
+        xcode-select --install
+    EOS
+    satisfy { MacOS::CLT.installed? }
   end
 
   def install
