@@ -5,14 +5,18 @@ set -e
 macbuild() {
 	pip3 install -U twine setuptools wheel
 	rm -rf dist build
-	if [[ "$1" = "sdist" ]]; then
+	if [[ "$1" = "sdist" and "$SOURCE" = TRUE ]]; then
 		python3 setup.py sdist bdist_wheel
 	else
 		python3 setup.py bdist_wheel
 	fi
 	python3 setup.py install
 	python3 test.py
-	twine upload --skip-existing --config-file .pypirc -r pypi dist/*.whl dist/*.tar.gz
+	if [[ "$1" = "sdist" and "$SOURCE" = TRUE ]]; then
+		twine upload --skip-existing --config-file .pypirc -r pypi dist/*.whl dist/*.tar.*
+	else
+		twine upload --skip-existing --config-file .pypirc -r pypi dist/*.whl
+	fi
 }
 
 openssl aes-256-cbc -K "$encrypted_dc7bbf7cef27_key" -iv "$encrypted_dc7bbf7cef27_iv" -in travis/secrets.enc -out secrets.tar -d
