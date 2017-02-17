@@ -5,14 +5,14 @@ set -e
 macbuild() {
 	pip3 install -U twine setuptools wheel
 	rm -rf dist build
-	if [[ "$1" = "sdist" and "$SOURCE" = TRUE ]]; then
+	if [[ "$1" = "sdist" && "$SOURCE" = TRUE ]]; then
 		python3 setup.py sdist bdist_wheel
 	else
 		python3 setup.py bdist_wheel
 	fi
 	python3 setup.py install
 	python3 test.py
-	if [[ "$1" = "sdist" and "$SOURCE" = TRUE ]]; then
+	if [[ "$1" = "sdist" && "$SOURCE" = TRUE ]]; then
 		twine upload --skip-existing --config-file .pypirc -r pypi dist/*.whl dist/*.tar.*
 	else
 		twine upload --skip-existing --config-file .pypirc -r pypi dist/*.whl
