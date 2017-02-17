@@ -6,9 +6,9 @@ class Python35 < Formula
 
   bottle do
     root_url "https://github.com/Noctem/pogeo-toolchain/releases/download/1.0"
-    sha256 "e07d9af2c2fe4569d0c3f08a2b691aefab3a20432c1142ffe68d856ab8d0dab4" => :yosemite
-    sha256 "618dab4ed0d7c0540cf8ba4e4169392426d87ff38c5d1f59b6db9e2223cc75a1" => :el_capitan
-    sha256 "66870881e0b1e5e5177faf612d29934a62bbf492a5a2fbd66e7b9e8204d2c0b7" => :sierra
+    sha256 "0260b847e83153dfac05bf46628c1ff1bef0f9f4ef5d6597aa37d91219d8c656" => :yosemite
+    sha256 "a3e88a7ce5413189d1489895db212f85bedf1486221c445853074abcd1d34772" => :el_capitan
+    sha256 "996b2a39ca82a0a7ec600b470ee969e4c0357bfcaf0240ae8354dcea29b1ead0" => :sierra
   end
 
   option :universal
