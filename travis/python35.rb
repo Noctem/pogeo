@@ -33,8 +33,8 @@ class Python35 < Formula
   skip_clean "bin/easy_install3", "bin/easy_install-3.4", "bin/easy_install-3.5"
 
   resource "setuptools" do
-    url "https://pypi.python.org/packages/16/ef/44baff6e9b1f8125d759d026757677a8a82d14d9974726f13726dee9adfb/setuptools-34.2.0.zip"
-    sha256 "7b551f5070f9414d48c08dda58bcb879c8d9276199283a99dc8e1362e2f378a2"
+    url "https://pypi.python.org/packages/dc/8c/7c9869454bdc53e72fb87ace63eac39336879eef6f2bf96e946edbf03e90/setuptools-33.1.1.zip"
+    sha256 "6b20352ed60ba08c43b3611bdb502286f7a869fbfcf472f40d7279f1e77de145"
   end
 
   resource "pip" do
@@ -234,6 +234,7 @@ class Python35 < Formula
     rm_rf Dir["#{site_packages}/setuptools*"]
     rm_rf Dir["#{site_packages}/distribute*"]
     rm_rf Dir["#{site_packages}/pip[-_.][0-9]*", "#{site_packages}/pip"]
+
 
     %w[setuptools pip wheel].each do |pkg|
       (libexec/pkg).cd do
