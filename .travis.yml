@@ -6,6 +6,13 @@ matrix:
       python: 3.6
       sudo: required
       env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64
+    - services: docker
+      os: linux
+      dist: trusty
+      python: 3.6
+      sudo: required
+      env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686
+           PRE_CMD=linux32
     - os: linux
       dist: trusty
       python: 3.5
@@ -47,7 +54,7 @@ before_install:
   - if [[ -n "$DOCKER_IMAGE" ]]; then docker pull $DOCKER_IMAGE; fi
   - pip3 install -U setuptools
 
-install: if [[ -z "$DOCKER_IMAGE" ]]; then python3 setup.py install; else docker run --rm -v `pwd`:/io $DOCKER_IMAGE /io/travis/manylinux-build.sh; fi
+install: if [[ -z "$DOCKER_IMAGE" ]]; then python3 setup.py install; else docker run --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/travis/manylinux-build.sh; fi
 
 script: if [[ -z "$DOCKER_IMAGE" ]]; then python3 test.py; else ls wheelhouse/*; fi
 
