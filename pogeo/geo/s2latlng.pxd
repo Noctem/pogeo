@@ -1,4 +1,5 @@
 from libcpp cimport bool
+from libcpp.string cimport string
 
 from .s2 cimport S2Point
 from .s1angle cimport S1Angle
@@ -6,8 +7,11 @@ from .s1angle cimport S1Angle
 
 cdef extern from "s2latlng.h" nogil:
     cdef cppclass S2LatLng:
+        S2LatLng(S1Angle lat, S1Angle lng)
         S2LatLng()
         S2LatLng(S2Point p)
+        @staticmethod
+        S2LatLng Invalid()
         @staticmethod
         S2LatLng FromRadians(double lat_radians, double lng_radians)
         @staticmethod
@@ -22,3 +26,4 @@ cdef extern from "s2latlng.h" nogil:
         S2LatLng Normalized()
         S2Point ToPoint()
         S1Angle GetDistance(S2LatLng o)
+        string ToStringInDegrees()

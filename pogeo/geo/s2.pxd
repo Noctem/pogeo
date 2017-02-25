@@ -21,6 +21,9 @@ cdef extern from "s2.h" nogil:
         bool SimpleCCW(S2Point a, S2Point b, S2Point c)
         @staticmethod
         int RobustCCW(S2Point a, S2Point b, S2Point c)
+        double STtoUV(double s)
+        double UVtoST(double u)
+        S2Point FaceUVtoXyz(int face, double u, double v)
         @staticmethod
         double Angle(S2Point a, S2Point b, S2Point c)
         @staticmethod
