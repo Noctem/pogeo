@@ -9,6 +9,8 @@
 const double kEarthRadiusKilometers = 6371.0088;
 const double kEarthRadiusMeters = kEarthRadiusKilometers * 1000;
 const double kEarthRadiusMiles = kEarthRadiusKilometers * 0.621371;
+const double radToDeg = 180.0 / M_PI;
+const double degToRad = M_PI / 180.0;
 
 double RadiansToDistance(double radians, char *unit) {
   const double *radius;
@@ -26,6 +28,28 @@ double RadiansToDistance(double radians, char *unit) {
   }
 
   return (radians * *radius);
+}
+
+// Returns the bearing between two locations.
+static PyObject *GetBearing(PyObject *self, PyObject *args) {
+  double lat1, lon1, lat2, lon2;
+
+  if (!PyArg_ParseTuple(args, "(dd)(dd):GetBearing", &lat1, &lon1, &lat2, &lon2))
+    return NULL;
+
+  lat1 *= degToRad;
+  lat2 *= degToRad;
+
+  double lonDiff = (lon2 - lon1) * degToRad;
+  double x = sin(lonDiff) * cos(lat2);
+  double y = cos(lat1) * sin(lat2) - (sin(lat1) * cos(lat2) * cos(lonDiff));
+  double initial_bearing = atan2(x, y);
+  initial_bearing = fmod(initial_bearing * radToDeg + 360, 360);
+
+  PyObject *bearing;
+  bearing = PyFloat_FromDouble(initial_bearing);
+
+  return bearing;
 }
 
 // Returns the distance between two locations.
@@ -76,6 +100,8 @@ static PyMethodDef PogeoMethods[] = {
      "Get the cell IDs for the given coordinates."},
     {"get_distance", GetDistance, METH_VARARGS,
      "Get the distance between two points."},
+    {"get_bearing", GetBearing, METH_VARARGS,
+     "Calculates the bearing between two points."},
     {NULL, NULL, 0, NULL} /* sentinel */
 };
 
