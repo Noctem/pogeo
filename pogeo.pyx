@@ -1,7 +1,7 @@
 # distutils: language = c++
-#cython: language_level=3
+# cython: language_level=3
 
-from libc.math cimport atan2, cos, fmod, M_PI, sin
+from libc.math cimport atan2, cos, fmod, M_PI, pow, sin
 from libcpp.vector cimport vector
 
 from cpython.array cimport array
@@ -17,7 +17,7 @@ from s2cellid cimport S2CellId
 cdef double EARTH_RADIUS_KILOMETERS = 6371.0088
 cdef double EARTH_RADIUS_METERS = 6371008.8
 cdef double EARTH_RADIUS_MILES = EARTH_RADIUS_KILOMETERS * 0.621371
-cdef double EARTH_CIRCUMFERENCE_METERS = M_PI * EARTH_RADIUS_METERS * 2
+cdef double AXIS_HEIGHT = pow(500 / EARTH_RADIUS_METERS, 2) / 2
 cdef double RAD_TO_DEG = 180.0 / M_PI
 cdef double DEG_TO_RAD = M_PI / 180.0
 
@@ -57,13 +57,13 @@ def get_distance(tuple point1, tuple point2, char unit=3):
         return rad * EARTH_RADIUS_METERS
 
 
-cpdef list get_cell_ids(tuple point, unsigned short radius=500):
+cpdef list get_cell_ids(tuple point):
     cdef double lat, lon
     lat, lon = point
 
-    cdef S2Cap region = S2Cap.FromAxisAngle(
+    cdef S2Cap region = S2Cap.FromAxisHeight(
         S2LatLng.FromDegrees(lat, lon).ToPoint(),
-        S1Angle.Degrees(360 * radius / EARTH_CIRCUMFERENCE_METERS))
+        AXIS_HEIGHT)
 
     cdef S2RegionCoverer coverer
     coverer.set_min_level(15)
@@ -75,5 +75,5 @@ cpdef list get_cell_ids(tuple point, unsigned short radius=500):
     return covering
 
 
-def get_cell_ids_compact(*args, **kwargs):
-    return array('Q', get_cell_ids(*args, **kwargs)) 
+def get_cell_ids_compact(tuple point):
+    return array('Q', get_cell_ids(point))
