@@ -78,6 +78,8 @@ class S2CellUnion : public S2Region {
   void Denormalize(int min_level, int level_mod,
                    vector<S2CellId>* output) const;
 
+  void GetCellIds(int min_level, vector<unsigned long long>* output) const;
+
   // If there are more than "excess" elements of the cell_ids() vector that
   // are allocated but unused, reallocate the array to eliminate the excess
   // space.  This reduces memory usage when many cell unions need to be held

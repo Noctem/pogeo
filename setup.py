@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 
-try:
-    from setuptools import setup, Extension
-except ImportError:
-    from distutils.core import setup, Extension
-
 from ctypes.util import find_library
 from os.path import isdir, join, dirname
 from os import environ
 from sys import platform
 
+from setuptools import setup, Extension
+from Cython.Build import cythonize
 
 macros = [('S2_USE_EXACTFLOAT', None), ('ARCH_K8', None)]
 include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math']
@@ -52,7 +49,7 @@ if openssl_dir:
 else:
     library_dirs = []
 
-pogeo = Extension('pogeo',
+pogeo = cythonize(Extension('pogeo',
                   define_macros = macros,
                   library_dirs = library_dirs,
                   libraries = libraries,
@@ -92,15 +89,15 @@ pogeo = Extension('pogeo',
                       'geometry/s2regioncoverer.cc',
                       'geometry/s2regionintersection.cc',
                       'geometry/s2regionunion.cc',
-                      'pogeo.cpp'
+                      'pogeo.pyx'
                   ],
                   include_dirs = include_dirs,
-                  language='c++')
+                  language='c++'))
 
-setup (name = 'pogeo',
-       version = '0.3.0',
-       description = 'Fast geography package.',
-       long_description = 'A fast C++ extension for calculating cell IDs and distances.',
+setup (name='pogeo',
+       version='0.3.0',
+       description='Fast geography package.',
+       long_description='A fast C++ extension for calculating cell IDs and distances.',
        url="https://github.com/Noctem/pogeo",
        author='David Christenson',
        author_email='mail@noctem.xyz',
@@ -108,12 +105,14 @@ setup (name = 'pogeo',
            'Development Status :: 4 - Beta',
            'Intended Audience :: Developers',
            'Operating System :: OS Independent',
-           'Programming Language :: C',
+           'Programming Language :: C++',
+           'Programming Language :: Cython',
            'Programming Language :: Python :: 3',
            'Programming Language :: Python :: 3.3',
            'Programming Language :: Python :: 3.4',
            'Programming Language :: Python :: 3.5',
            'Programming Language :: Python :: 3.6',
+           'Topic :: Scientific/Engineering :: GIS'
        ],
        keywords='pogeo geography S2 distance geo',
-       ext_modules = [pogeo])
+       ext_modules=pogeo)

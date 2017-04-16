@@ -164,6 +164,24 @@ void S2CellUnion::Denormalize(int min_level, int level_mod,
   }
 }
 
+void S2CellUnion::GetCellIds(int min_level, vector<unsigned long long>* output) const {
+  output->clear();
+  output->reserve(num_cells());
+  for (unsigned short i = 0; i < num_cells(); ++i) {
+    S2CellId id = cell_id(i);
+    int level = id.level();
+    int new_level = max(min_level, level);
+    if (new_level == level) {
+      output->push_back(id.id());
+    } else {
+      S2CellId end = id.child_end(new_level);
+      for (id = id.child_begin(new_level); id != end; id = id.next()) {
+        output->push_back(id.id());
+      }
+    }
+  }
+}
+
 S2Cap S2CellUnion::GetCapBound() const {
   // Compute the approximate centroid of the region.  This won't produce the
   // bounding cap of minimal area, but it should be close enough.
