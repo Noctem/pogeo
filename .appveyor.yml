@@ -1,0 +1,55 @@
+version: 0.3.0-{build}
+clone_folder: C:\projects\pogeo
+pull_requests:
+  do_not_increment_build_number: true
+environment:
+  TWINE_PASSWORD:
+    secure: y/ZzELXah34vmsOHWCwMZhrpW0SHo+M6ddPOYZaKzd8=
+  TWINE_REPOSITORY: https://pypi.python.org/pypi
+  TWINE_REPOSITORY_URL: https://pypi.python.org/pypi
+  TWINE_USERNAME: Noctem
+  matrix:
+  - PYTHON: C:\Python35
+    OPENSSL_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-openssl-x86.zip
+    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x86.zip
+    LIB: C:\projects\pogeo\OpenSSL-x86\lib;C:\projects\pogeo\pthreads-x86
+    INCLUDE: C:\projects\pogeo\OpenSSL-x86\include;C:\projects\pogeo\pthreads-x86
+  - PYTHON: C:\Python35-x64
+    OPENSSL_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-openssl-x64.zip
+    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x64.zip
+    LIB: C:\projects\pogeo\OpenSSL-x64\lib;C:\projects\pogeo\pthreads-x64
+    INCLUDE: C:\projects\pogeo\OpenSSL-64\include;C:\projects\pogeo\pthreads-x64
+  - PYTHON: C:\Python36
+    OPENSSL_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-openssl-x86.zip
+    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x86.zip
+    LIB: C:\projects\pogeo\OpenSSL-x86\lib;C:\projects\pogeo\pthreads-x86
+    INCLUDE: C:\projects\pogeo\OpenSSL-x86\include;C:\projects\pogeo\pthreads-x86
+  - PYTHON: C:\Python36-x64
+    OPENSSL_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-openssl-x64.zip
+    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x64.zip
+    LIB: C:\projects\pogeo\OpenSSL-x64\lib;C:\projects\pogeo\pthreads-x64
+    INCLUDE: C:\projects\pogeo\OpenSSL-64\include;C:\projects\pogeo\pthreads-x64
+before_build:
+- cmd: >-
+    curl -fsSL -o openssl.zip %OPENSSL_URL%
+    curl -fsSL -o pthreads.zip %PTHREADS_URL%
+    7z x openssl.zip
+    7z x pthreads.zip
+install:
+- cmd: '%PYTHON%\\python.exe -m pip install -U setuptools wheel cython'
+build_script:
+- cmd: >-
+    %PYTHON%\\python.exe setup.py install
+
+    %PYTHON%\\python.exe setup.py bdist_wheel
+test_script:
+- cmd: '%PYTHON%\\python.exe test.py'
+artifacts:
+- path: dist\*.whl
+  name: Wheel
+deploy_script:
+- ps: >-
+    if($env:appveyor_repo_tag -eq 'True') {
+      Invoke-Expression "$env:PYTHON\\python.exe -m pip install -U twine"
+      Invoke-Expression "$env:PYTHON\\python.exe -m twine upload dist/*.whl --skip-existing"
+    }
