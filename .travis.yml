@@ -17,14 +17,14 @@ matrix:
     python: 3.6
     language: python
     compiler: clang
-    env: COMPILER='clang++-3.9'
+    env: COMPILER='clang++-4.0'
     addons:
       apt:
         sources:
-        - - llvm-toolchain-trusty-3.9
+        - - llvm-toolchain-trusty-4.0
           - ubuntu-toolchain-r-test
         packages:
-        - clang-3.9
+        - clang-4.0
   - os: linux
     dist: trusty
     python: 3.5
