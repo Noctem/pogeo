@@ -1,4 +1,4 @@
 Pogeo
-=======================
+=====
 
-A fast C++ extension for calculating cell IDs and distances.
+A fast Cython extension for calculating cell IDs, bearings, and distances.
