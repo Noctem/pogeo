@@ -32,8 +32,11 @@ environment:
 before_build:
 - cmd: >-
     curl -fsSL -o openssl.zip %OPENSSL_URL%
+
     curl -fsSL -o pthreads.zip %PTHREADS_URL%
+
     7z x openssl.zip
+
     7z x pthreads.zip
 install:
 - cmd: '%PYTHON%\\python.exe -m pip install -U setuptools wheel cython'
