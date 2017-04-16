@@ -22,6 +22,7 @@ export OPENSSL_ROOT_DIR="/toolchain"
 
 # Compile wheels
 for PIP in /opt/python/cp3*/bin/pip; do
+	"$PIP" install -U cython
 	"$PIP" wheel /io/ -w wheelhouse/
 done
 

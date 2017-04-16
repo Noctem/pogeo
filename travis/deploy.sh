@@ -3,28 +3,24 @@
 set -e
 
 macbuild() {
-	pip3 install -U twine setuptools wheel
+	pip3 install -U setuptools wheel cython twine
 	rm -rf dist build
 	if [[ "$1" = "sdist" && "$SOURCE" = TRUE ]]; then
 		python3 setup.py sdist bdist_wheel
+		python3 setup.py install
+		python3 test.py
+		twine upload --skip-existing dist/*.whl dist/*.tar.*
 	else
 		python3 setup.py bdist_wheel
-	fi
-	python3 setup.py install
-	python3 test.py
-	if [[ "$1" = "sdist" && "$SOURCE" = TRUE ]]; then
-		twine upload --skip-existing --config-file .pypirc -r pypi dist/*.whl dist/*.tar.*
-	else
-		twine upload --skip-existing --config-file .pypirc -r pypi dist/*.whl
+		python3 setup.py install
+		python3 test.py
+		twine upload --skip-existing dist/*.whl
 	fi
 }
 
-openssl aes-256-cbc -K "$encrypted_dc7bbf7cef27_key" -iv "$encrypted_dc7bbf7cef27_iv" -in travis/secrets.enc -out secrets.tar -d
-tar -xf secrets.tar
-
 if [[ "$DOCKER_IMAGE" ]]; then
 	pip3 install -U twine
-	twine upload --skip-existing --config-file .pypirc -r pypi wheelhouse/*.whl
+	twine upload --skip-existing wheelhouse/*.whl
 	echo "Successfully uploaded Linux wheels."
 else
 	curl -L 'https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/macos-openssl-static.tar.xz' -o openssl-static.tar.xz
@@ -34,13 +30,10 @@ else
 	macbuild sdist
 	echo "Successfully uploaded Python 3.6 wheel and source."
 
-	cd travis
 	brew uninstall python3
-	brew install python35.rb
-	cd ..
+	brew install https://raw.githubusercontent.com/Noctem/pogeo-toolchain/master/python35.rb
 	echo "Successfully installed Python 3.5."
 
-	pip3 install -U twine
 	macbuild
 	echo "Successfully uploaded Python 3.5 wheel."
 fi
