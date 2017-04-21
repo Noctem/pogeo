@@ -556,6 +556,8 @@ class S2 {
   // longest diagonal length to its shortest diagonal length.
   static double const kMaxDiagAspect;
 
+  static unsigned char ClosestLevel(double value);
+
  private:
   // Given a *valid* face for the given point p (meaning that dot product
   // of p with the face normal is positive), return the corresponding

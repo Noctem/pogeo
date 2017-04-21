@@ -18,8 +18,6 @@ double const S2::kMaxDetError = 0.8e-15;  // 14 * (2**-54)
 static_assert(S2::kSwapMask == 0x01 && S2::kInvertMask == 0x02,
               "masks_changed");
 
-static const uint32 MIX32 = 0x12b9b0a1UL;
-
 namespace std {
 
 // The hash function due to Bob Jenkins (see
@@ -765,3 +763,7 @@ double const S2::kMaxEdgeAspect = (
 
 double const S2::kMaxDiagAspect = sqrt(3);                             // 1.732
 // This is true for all projections.
+
+unsigned char S2::ClosestLevel(double value) {
+    return kAvgEdge.GetClosestLevel(value);
+}

@@ -1,5 +1,6 @@
 from libcpp.vector cimport vector
 
+from s2 cimport S2Point
 from s2region cimport S2Region
 from s2cellid cimport S2CellId
 
@@ -18,3 +19,7 @@ cdef extern from "geometry/s2/s2regioncoverer.h":
         void GetCoveringInternal(S2Region region)
         void GetCovering(S2Region region, vector[S2CellId]* covering)
         void GetCellIds(S2Region region, vector[unsigned long long]* covering)
+        @staticmethod
+        void GetSimpleCovering(S2Region region, S2Point start, int level, vector[S2CellId]* output)
+        @staticmethod
+        void GetSimpleCoveringId(S2Region region, S2Point start, unsigned char level, vector[unsigned long long]* output)

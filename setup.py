@@ -21,7 +21,7 @@ else:
         extra_args = ['-stdlib=libc++', '-Wno-unused-local-typedef', '-std=c++11']
     else:
         extra_args = ['-Wno-ignore-qualifiers', '-fpermissive', '-std=c++11']
-    libraries = ['crypto']
+    libraries = ['crypto', 'geos']
     ssl_name = 'crypto'
 
 if 'OPENSSL_ROOT_DIR' in environ:
@@ -95,12 +95,13 @@ pogeo = cythonize(Extension('pogeo',
                   language='c++'))
 
 setup (name='pogeo',
-       version='0.3.0',
+       version='0.4.0',
        description='Fast geography package.',
        long_description='A fast C++ extension for calculating cell IDs and distances.',
        url="https://github.com/Noctem/pogeo",
        author='David Christenson',
        author_email='mail@noctem.xyz',
+       license='Apache',
        classifiers=[
            'Development Status :: 4 - Beta',
            'Intended Audience :: Developers',

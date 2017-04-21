@@ -6,6 +6,8 @@ from s1angle cimport S1Angle
 
 cdef extern from "geometry/s2/s2latlng.h":
     cdef cppclass S2LatLng:
+        S2LatLng()
+        S2LatLng(S2Point p)
         @staticmethod
         S2LatLng FromRadians(double lat_radians, double lng_radians)
         @staticmethod
