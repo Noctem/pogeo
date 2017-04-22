@@ -220,14 +220,14 @@ void S2RegionCoverer::GetInitialCandidates() {
       base.reserve(4);
       S2CellId id = S2CellId::FromPoint(cap.axis());
       id.AppendVertexNeighbors(level, &base);
-      for (int i = 0; i < base.size(); ++i) {
+      for (size_t i = 0; i < base.size(); ++i) {
         AddCandidate(NewCandidate(S2Cell(base[i])));
       }
       return;
     }
   }
   // Default: start with all six cube faces.
-  for (int face = 0; face < 6; ++face) {
+  for (size_t face = 0; face < 6; ++face) {
     AddCandidate(NewCandidate(face_cells[face]));
   }
 }

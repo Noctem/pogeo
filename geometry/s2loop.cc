@@ -22,7 +22,6 @@ using std::make_pair;
 
 #include "s2loop.h"
 
-#include "base/commandlineflags.h"
 #include "base/logging.h"
 #include "util/coding/coder.h"
 #include "s2cap.h"

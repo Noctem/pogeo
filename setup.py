@@ -53,16 +53,24 @@ sources = [
 try:
     from Cython.Build import cythonize
     sources.append('pogeo/pogeo.pyx')
+
+    ext = cythonize(Extension('pogeo.pogeo',
+                              define_macros=macros,
+                              extra_compile_args=extra_args,
+                              extra_link_args=extra_args,
+                              sources=sources,
+                              include_dirs=['geometry', 'geometry/s2', 'geometry/util/math'],
+                              language='c++'))
 except ImportError:
     sources.append('pogeo/pogeo.cpp')
 
-ext = cythonize(Extension('pogeo.pogeo',
-                  define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
-                  sources=sources,
-                  include_dirs=['geometry', 'geometry/s2', 'geometry/util/math'],
-                  language='c++'))
+    ext = Extension('pogeo.pogeo',
+                    define_macros=macros,
+                    extra_compile_args=extra_args,
+                    extra_link_args=extra_args,
+                    sources=sources,
+                    include_dirs=['geometry', 'geometry/s2', 'geometry/util/math'],
+                    language='c++')
 
 setup (name='pogeo',
        version='0.4.0',

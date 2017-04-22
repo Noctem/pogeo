@@ -52,7 +52,7 @@ void S2PolygonBuilderOptions::set_vertex_merge_radius(S1Angle const& angle) {
 }
 
 void S2PolygonBuilderOptions::set_edge_splice_fraction(double fraction) {
-  CHECK(fraction < sqrt(3) / 2);
+  CHECK(fraction < sqrt(3.) / 2);
   edge_splice_fraction_ = fraction;
 }
 
@@ -424,7 +424,7 @@ void S2PolygonBuilder::MoveVertices(MergeMap const& merge_map) {
   // Now erase all the old edges, and add all the new edges.  This will
   // automatically take care of any XORing that needs to be done, because
   // EraseEdge also erases the sibling of undirected edges.
-  for (int i = 0; i < edges.size(); ++i) {
+  for (size_t i = 0; i < edges.size(); ++i) {
     S2Point v0 = edges[i].first;
     S2Point v1 = edges[i].second;
     EraseEdge(v0, v1);
@@ -495,7 +495,7 @@ bool S2PolygonBuilder::AssembleLoops(vector<S2Loop*>* loops,
   // different machine architectures (e.g. 'clovertown' vs. 'opteron'),
   // we follow the order they were added to the builder.
   unused_edges->clear();
-  for (int i = 0; i < starting_vertices_.size(); ) {
+  for (size_t i = 0; i < starting_vertices_.size(); ) {
     S2Point const& v0 = starting_vertices_[i];
     EdgeSet::const_iterator candidates = edges_->find(v0);
     if (candidates == edges_->end()) {
@@ -532,19 +532,19 @@ bool S2PolygonBuilder::AssemblePolygon(S2Polygon* polygon,
   // If edges are undirected, then all loops are already CCW.  Otherwise we
   // need to make sure the loops are normalized.
   if (!options_.undirected_edges()) {
-    for (int i = 0; i < loops.size(); ++i) {
+    for (size_t i = 0; i < loops.size(); ++i) {
       loops[i]->Normalize();
     }
   }
   if (options_.validate() && !S2Polygon::IsValid(loops)) {
     if (unused_edges != NULL) {
-      for (int i = 0; i < loops.size(); ++i) {
+      for (size_t i = 0; i < loops.size(); ++i) {
         RejectLoop(&loops[i]->vertex(0), loops[i]->num_vertices(),
                    unused_edges);
       }
     }
 
-    for (int i = 0; i < loops.size(); ++i) {
+    for (size_t i = 0; i < loops.size(); ++i) {
       delete loops[i];
     }
     loops.clear();

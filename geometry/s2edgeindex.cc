@@ -71,7 +71,6 @@ using std::make_pair;
 using std::unique_ptr;
 
 
-#include "base/commandlineflags.h"
 #include "base/logging.h"
 #include "s2cell.h"
 #include "s2edgeutil.h"
@@ -201,7 +200,7 @@ static bool LenientCrossing(S2Point const& a, S2Point const& b,
 
 bool S2EdgeIndex::EdgeIntersectsCellBoundary(
     S2Point const& a, S2Point const& b, const S2Cell& cell) {
-  S2Point start_vertex = cell.GetVertex(0);
+  //S2Point start_vertex = cell.GetVertex(0);
 
   S2Point vertices[4];
   for (int i = 0; i < 4; ++i) {
@@ -422,7 +421,7 @@ int S2EdgeIndex::GetCovering(
   // Cover the edge by a cap centered at the edge midpoint, then cover
   // the cap by four big-enough cells around the cell vertex closest to the
   // cap center.
-  S2Point middle = ((a + b) / 2).Normalize();
+  S2Point middle = ((a + b) / 2.0).Normalize();
   int actual_level = min(ideal_level, S2CellId::kMaxLevel-1);
   S2CellId::FromPoint(middle).AppendVertexNeighbors(
       actual_level, edge_covering);

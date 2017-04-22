@@ -480,7 +480,7 @@ bool DictionaryParse(const string& encoded_str,
                       vector<pair<string, string> >* items) {
   vector<string> entries;
   SplitStringUsing(encoded_str, ",", &entries);
-  for (int i = 0; i < entries.size(); ++i) {
+  for (size_t i = 0; i < entries.size(); ++i) {
     vector<string> fields;
     SplitStringAllowEmpty(entries[i], ":", &fields);
     if (fields.size() != 2) // parsing error

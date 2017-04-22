@@ -2,7 +2,6 @@
 
 #include "s2.h"
 
-#include "base/commandlineflags.h"
 #include "base/integral_types.h"
 #include "base/logging.h"
 #include "util/math/matrix3x3-inl.h"
