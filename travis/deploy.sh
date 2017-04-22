@@ -8,12 +8,12 @@ macbuild() {
 	if [[ "$1" = "sdist" && "$SOURCE" = TRUE ]]; then
 		python3 setup.py sdist bdist_wheel
 		python3 setup.py install
-		python3 test.py
+		python3 test_pogeo.py
 		twine upload --skip-existing dist/*.whl dist/*.tar.*
 	else
 		python3 setup.py bdist_wheel
 		python3 setup.py install
-		python3 test.py
+		python3 test/test_pogeo.py
 		twine upload --skip-existing dist/*.whl
 	fi
 }

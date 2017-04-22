@@ -23,7 +23,7 @@ using std::vector;
 // Returns true if the vector of cell_ids is sorted.  Used only in
 // DCHECKs.
 extern bool IsSorted(vector<S2CellId> const& cell_ids) {
-  for (int i = 0; i + 1 < cell_ids.size(); ++i) {
+  for (size_t i = 0; i + 1 < cell_ids.size(); ++i) {
     if (cell_ids[i + 1] < cell_ids[i]) {
       return false;
     }

@@ -21,5 +21,3 @@ cdef extern from "s2regioncoverer.h" nogil:
         void GetCellIds(S2Region region, vector[unsigned long long]* covering)
         @staticmethod
         void GetSimpleCovering(S2Region region, S2Point start, int level, vector[S2CellId]* output)
-        @staticmethod
-        void GetSimpleCoveringId(S2Region region, S2Point start, unsigned char level, vector[unsigned long long]* output)

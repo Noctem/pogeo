@@ -8,7 +8,6 @@ using std::numeric_limits;
 using std::back_insert_iterator;
 
 
-#include "base/commandlineflags.h"
 #include "base/integral_types.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -464,7 +463,7 @@ DEFINE_SPLIT_ONE_NUMBER_TOKEN(Uint32, uint32, strtou32_0)
 DEFINE_SPLIT_ONE_NUMBER_TOKEN(Int64, int64, strto64_0)
 DEFINE_SPLIT_ONE_NUMBER_TOKEN(Uint64, uint64, strtou64_0)
 DEFINE_SPLIT_ONE_NUMBER_TOKEN(Double, double, strtod)
-#ifdef COMPILER_MSVC  // has no strtof()
+#ifdef _WIN32 // has no strtof()
 // Note: does an implicit cast to float.
 DEFINE_SPLIT_ONE_NUMBER_TOKEN(Float, float, strtod)
 #else
