@@ -1,12 +1,12 @@
 from libcpp cimport bool
 from libcpp.string cimport string
 
-from s2 cimport S2Point
-from s2latlng cimport S2LatLng
-from s2cellid cimport S2CellId
+from .s2 cimport S2Point
+from .s2latlng cimport S2LatLng
+from .s2cellid cimport S2CellId
 
 
-cdef extern from "geometry/s2/s2cellid.h":
+cdef extern from "s2cellid.h" nogil:
     cdef cppclass S2CellId:
         @staticmethod
         S2CellId FromPoint(S2Point p)

@@ -23,10 +23,6 @@ if [[ "$DOCKER_IMAGE" ]]; then
 	twine upload --skip-existing wheelhouse/*.whl
 	echo "Successfully uploaded Linux wheels."
 else
-	curl -L 'https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/macos-openssl-static.tar.xz' -o openssl-static.tar.xz
-	tar -xf openssl-static.tar.xz
-	export OPENSSL_ROOT_DIR="$(pwd)/openssl-static"
-
 	macbuild sdist
 	echo "Successfully uploaded Python 3.6 wheel and source."
 

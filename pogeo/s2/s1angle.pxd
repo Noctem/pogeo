@@ -1,8 +1,8 @@
-from s2 cimport S2Point
-from s2latlng cimport S2LatLng
+from .s2 cimport S2Point
+from .s2latlng cimport S2LatLng
 
 
-cdef extern from "geometry/s2/s1angle.h":
+cdef extern from "s1angle.h" nogil:
     cdef cppclass S1Angle:
         @staticmethod
         S1Angle Radians(double radians)

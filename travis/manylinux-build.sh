@@ -18,7 +18,6 @@ tar -C / -xf toolchain.tar.bz2
 export PATH="/toolchain/bin:${PATH}"
 export CFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++ ${MFLAG}"
 export CXXFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++ ${MFLAG}"
-export OPENSSL_ROOT_DIR="/toolchain"
 
 # Compile wheels
 for PIP in /opt/python/cp3*/bin/pip; do
