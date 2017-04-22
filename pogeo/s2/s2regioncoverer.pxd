@@ -1,11 +1,11 @@
 from libcpp.vector cimport vector
 
-from s2 cimport S2Point
-from s2region cimport S2Region
-from s2cellid cimport S2CellId
+from .s2 cimport S2Point
+from .s2region cimport S2Region
+from .s2cellid cimport S2CellId
 
 
-cdef extern from "geometry/s2/s2regioncoverer.h":
+cdef extern from "s2regioncoverer.h" nogil:
     cdef cppclass S2RegionCoverer:
         S2RegionCoverer()
         void set_min_level(int min_level)

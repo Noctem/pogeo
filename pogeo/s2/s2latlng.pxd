@@ -1,10 +1,10 @@
 from libcpp cimport bool
 
-from s2 cimport S2Point
-from s1angle cimport S1Angle
+from .s2 cimport S2Point
+from .s1angle cimport S1Angle
 
 
-cdef extern from "geometry/s2/s2latlng.h":
+cdef extern from "s2latlng.h" nogil:
     cdef cppclass S2LatLng:
         S2LatLng()
         S2LatLng(S2Point p)

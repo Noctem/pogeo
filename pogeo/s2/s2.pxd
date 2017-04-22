@@ -1,9 +1,9 @@
 from libcpp cimport bool
 
-from vector3 cimport Vector3_d
+from .vector3 cimport Vector3_d
 
 
-cdef extern from "geometry/s2/s2.h":
+cdef extern from "s2.h" nogil:
     ctypedef Vector3_d S2Point
 
     cdef cppclass S2:

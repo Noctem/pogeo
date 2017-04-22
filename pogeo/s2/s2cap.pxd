@@ -1,11 +1,11 @@
 from libcpp cimport bool
 
-from s2 cimport S2Point
-from s1angle cimport S1Angle
-from s2region cimport S2Region
+from .s2 cimport S2Point
+from .s1angle cimport S1Angle
+from .s2region cimport S2Region
 
 
-cdef extern from "geometry/s2/s2cap.h":
+cdef extern from "s2cap.h" nogil:
     cdef cppclass S2Cap(S2Region):
         @staticmethod
         S2Cap FromAxisHeight(S2Point axis, double height)

@@ -13,16 +13,16 @@ from cpython cimport bool as pybool
 from cython.operator cimport dereference as deref
 from cython cimport boundscheck
 
-from cyrandom cimport uniform
+from cyrandom.cyrandom cimport uniform
 
-from rounding cimport *
-from s2 cimport S2Point, S2
-from s2cap cimport S2Cap
-from s2latlng cimport S2LatLng
-from s1angle cimport S1Angle
-from s2regioncoverer cimport S2RegionCoverer
-from s2cellid cimport S2CellId
-from s2loop cimport S2Loop
+from .cpylib cimport *
+from .s2.s2 cimport S2Point, S2
+from .s2.s2cap cimport S2Cap
+from .s2.s2latlng cimport S2LatLng
+from .s2.s1angle cimport S1Angle
+from .s2.s2regioncoverer cimport S2RegionCoverer
+from .s2.s2cellid cimport S2CellId
+from .s2.s2loop cimport S2Loop
 
 try:
     from shapely.geos import lgeos
