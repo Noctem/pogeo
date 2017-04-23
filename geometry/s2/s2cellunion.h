@@ -9,6 +9,7 @@ using std::vector;
 #include "base/integral_types.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/types.h"
 #include "s2region.h"
 #include "s2cellid.h"
 
@@ -78,7 +79,7 @@ class S2CellUnion : public S2Region {
   void Denormalize(int min_level, int level_mod,
                    vector<S2CellId>* output) const;
 
-  void GetCellIds(int min_level, vector<unsigned long long>* output) const;
+  void GetCellIds(int min_level, vector_uint64* output) const;
 
   // If there are more than "excess" elements of the cell_ids() vector that
   // are allocated but unused, reallocate the array to eliminate the excess

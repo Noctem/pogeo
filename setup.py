@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
 
+from os import environ
 from sys import platform
 
 from setuptools import setup, Extension
 
 libraries = None
-macros = [('ARCH_K8', None)]
+macros = None
 include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math', 'include']
 
 if platform == 'win32':
-    extra_args = None
-    macros.append(('PTW32_STATIC_LIB', None))
+    macros = [('PTW32_STATIC_LIB', None)]
     libraries = ['pthreadVC2', 'Advapi32', 'User32']
+    extra_args = None
 elif platform == 'darwin':
     extra_args = ['-stdlib=libc++', '-std=c++11']
+    environ['CFLAGS'] = ' '.join(extra_args)
 else:
     extra_args = ['-std=c++11']
+    environ['CFLAGS'] = ' '.join(extra_args)
 
 s2 = [('s2', {
         'language': 'c++',
-        'define_macros': macros,
+        'macros': macros,
         'include_dirs': include_dirs,
         'extra_compile_args': extra_args,
         'extra_link_args': extra_args,
@@ -70,27 +73,35 @@ exts = [Extension('pogeo.const',
                   sources=['pogeo/const.' + file_ext],
                   language='c++'),
         Extension('pogeo.cellcache',
+                  define_macros=macros,
                   extra_compile_args=extra_args,
                   extra_link_args=extra_args,
                   include_dirs=include_dirs,
+                  libraries=libraries,
                   sources=['pogeo/cellcache.' + file_ext],
                   language='c++'),
         Extension('pogeo.location',
+                  define_macros=macros,
                   extra_compile_args=extra_args,
                   extra_link_args=extra_args,
                   include_dirs=include_dirs,
+                  libraries=libraries,
                   sources=['pogeo/location.' + file_ext],
                   language='c++'),
         Extension('pogeo.polygon',
+                  define_macros=macros,
                   extra_compile_args=extra_args,
                   extra_link_args=extra_args,
                   include_dirs=include_dirs,
+                  libraries=libraries,
                   sources=['pogeo/polygon.' + file_ext],
                   language='c++'),
         Extension('pogeo.utils',
+                  define_macros=macros,
                   extra_compile_args=extra_args,
                   extra_link_args=extra_args,
                   include_dirs=include_dirs,
+                  libraries=libraries,
                   sources=['pogeo/utils.' + file_ext],
                   language='c++')]
 
@@ -112,8 +123,6 @@ setup(name='pogeo',
           'Programming Language :: C++',
           'Programming Language :: Cython',
           'Programming Language :: Python :: 3',
-          'Programming Language :: Python :: 3.3',
-          'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
           'Topic :: Scientific/Engineering :: GIS'],

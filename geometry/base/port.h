@@ -64,7 +64,7 @@ typedef unsigned long ulong;
 #include <cstddef>              // For _GLIBCXX macros
 #endif
 
-#if !defined(HAVE_TLS) && defined(_GLIBCXX_HAVE_TLS) && defined(ARCH_K8)
+#if !defined(HAVE_TLS) && defined(_GLIBCXX_HAVE_TLS)
 #define HAVE_TLS 1
 #endif
 
@@ -935,9 +935,6 @@ struct PortableHashBase { };
 #define STREAM_SETF(s, flag) (s).setf(ios::flag)
 #endif
 
-// Portable handling of unaligned loads and stores
-
-#if defined(ARCH_PIII) || defined(ARCH_ATHLON) || defined(ARCH_K8) || defined(_ARCH_PPC)
 
 // x86 and x86-64 can perform unaligned loads/stores directly;
 // modern PowerPC hardware can also do unaligned integer loads and stores;
@@ -951,44 +948,6 @@ struct PortableHashBase { };
 #define UNALIGNED_STORE32(_p, _val) (*reinterpret_cast<uint32 *>(_p) = (_val))
 #define UNALIGNED_STORE64(_p, _val) (*reinterpret_cast<uint64 *>(_p) = (_val))
 
-#else
-
-#define NEED_ALIGNED_LOADS
-
-// These functions are provided for architectures that don't support
-// unaligned loads and stores.
-
-inline uint16 UNALIGNED_LOAD16(const void *p) {
-  uint16 t;
-  memcpy(&t, p, sizeof t);
-  return t;
-}
-
-inline uint32 UNALIGNED_LOAD32(const void *p) {
-  uint32 t;
-  memcpy(&t, p, sizeof t);
-  return t;
-}
-
-inline uint64 UNALIGNED_LOAD64(const void *p) {
-  uint64 t;
-  memcpy(&t, p, sizeof t);
-  return t;
-}
-
-inline void UNALIGNED_STORE16(void *p, uint16 v) {
-  memcpy(p, &v, sizeof v);
-}
-
-inline void UNALIGNED_STORE32(void *p, uint32 v) {
-  memcpy(p, &v, sizeof v);
-}
-
-inline void UNALIGNED_STORE64(void *p, uint64 v) {
-  memcpy(p, &v, sizeof v);
-}
-
-#endif
 
 #ifdef _LP64
 #define UNALIGNED_LOADW(_p) UNALIGNED_LOAD64(_p)

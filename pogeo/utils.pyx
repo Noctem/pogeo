@@ -10,7 +10,7 @@ from libcpp.vector cimport vector
 # temporary hack to trick the Cython compiler
 from cpython cimport array as _array
 
-from . cimport array
+from .array cimport array, clone
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
 from .cpylib cimport _PyTime_t, _Py_dg_dtoa, _Py_dg_strtod, _Py_dg_freedtoa, PyOS_snprintf
 from .location cimport Location
@@ -24,7 +24,7 @@ from .types cimport vector_uint64
 
 DEF S2_LEVEL = 15
 
-cdef array.array array_template = array.array('Q', [])
+cdef array array_template = array('Q', [])
 
 cpdef double get_bearing(Location point1, Location point2):
     cdef double lat1, lat2, lon_diff, x, y, initial_bearing
@@ -66,7 +66,7 @@ def get_cell_ids(Location p):
     coverer.GetCellIds(cap, &cells)
     cdef uint8_t i, size
     size = cells.size()
-    cdef array.array cell_array = array.clone(array_template, size)
+    cdef array cell_array = clone(array_template, size)
     memcpy(&cell_array.data.as_ulonglongs[0], &cells[0], size * 8)
     return cell_array
 
@@ -100,7 +100,7 @@ def get_cell_ids_alternative(Location p):
             if all_.insert(nbr).second:
                 frontier.push_back(nbr)
 
-    cdef array.array cell_array = array.clone(array_template, size)
+    cdef array cell_array = clone(array_template, size)
     memcpy(&cell_array.data.as_ulonglongs[0], &cells[0], size * 8)
     return cell_array
 
