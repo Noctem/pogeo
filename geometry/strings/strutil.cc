@@ -112,7 +112,7 @@ char *FastInt64ToBuffer(int64 i, char* buffer) {
 
 // Offset into buffer where FastInt32ToBuffer places the end of string
 // null character.  Also used by FastInt32ToBufferLeft
-static const int kFastInt32ToBufferOffset = 11;
+//static const int kFastInt32ToBufferOffset = 11;
 
 char *FastInt32ToBuffer(int32 i, char* buffer) {
   FastInt32ToBufferLeft(i, buffer);
