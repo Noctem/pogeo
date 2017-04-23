@@ -1,30 +1,26 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True
 
-from libc.string cimport memcpy
+from libc.string cimport memmove
 from libc.math cimport atan2, cos, fmod, sin
 from libc.stdint cimport uint8_t, uint64_t
 from libcpp.unordered_set cimport unordered_set
 from libcpp.vector cimport vector
 
-# temporary hack to trick the Cython compiler
-from cpython cimport array as _array
-
 from .array cimport array, clone
+from .cellcache cimport ARRAY_TEMPLATE
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
 from .cpylib cimport _PyTime_t, _Py_dg_dtoa, _Py_dg_strtod, _Py_dg_freedtoa, PyOS_snprintf
 from .location cimport Location
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
 from .geo.s2cap cimport S2Cap
-from .geo.s2cell cimport S2Cell
 from .geo.s2cellid cimport S2CellId
 from .geo.s2regioncoverer cimport S2RegionCoverer
 from .types cimport vector_uint64
 
 DEF S2_LEVEL = 15
 
-cdef array array_template = array('Q', [])
 
 cpdef double get_bearing(Location point1, Location point2):
     cdef double lat1, lat2, lon_diff, x, y, initial_bearing
@@ -64,44 +60,9 @@ def get_cell_ids(Location p):
 
     cdef vector_uint64 cells
     coverer.GetCellIds(cap, &cells)
-    cdef uint8_t i, size
-    size = cells.size()
-    cdef array cell_array = clone(array_template, size)
-    memcpy(&cell_array.data.as_ulonglongs[0], &cells[0], size * 8)
-    return cell_array
-
-
-def get_cell_ids_alternative(Location p):
-    cdef uint8_t edge
-    cdef S2CellId id_, start, nbr
-    cdef S2CellId neighbors[4]
-    cdef S2Point point = p.point
-    cdef S2Cap cap = S2Cap.FromAxisHeight(point, AXIS_HEIGHT)
-    start = S2CellId.FromPoint(point).parent(S2_LEVEL)
-
-    cdef vector_uint64 cells
-    cdef unordered_set[S2CellId] all_
-    cdef vector[S2CellId] frontier
-
-    cdef uint8_t i, size = 0
-
-    all_.insert(start)
-    frontier.push_back(start)
-    while not frontier.empty():
-        id_ = frontier.back()
-        frontier.pop_back()
-        if not cap.MayIntersect(S2Cell(id_)):
-            continue
-        cells.push_back(id_.id())
-        size += 1
-        id_.GetEdgeNeighbors(neighbors)
-        for edge in range(4):
-            nbr = neighbors[edge]
-            if all_.insert(nbr).second:
-                frontier.push_back(nbr)
-
-    cdef array cell_array = clone(array_template, size)
-    memcpy(&cell_array.data.as_ulonglongs[0], &cells[0], size * 8)
+    cdef size_t size = cells.size()
+    cdef array cell_array = clone(ARRAY_TEMPLATE, size)
+    memmove(&cell_array.data.as_ulonglongs[0], &cells[0], size * 8)
     return cell_array
 
 
