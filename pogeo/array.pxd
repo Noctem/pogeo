@@ -47,6 +47,12 @@
               : (see revision control)
 """
 
+# the included Cython pxd can be used if my PR is accepted
+# https://github.com/cython/cython/pull/1681
+
+# temporary hack to trick the Cython compiler
+from cpython cimport array as _
+
 from cpython.object cimport Py_SIZE
 from cpython.ref cimport PyTypeObject, Py_TYPE
 from cpython.mem cimport PyObject_Malloc, PyObject_Free
