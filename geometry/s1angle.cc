@@ -32,7 +32,7 @@ ostream& operator<<(ostream& os, S1Angle const& a) {
   double degrees = a.degrees();
   char buffer[13];
   size_t sz = snprintf(buffer, sizeof(buffer), "%.7f", degrees);
-  if (sz >= 0 && sz < sizeof(buffer)) {
+  if (sz < sizeof(buffer)) {
     return os << buffer;
   } else {
     return os << degrees;
