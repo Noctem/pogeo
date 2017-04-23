@@ -1,4 +1,4 @@
-version: 0.3.0-{build}
+version: 0.4.0-{build}
 clone_folder: C:\projects\pogeo
 pull_requests:
   do_not_increment_build_number: true
@@ -10,19 +10,19 @@ environment:
   TWINE_USERNAME: Noctem
   matrix:
   - PYTHON: C:\Python35
-    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x86.zip
+    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/windows-pthreads-x86.zip
     LIB: C:\projects\pogeo\pthreads-x86
     INCLUDE: C:\projects\pogeo\pthreads-x86
   - PYTHON: C:\Python35-x64
-    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x64.zip
+    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/windows-pthreads-x64.zip
     LIB: C:\projects\pogeo\pthreads-x64
     INCLUDE: C:\projects\pogeo\pthreads-x64
   - PYTHON: C:\Python36
-    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x86.zip
+    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/windows-pthreads-x86.zip
     LIB: C:\projects\pogeo\pthreads-x86
     INCLUDE: C:\projects\pogeo\pthreads-x86
   - PYTHON: C:\Python36-x64
-    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x64.zip
+    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/windows-pthreads-x64.zip
     LIB: C:\projects\pogeo\pthreads-x64
     INCLUDE: C:\projects\pogeo\pthreads-x64
 before_build:
@@ -31,14 +31,14 @@ before_build:
 
     7z x pthreads.zip
 install:
-- cmd: '%PYTHON%\\python.exe -m pip install -U setuptools wheel cython'
+- cmd: '%PYTHON%\\python.exe -m pip install -U setuptools wheel cython cyrandom'
 build_script:
 - cmd: >-
     %PYTHON%\\python.exe setup.py install
 
     %PYTHON%\\python.exe setup.py bdist_wheel
 test_script:
-- cmd: '%PYTHON%\\python.exe test/test_pogeo.py'
+- cmd: '%PYTHON%\\python.exe test\test_pogeo.py'
 artifacts:
 - path: dist\*.whl
   name: Wheel
