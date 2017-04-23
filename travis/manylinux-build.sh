@@ -20,7 +20,7 @@ export CFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++ ${MFLAG}"
 export CXXFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++ ${MFLAG}"
 
 # Compile wheels
-for PIP in /opt/python/cp3*/bin/pip; do
+for PIP in /opt/python/cp3[56789]*/bin/pip; do
 	"$PIP" install -U cython cyrandom
 	"$PIP" wheel /io/ -w wheelhouse/
 done
@@ -31,7 +31,7 @@ for WHL in wheelhouse/*.whl; do
 done
 
 # Install packages and test
-for PYBIN in /opt/python/cp3*/bin; do
+for PYBIN in /opt/python/cp3[56789]*/bin; do
 	"${PYBIN}/pip" install pogeo --no-index -f /io/wheelhouse
 	"${PYBIN}/python" /io/test/test.py
 done

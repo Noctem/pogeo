@@ -15,6 +15,7 @@ if platform == 'win32':
     libraries = ['pthreadVC2', 'Advapi32', 'User32']
     library_dirs = ['pthreads-x86', 'pthreads-x64']
     environ['CFLAGS'] = '-DPTW32_STATIC_LIB -DARCH_K8'
+    extra_args = None
 elif platform == 'darwin':
     extra_args = ['-stdlib=libc++', '-std=c++11']
     environ['CFLAGS'] = ' '.join(extra_args)
