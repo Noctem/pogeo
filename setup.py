@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
 
+from os import environ
 from sys import platform
 
 from setuptools import setup, Extension
 
 libraries = None
+library_dirs = None
 macros = [('ARCH_K8', None)]
 include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math', 'include']
 
 if platform == 'win32':
-    extra_args = None
     macros.append(('PTW32_STATIC_LIB', None))
     libraries = ['pthreadVC2', 'Advapi32', 'User32']
+    library_dirs = ['pthreads-x86', 'pthreads-x64']
+    environ['CFLAGS'] = '-DPTW32_STATIC_LIB -DARCH_K8'
 elif platform == 'darwin':
     extra_args = ['-stdlib=libc++', '-std=c++11']
+    environ['CFLAGS'] = ' '.join(extra_args)
 else:
     extra_args = ['-std=c++11']
+    environ['CFLAGS'] = ' '.join(extra_args)
 
 s2 = [('s2', {
         'language': 'c++',
@@ -24,6 +29,7 @@ s2 = [('s2', {
         'extra_compile_args': extra_args,
         'extra_link_args': extra_args,
         'libraries': libraries,
+        'library_dirs': library_dirs,
         'sources': [
             'geometry/base/int128.cc',
             'geometry/base/logging.cc',

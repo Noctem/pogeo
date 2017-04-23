@@ -16,7 +16,7 @@ using std::make_pair;
 #include <vector>
 using std::vector;
 
-#include "base/integral_types.h"
+#include "base/types.h"
 #include "base/macros.h"
 #include "s2cell.h"
 #include "s2cellid.h"

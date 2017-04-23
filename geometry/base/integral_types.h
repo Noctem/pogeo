@@ -96,9 +96,4 @@ static const  int32 kint32max  = (( int32) 0x7FFFFFFF);
 static const  int64 kint64min  = (( int64) GG_LONGLONG(0x8000000000000000));
 static const  int64 kint64max  = (( int64) GG_LONGLONG(0x7FFFFFFFFFFFFFFF));
 
-#include <vector>
-using std::vector;
-typedef uint64_t uint64;
-typedef vector<uint64_t> vector_uint64;
-
 #endif  // BASE_INT_TYPES_H_

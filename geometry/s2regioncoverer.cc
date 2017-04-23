@@ -22,8 +22,8 @@ using std::priority_queue;
 #include <vector>
 using std::vector;
 
-#include "base/integral_types.h"
 #include "base/logging.h"
+#include "base/types.h"
 #include "s2.h"
 #include "s2cap.h"
 #include "s2cellunion.h"
