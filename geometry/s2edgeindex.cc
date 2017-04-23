@@ -234,49 +234,43 @@ void S2EdgeIndex::GetEdgesInChildrenCells(
     start = mapping.lower_bound(cell.range_min());
     end = mapping.upper_bound(cell.range_max());
     int num_edges = 0;
-    bool rewind = FLAGS_always_recurse_on_children;
     // TODO(user): Maybe distinguish between edges in current cell, that
     // are going to be added anyhow, and edges in subcells, and rewind only
     // those.
-    if (!rewind) {
-      for (it = start; it != end; ++it) {
-        candidate_crossings->push_back(it->second);
-        ++num_edges;
-        if (num_edges == 16 && !cell.is_leaf()) {
-          rewind = true;
-          break;
+    for (it = start; it != end; ++it) {
+      candidate_crossings->push_back(it->second);
+      ++num_edges;
+      if (num_edges == 16 && !cell.is_leaf()) {
+        // If there are too many to insert, uninsert and recurse.
+        for (int i = 0; i < num_edges; ++i) {
+          candidate_crossings->pop_back();
         }
-      }
-    }
-    // If there are too many to insert, uninsert and recurse.
-    if (rewind) {
-      for (int i = 0; i < num_edges; ++i) {
-        candidate_crossings->pop_back();
-      }
-      // Add cells at this level
-      pair<CellEdgeMultimap::const_iterator,
-           CellEdgeMultimap::const_iterator> eq =
-                                          mapping.equal_range(cell);
-      for (it = eq.first; it != eq.second; ++it) {
-        candidate_crossings->push_back(it->second);
-      }
-      // Recurse on the children -- hopefully some will be empty.
-      if (eq.first != start || eq.second != end) {
-        S2Cell children[4];
-        S2Cell c(cell);
-        c.Subdivide(children);
-        for (int i = 0; i < 4; ++i) {
-          // TODO(user): Do the check for the four cells at once,
-          // as it is enough to check the four edges between the cells.  At
-          // this time, we are checking 16 edges, 4 times too many.
-          //
-          // Note that given the guarantee of AppendCovering, it is enough
-          // to check that the edge intersect with the cell boundary as it
-          // cannot be fully contained in a cell.
-          if (EdgeIntersectsCellBoundary(a, b, children[i])) {
-            cover->push_back(children[i].id());
+        // Add cells at this level
+        pair<CellEdgeMultimap::const_iterator,
+             CellEdgeMultimap::const_iterator> eq =
+                                            mapping.equal_range(cell);
+        for (it = eq.first; it != eq.second; ++it) {
+          candidate_crossings->push_back(it->second);
+        }
+        // Recurse on the children -- hopefully some will be empty.
+        if (eq.first != start || eq.second != end) {
+          S2Cell children[4];
+          S2Cell c(cell);
+          c.Subdivide(children);
+          for (int i = 0; i < 4; ++i) {
+            // TODO(user): Do the check for the four cells at once,
+            // as it is enough to check the four edges between the cells.  At
+            // this time, we are checking 16 edges, 4 times too many.
+            //
+            // Note that given the guarantee of AppendCovering, it is enough
+            // to check that the edge intersect with the cell boundary as it
+            // cannot be fully contained in a cell.
+            if (EdgeIntersectsCellBoundary(a, b, children[i])) {
+              cover->push_back(children[i].id());
+            }
           }
         }
+        break;
       }
     }
   }

@@ -1,7 +1,8 @@
 from libcpp cimport bool
 
-from .s2 cimport S2Point
 from .s1angle cimport S1Angle
+from .s2 cimport S2Point
+from .s2cell cimport S2Cell
 from .s2region cimport S2Region
 
 
@@ -28,3 +29,4 @@ cdef extern from "s2cap.h" nogil:
         void AddPoint(S2Point p)
         void AddCap(S2Cap other)
         S2Cap Expanded(S1Angle distance)
+        bool MayIntersect(S2Cell cell)

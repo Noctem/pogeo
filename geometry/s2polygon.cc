@@ -225,9 +225,6 @@ bool S2Polygon::ContainsChild(S2Loop* a, S2Loop* b, LoopMap const& loop_map) {
 }
 
 void S2Polygon::Init(vector<S2Loop*>* loops) {
-  if (FLAGS_s2debug) {
-    CHECK(IsValid(*loops));
-  }
   DCHECK(loops_.empty());
   loops_.swap(*loops);
 
@@ -243,17 +240,6 @@ void S2Polygon::Init(vector<S2Loop*>* loops) {
   // Reorder the loops in depth-first traversal order.
   loops_.clear();
   InitLoop(NULL, -1, &loop_map);
-
-  if (FLAGS_s2debug) {
-    // Check that the LoopMap is correct (this is fairly cheap).
-    for (int i = 0; i < num_loops(); ++i) {
-      for (int j = 0; j < num_loops(); ++j) {
-        if (i == j) continue;
-        CHECK_EQ(ContainsChild(loop(i), loop(j), loop_map),
-                 loop(i)->ContainsNested(loop(j)));
-      }
-    }
-  }
 
   // Compute the bounding rectangle of the entire polygon.
   has_holes_ = false;

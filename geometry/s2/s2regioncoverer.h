@@ -136,9 +136,6 @@ class S2RegionCoverer {
   static void GetSimpleCovering(S2Region const& region, S2Point const& start,
                                 int level, vector<S2CellId>* output);
 
-  static void GetSimpleCoveringId(S2Region const& region, S2Point const& start,
-                                  unsigned char level, vector<unsigned long long>* output);
-
  private:
   struct Candidate {
     S2Cell cell;
@@ -179,8 +176,6 @@ class S2RegionCoverer {
   // The output cells are returned in arbitrary order.
   static void FloodFill(S2Region const& region, S2CellId const& start,
                         vector<S2CellId>* output);
-  static void FloodFillId(S2Region const& region, S2CellId const& start,
-                          vector<unsigned long long>* output);
 
   int min_level_;
   int max_level_;

@@ -20,3 +20,4 @@ cdef extern from "s2cellid.h" nogil:
         S2CellId parent(int level)
         string ToToken()
         string ToString()
+        void GetEdgeNeighbors(S2CellId neighbors[4])

@@ -361,37 +361,8 @@ void S2RegionCoverer::FloodFill(
   }
 }
 
-void S2RegionCoverer::FloodFillId(
-    S2Region const& region, S2CellId const& start, vector<unsigned long long>* output) {
-  unordered_set<unsigned long long> all;
-  vector<S2CellId> frontier;
-  all.insert(start.id());
-  frontier.push_back(start);
-  while (!frontier.empty()) {
-    S2CellId id = frontier.back();
-    frontier.pop_back();
-    if (!region.MayIntersect(S2Cell(id))) continue;
-    output->push_back(id.id());
-
-    S2CellId neighbors[4];
-    id.GetEdgeNeighbors(neighbors);
-    for (unsigned char edge = 0; edge < 4; ++edge) {
-      S2CellId nbr = neighbors[edge];
-      if (all.insert(nbr.id()).second) {
-        frontier.push_back(nbr);
-      }
-    }
-  }
-}
-
 void S2RegionCoverer::GetSimpleCovering(
     S2Region const& region, S2Point const& start,
     int level, vector<S2CellId>* output) {
   return FloodFill(region, S2CellId::FromPoint(start).parent(level), output);
-}
-
-void S2RegionCoverer::GetSimpleCoveringId(
-    S2Region const& region, S2Point const& start,
-    unsigned char level, vector<unsigned long long>* output) {
-  return FloodFillId(region, S2CellId::FromPoint(start).parent(level), output);
 }
