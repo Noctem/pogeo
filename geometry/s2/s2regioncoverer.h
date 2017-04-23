@@ -3,6 +3,8 @@
 #ifndef UTIL_GEOMETRY_S2REGION_COVERER_H_
 #define UTIL_GEOMETRY_S2REGION_COVERER_H_
 
+#include <stdint.h>
+
 #include <queue>
 using std::priority_queue;
 
@@ -19,6 +21,8 @@ using std::vector;
 #include "base/macros.h"
 #include "s2cell.h"
 #include "s2cellid.h"
+
+typedef vector<uint64_t> vector_uint64
 
 class S2CellUnion;
 
@@ -118,7 +122,7 @@ class S2RegionCoverer {
   // within (GetInteriorCovering) the given region and satisfies the various
   // restrictions specified above.
   void GetCovering(S2Region const& region, vector<S2CellId>* covering);
-  void GetCellIds(S2Region const& region, vector<unsigned long long>* covering);
+  void GetCellIds(S2Region const& region, vector_uint64* covering);
   void GetInteriorCovering(S2Region const& region, vector<S2CellId>* interior);
 
   // Return a normalized cell union that covers (GetCellUnion) or is contained

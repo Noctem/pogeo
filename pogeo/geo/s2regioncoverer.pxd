@@ -3,6 +3,7 @@ from libcpp.vector cimport vector
 from .s2 cimport S2Point
 from .s2region cimport S2Region
 from .s2cellid cimport S2CellId
+from .types cimport vector_uint64
 
 
 cdef extern from "s2regioncoverer.h" nogil:
@@ -18,6 +19,6 @@ cdef extern from "s2regioncoverer.h" nogil:
         int max_cells()
         void GetCoveringInternal(S2Region region)
         void GetCovering(S2Region region, vector[S2CellId]* covering)
-        void GetCellIds(S2Region region, vector[unsigned long long]* covering)
+        void GetCellIds(S2Region region, vector_uint64* covering)
         @staticmethod
         void GetSimpleCovering(S2Region region, S2Point start, int level, vector[S2CellId]* output)
