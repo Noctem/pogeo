@@ -10,11 +10,6 @@
 #ifndef BASE_INT_TYPES_H_
 #define BASE_INT_TYPES_H_
 
-// These typedefs are also defined in base/google.swig. In the
-// SWIG environment, we use those definitions and avoid duplicate
-// definitions here with an ifdef. The definitions should be the
-// same in both files, and ideally be only defined in this file.
-#ifndef SWIG
 // Standard typedefs
 // All Google2 code is compiled with -funsigned-char to make "char"
 // unsigned.  Google2 code therefore doesn't need a "uchar" type.
@@ -62,8 +57,6 @@ typedef unsigned long      uword_t;
 // rather than "sword_t"
 typedef long sword_t;
 
-#endif /* SWIG */
-
 // long long macros to be used because gcc and vc++ use different suffixes,
 // and different size specifiers in format strings
 #undef GG_LONGLONG
@@ -103,5 +96,9 @@ static const  int32 kint32max  = (( int32) 0x7FFFFFFF);
 static const  int64 kint64min  = (( int64) GG_LONGLONG(0x8000000000000000));
 static const  int64 kint64max  = (( int64) GG_LONGLONG(0x7FFFFFFFFFFFFFFF));
 
+#include <vector>
+using std::vector;
+typedef uint64_t uint64;
+typedef vector<uint64_t> vector_uint64;
 
 #endif  // BASE_INT_TYPES_H_

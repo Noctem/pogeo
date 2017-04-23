@@ -3,7 +3,7 @@ from libcpp.vector cimport vector
 from .s2 cimport S2Point
 from .s2region cimport S2Region
 from .s2cellid cimport S2CellId
-from .types cimport vector_uint64
+from ..types cimport vector_uint64
 
 
 cdef extern from "s2regioncoverer.h" nogil:

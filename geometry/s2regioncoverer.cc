@@ -2,7 +2,6 @@
 
 #include "s2regioncoverer.h"
 
-#include <stdint.h>
 #include <pthread.h>
 
 #include <algorithm>
@@ -23,13 +22,11 @@ using std::priority_queue;
 #include <vector>
 using std::vector;
 
-
+#include "base/integral_types.h"
 #include "base/logging.h"
 #include "s2.h"
 #include "s2cap.h"
 #include "s2cellunion.h"
-
-typedef vector<uint64_t> vector_uint64
 
 // Define storage for header file constants (the values are not needed here).
 int const S2RegionCoverer::kDefaultMaxCells;

@@ -3,8 +3,6 @@
 #ifndef UTIL_GEOMETRY_S2REGION_COVERER_H_
 #define UTIL_GEOMETRY_S2REGION_COVERER_H_
 
-#include <stdint.h>
-
 #include <queue>
 using std::priority_queue;
 
@@ -18,11 +16,10 @@ using std::make_pair;
 #include <vector>
 using std::vector;
 
+#include "base/integral_types.h"
 #include "base/macros.h"
 #include "s2cell.h"
 #include "s2cellid.h"
-
-typedef vector<uint64_t> vector_uint64
 
 class S2CellUnion;
 

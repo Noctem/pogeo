@@ -164,7 +164,7 @@ void S2CellUnion::Denormalize(int min_level, int level_mod,
   }
 }
 
-void S2CellUnion::GetCellIds(int min_level, vector<unsigned long long>* output) const {
+void S2CellUnion::GetCellIds(int min_level, vector_uint64* output) const {
   output->clear();
   output->reserve(num_cells());
   for (unsigned short i = 0; i < num_cells(); ++i) {
