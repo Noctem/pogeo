@@ -21,7 +21,7 @@ export CXXFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++ ${MFLAG}"
 
 # Compile wheels
 for PIP in /opt/python/cp3*/bin/pip; do
-	"$PIP" install -U cython
+	"$PIP" install -U cython cyrandom
 	"$PIP" wheel /io/ -w wheelhouse/
 done
 
