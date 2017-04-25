@@ -8,7 +8,6 @@ from libcpp.unordered_set cimport unordered_set
 from libcpp.vector cimport vector
 
 from .array cimport array, clone
-from .cellcache cimport ARRAY_TEMPLATE
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
 from .cpylib cimport _PyTime_t, _Py_dg_dtoa, _Py_dg_strtod, _Py_dg_freedtoa, PyOS_snprintf
 from .location cimport Location
@@ -20,6 +19,8 @@ from .geo.s2regioncoverer cimport S2RegionCoverer
 from .types cimport vector_uint64
 
 DEF S2_LEVEL = 15
+
+cdef array ARRAY_TEMPLATE = array('Q', [])
 
 
 cpdef double get_bearing(Location point1, Location point2):
