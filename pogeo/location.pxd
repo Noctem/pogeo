@@ -10,5 +10,3 @@ cdef class Location:
     cdef S2Point point
     @staticmethod
     cdef from_point(S2Point point)
-    cdef double lat_radian(self)
-    cdef double lon_radian(self)

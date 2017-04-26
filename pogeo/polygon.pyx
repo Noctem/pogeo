@@ -1,14 +1,15 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True
 
-from libc.stdint cimport uint16_t
+from libc.stdint cimport uint8_t, uint16_t, uint32_t, uint64_t, int32_t
 from libcpp cimport bool
 from libcpp.vector cimport vector
 
+from .cpylib cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from .geo.s2 cimport S2, S2Point
 from .geo.s2latlng cimport S2LatLng
 from .location cimport Location
-from .utils cimport double_round, get_distance
+from .utils cimport coords_to_s2point, double_round, get_distance
 
 
 cdef class Polygon:
@@ -23,12 +24,10 @@ cdef class Polygon:
         if length < 3:
             raise ValueError('Must provide at least 3 points.')
 
-        self.multi = False
-
         lat, lon = points[0]
         self.south = self.north = lat
         self.east = self.west = lon
-        v.push_back(S2LatLng.FromDegrees(lat, lon).ToPoint())
+        v.push_back(coords_to_s2point(lat, lon))
 
         for i in range(1, length):
             lat, lon = points[i]
@@ -40,7 +39,7 @@ cdef class Polygon:
                 self.east = lon
             elif lon < self.west:
                 self.west = lon
-            v.push_back(S2LatLng.FromDegrees(lat, lon).ToPoint())
+            v.push_back(coords_to_s2point(lat, lon))
 
         self.loop.Init(v)
         a = v[0]
@@ -51,27 +50,39 @@ cdef class Polygon:
             self.loop.Invert()
 
         cdef S2LatLng ll = S2LatLng(self.loop.GetCentroid())
-        self.center.push_back(ll.lat().degrees())
-        self.center.push_back(ll.lng().degrees())
 
-    def __contains__(self, Location point):
-        cdef S2Point p
-        p = point.point
+    def __contains__(self, Location loc):
+        cdef S2Point p = loc.point
         return self.loop.Contains(p)
 
     def __hash__(self):
-        return hash((self.south, self.west, self.north, self.east))
+        cdef Py_uhash_t mult = 1000003
+        cdef Py_uhash_t x = 0x345678
+        cdef Py_hash_t y
+        cdef double[4] bounds = [self.south, self.east, self.north, self.west]
+        cdef double bound
+        for bound in bounds:
+            y = _Py_HashDouble(bound)
+            x = (x ^ y) * mult
+            mult += <Py_hash_t>(82520 + 8)
+        x += 97531
+        return x
+
+    @property
+    def multi(self):
+        return False
 
     @property
     def bounds(self):
-        return self.south, self.west, self.north, self.east
+        return self.south, self.east, self.north, self.west
 
     @property
     def area(self):
         """Returns the square kilometers for configured scan area"""
+        cdef double center_lat = S2LatLng(self.loop.GetCentroid()).lat().degrees()
         width = get_distance(
-            Location(self.center[0], self.west),
-            Location(self.center[0], self.east), 2)
+            Location(center_lat, self.west),
+            Location(center_lat, self.east), 2)
         height = get_distance(
             Location(self.south, 0),
             Location(self.north, 0), 2)

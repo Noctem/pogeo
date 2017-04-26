@@ -5,3 +5,6 @@ cdef extern from "Python.h":
     void _Py_dg_freedtoa(char *s)
     int PyOS_snprintf(char *str, size_t size, const char  *format, char*, char*, int)
     _PyTime_t _PyTime_GetSystemClock()
+    Py_hash_t _Py_HashDouble(double v)
+    ctypedef size_t Py_uhash_t
+    ctypedef Py_ssize_t Py_hash_t

@@ -57,3 +57,5 @@ dist/
 pogeo/*.cpp
 pogeo/*.html
 pogeo.egg-info/
+
+.DS_STORE
