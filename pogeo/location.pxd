@@ -8,5 +8,7 @@ cdef class Location:
     cdef public double altitude
     cdef readonly uint32_t time
     cdef S2Point point
+    @staticmethod
+    cdef from_point(S2Point point)
     cdef double lat_radian(self)
     cdef double lon_radian(self)
