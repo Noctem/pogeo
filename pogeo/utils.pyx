@@ -2,8 +2,9 @@
 # cython: language_level=3, cdivision=True
 
 from libc.string cimport memmove
-from libc.math cimport atan2, cos, fmod, sin
+from libc.math cimport atan2, cos, fmod, log2, sin
 from libc.stdint cimport uint8_t, uint64_t
+from libcpp.string cimport string
 from libcpp.unordered_set cimport unordered_set
 from libcpp.vector cimport vector
 
@@ -71,7 +72,17 @@ cdef uint8_t closest_level(double value):
     return S2.ClosestLevel(value / EARTH_RADIUS_METERS)
 
 
-def cell_id_for_point(Location p):
+def location_from_cellid(uint64_t cellid):
+    cdef S2Point point = S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw()
+    return Location.from_point(point)
+
+
+def location_from_token(string token):
+    cdef S2Point point = S2CellId.FromToken(token).ToPointRaw()
+    return Location.from_point(point)
+
+
+def cellid_for_location(Location p):
     return S2CellId.FromPoint(p.point).parent(S2_LEVEL).id()
 
 

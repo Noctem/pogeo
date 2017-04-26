@@ -8,6 +8,7 @@ from cyrandom.cyrandom cimport uniform
 from .const cimport DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES
 from .cpylib cimport _PyTime_GetSystemClock
 from .geo.s1angle cimport S1Angle
+from .geo.s2 cimport S2Point
 from .geo.s2latlng cimport S2LatLng
 from .utils cimport double_round
 
@@ -22,11 +23,11 @@ except ImportError:
 
 cdef class Location:
     """Simple location extension type"""
-    def __cinit__(self, double latitude, double longitude, double altitude=0.0, uint32_t time=0):
+    def __cinit__(self, double latitude, double longitude):
         self.latitude = latitude
         self.longitude = longitude
-        self.altitude = altitude
-        self.time = time
+
+    def __init__(self, double latitude, double longitude):
         self.point = S2LatLng.FromDegrees(latitude, longitude).ToPoint()
 
     def __getstate__(self):
@@ -93,6 +94,13 @@ cdef class Location:
     def update_time(self):
         self.time = _PyTime_GetSystemClock() / 1000000000
 
+    @staticmethod
+    cdef from_point(S2Point point):
+        cdef S2LatLng latlng = S2LatLng(point)
+        cdef Location location = Location.__new__(Location, latlng.lat().degrees(), latlng.lng().degrees())
+        location.point = point
+        return location
+
     @property
     def _ndim(self):
         return 2 if self.altitude == 0.0 else 3
@@ -128,9 +136,3 @@ cdef class Location:
     @location.setter
     def location(self, tuple location):
         self.latitude, self.longitude, self.altitude = location
-
-    cdef double lat_radian(self):
-        return self.latitude * DEG_TO_RAD
-
-    cdef double lon_radian(self):
-        return self.longitude * DEG_TO_RAD
