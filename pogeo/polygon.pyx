@@ -1,44 +1,29 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True
 
-from libc.stdint cimport uint8_t, uint16_t, uint32_t, uint64_t, int32_t
+from libc.math cimport pow
 from libcpp cimport bool
 from libcpp.vector cimport vector
 
+from .const cimport EARTH_RADIUS_KILOMETERS
 from .cpylib cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from .geo.s2 cimport S2, S2Point
 from .geo.s2latlng cimport S2LatLng
+from .geo.s2latlngrect cimport S2LatLngRect
 from .location cimport Location
-from .utils cimport coords_to_s2point, double_round, get_distance
+from .utils cimport coords_to_s2point, get_distance
 
 
 cdef class Polygon:
     def __cinit__(self, tuple points):
-        cdef double lat, lon
-        cdef vector[S2Point] v
-        cdef S2Point a, b, c
-        cdef uint16_t length, i
+        cdef:
+            double lat, lon
+            vector[S2Point] v
+            S2Point a, b, c
+            tuple coords
 
-        length = len(points)
-
-        if length < 3:
-            raise ValueError('Must provide at least 3 points.')
-
-        lat, lon = points[0]
-        self.south = self.north = lat
-        self.east = self.west = lon
-        v.push_back(coords_to_s2point(lat, lon))
-
-        for i in range(1, length):
-            lat, lon = points[i]
-            if lat > self.north:
-                self.north = lat
-            elif lat < self.south:
-                self.south = lat
-            if lon > self.east:
-                self.east = lon
-            elif lon < self.west:
-                self.west = lon
+        for coords in points:
+            lat, lon = coords
             v.push_back(coords_to_s2point(lat, lon))
 
         self.loop.Init(v)
@@ -49,7 +34,11 @@ cdef class Polygon:
         if not ccw:
             self.loop.Invert()
 
-        cdef S2LatLng ll = S2LatLng(self.loop.GetCentroid())
+        cdef S2LatLngRect rect = self.loop.GetRectBound()
+        self.south = rect.lat_lo().degrees()
+        self.east = rect.lng_hi().degrees()
+        self.north = rect.lat_hi().degrees()
+        self.west = rect.lng_lo().degrees()
 
     def __contains__(self, Location loc):
         cdef S2Point p = loc.point
@@ -59,14 +48,14 @@ cdef class Polygon:
         cdef Py_uhash_t mult = 1000003
         cdef Py_uhash_t x = 0x345678
         cdef Py_hash_t y
-        cdef double[4] bounds = [self.south, self.east, self.north, self.west]
-        cdef double bound
-        for bound in bounds:
-            y = _Py_HashDouble(bound)
+
+        cdef double[5] inputs = [self.south, self.east, self.north, self.west, <double>self.loop.num_vertices()]
+        cdef double i
+        for i in inputs:
+            y = _Py_HashDouble(i)
             x = (x ^ y) * mult
-            mult += <Py_hash_t>(82520 + 8)
-        x += 97531
-        return x
+            mult += <Py_hash_t>(82520 + 10)
+        return x + 97531
 
     @property
     def multi(self):
@@ -78,12 +67,5 @@ cdef class Polygon:
 
     @property
     def area(self):
-        """Returns the square kilometers for configured scan area"""
-        cdef double center_lat = S2LatLng(self.loop.GetCentroid()).lat().degrees()
-        width = get_distance(
-            Location(center_lat, self.west),
-            Location(center_lat, self.east), 2)
-        height = get_distance(
-            Location(self.south, 0),
-            Location(self.north, 0), 2)
-        return double_round(width * height, 0)
+        """Returns the square kilometers for configured area"""
+        return self.loop.GetArea() * pow(EARTH_RADIUS_KILOMETERS, 2)
