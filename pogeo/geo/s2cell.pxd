@@ -2,8 +2,10 @@ from libc.stdint cimport uint64_t
 from libcpp cimport bool
 
 from .s2 cimport S2Point
+from .s2cap cimport S2Cap
 from .s2cellid cimport S2CellId
 from .s2latlng cimport S2LatLng
+from .s2latlngrect cimport S2LatLngRect
 from .s2region cimport S2Region
 
 
@@ -33,3 +35,11 @@ cdef extern from "s2cell.h" nogil:
         double AverageArea()
         double ApproxArea()
         double ExactArea()
+        bool Contains(S2Point p)
+
+        # from S2Region
+        S2Cap GetCapBound()
+        S2LatLngRect GetRectBound()
+        bool Contains(S2Cell cell)
+        bool MayIntersect(S2Cell cell)
+        bool VirtualContainsPoint(S2Point p)

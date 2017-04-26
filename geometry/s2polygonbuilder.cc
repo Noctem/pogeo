@@ -56,6 +56,10 @@ void S2PolygonBuilderOptions::set_edge_splice_fraction(double fraction) {
   edge_splice_fraction_ = fraction;
 }
 
+S2PolygonBuilder::S2PolygonBuilder()
+  : options_(S2PolygonBuilderOptions()), edges_(new EdgeSet) {
+}
+
 S2PolygonBuilder::S2PolygonBuilder(S2PolygonBuilderOptions const& options)
   : options_(options), edges_(new EdgeSet) {
 }
