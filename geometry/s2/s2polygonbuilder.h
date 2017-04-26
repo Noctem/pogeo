@@ -171,6 +171,7 @@ class S2PolygonBuilderOptions {
 
 class S2PolygonBuilder {
  public:
+  S2PolygonBuilder();
   explicit S2PolygonBuilder(S2PolygonBuilderOptions const& options);
   ~S2PolygonBuilder();
 
