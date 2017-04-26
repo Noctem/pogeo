@@ -16,6 +16,7 @@ from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
 from .geo.s2cap cimport S2Cap
 from .geo.s2cellid cimport S2CellId
+from .geo.s2latlng cimport S2LatLng
 from .geo.s2regioncoverer cimport S2RegionCoverer
 from .types cimport vector_uint64
 
@@ -84,6 +85,10 @@ def location_from_token(string token):
 
 def cellid_for_location(Location p):
     return S2CellId.FromPoint(p.point).parent(S2_LEVEL).id()
+
+
+cdef S2Point coords_to_s2point(double lat, double lon):
+    return S2LatLng.FromDegrees(lat, lon).ToPoint()
 
 
 cpdef double double_round(double x, int ndigits):
