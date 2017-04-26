@@ -1,5 +1,3 @@
-from cpython cimport bool as pybool
-
 from .geo.s2loop cimport S2Loop
 
 
