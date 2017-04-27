@@ -1,6 +1,7 @@
 from libcpp.vector cimport vector
 from libcpp cimport bool
 
+from .s1angle cimport S1Angle
 from .s2 cimport S2Point
 from .s2cap cimport S2Cap
 from .s2cell cimport S2Cell
@@ -32,6 +33,8 @@ cdef extern from "s2loop.h" nogil:
         int ContainsOrCrosses(S2Loop b)
         bool BoundaryEquals(S2Loop b)
         bool BoundaryApproxEquals(S2Loop b)
+        S2Point Project(S2Point point)
+        S1Angle GetDistance(S2Point point)
         bool Contains(S2Point p)
 
         # from S2Region

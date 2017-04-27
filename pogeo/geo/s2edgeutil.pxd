@@ -10,3 +10,11 @@ cdef extern from "s2edgeutil.h" nogil:
         S2Point Interpolate(double t, S2Point a, S2Point b)
         @staticmethod
         S2Point InterpolateAtDistance(S1Angle ax, S2Point a, S2Point b)
+        @staticmethod
+        S1Angle GetDistance(S2Point x, S2Point a, S2Point b)
+        @staticmethod
+        S1Angle GetDistance(S2Point x, S2Point a, S2Point b, S2Point a_cross_b)
+        @staticmethod
+        S2Point GetClosestPoint(S2Point x, S2Point a, S2Point b)
+        @staticmethod
+        S2Point GetClosestPoint(S2Point x, S2Point a, S2Point b, S2Point a_cross_b)

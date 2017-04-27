@@ -803,3 +803,53 @@ bool S2Loop::BoundaryNear(S2Loop const* b, double max_error) const {
   }
   return false;
 }
+
+S2Point S2Loop::Project(S2Point const& point) const {
+  DCHECK(IsValid());
+
+  if (Contains(point)) {
+    return point;
+  }
+
+  S1Angle min_distance = S1Angle::Radians(10);
+  int min_vertex_index = 0;
+
+  for (int v = 0; v < num_vertices(); ++v) {
+    S1Angle distance_to_segment =
+        S2EdgeUtil::GetDistance(point,
+                                vertex(v),
+                                vertex(v + 1));
+    if (distance_to_segment < min_distance) {
+      min_distance = distance_to_segment;
+      min_vertex_index = v;
+    }
+  }
+
+  S2Point closest_point = S2EdgeUtil::GetClosestPoint(
+      point,
+      vertex(min_vertex_index),
+      vertex(min_vertex_index + 1));
+
+  return closest_point;
+}
+
+S1Angle S2Loop::GetDistance(S2Point const& point) const {
+  DCHECK(IsValid());
+
+  if (Contains(point)) {
+    return S1Angle();
+  }
+
+  S1Angle min_distance = S1Angle::Radians(10);
+
+  for (int v = 0; v < num_vertices(); ++v) {
+    S1Angle distance_to_segment =
+        S2EdgeUtil::GetDistance(point,
+                                vertex(v),
+                                vertex(v + 1));
+    if (distance_to_segment < min_distance)
+      min_distance = distance_to_segment;
+  }
+
+  return min_distance;
+}

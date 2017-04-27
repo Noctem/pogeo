@@ -184,6 +184,11 @@ class S2LatLngRect : public S2Region {
   // original rectangle is at most the given angle.
   S2LatLngRect ConvolveWithCap(S1Angle const& angle) const;
 
+  // If the point is not contained by the loop returns a point on the
+  // loop closest to the given point. Otherwise returns the point itself.
+  // The loop must not be empty.
+  S2LatLng Project(S2LatLng const& ll) const;
+
   // Returns the minimum distance (measured along the surface of the sphere) to
   // the given S2LatLngRect. Both S2LatLngRects must be non-empty.
   S1Angle GetDistance(S2LatLngRect const& other) const;

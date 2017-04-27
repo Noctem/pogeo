@@ -46,6 +46,8 @@ cdef extern from "s2latlngrect.h" nogil:
         bool InteriorIntersects(S2LatLngRect other)
         void AddPoint(S2Point p)
         void AddPoint(S2LatLng ll)
+        S2LatLng Project(S2LatLng ll)
+        S1Angle GetDistance(S2LatLng p)
         bool Contains(S2Point p)
 
         # from S2Region

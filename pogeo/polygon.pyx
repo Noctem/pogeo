@@ -6,7 +6,7 @@ from libcpp.vector cimport vector
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
-from .const cimport EARTH_RADIUS_KILOMETERS
+from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from .geo.s2 cimport S2, S2Point
 from .geo.s2latlng cimport S2LatLng

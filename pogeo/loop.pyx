@@ -5,8 +5,9 @@ from libc.math cimport pow
 from libcpp cimport bool
 from libcpp.vector cimport vector
 
-from .const cimport EARTH_RADIUS_KILOMETERS
+from .const cimport EARTH_RADIUS_METERS, EARTH_RADIUS_KILOMETERS
 from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
@@ -55,6 +56,14 @@ cdef class Loop:
             x = (x ^ y) * mult
             mult += <Py_hash_t>(82520 + 10)
         return x + 97531
+
+    def distance(self, Location loc):
+        cdef S1Angle angle = self.loop.GetDistance(loc.point)
+        return angle.radians() * EARTH_RADIUS_METERS
+
+    def project(self, Location loc):
+        cdef S2Point closest = self.loop.Project(loc.point)
+        return Location.from_point(closest)
 
     @property
     def bounds(self):
