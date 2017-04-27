@@ -1189,3 +1189,27 @@ S2Point S2Polygon::Project(S2Point const& point) const {
 
   return closest_point;
 }
+
+S1Angle S2Polygon::GetDistance(S2Point const& point) const {
+  DCHECK(!loops_.empty());
+
+  if (Contains(point)) {
+    return S1Angle();
+  }
+
+  S1Angle min_distance = S1Angle::Radians(10);
+
+  for (int l = 0; l < num_loops(); ++l) {
+    S2Loop *a_loop = loop(l);
+    for (int v = 0; v < a_loop->num_vertices(); ++v) {
+      S1Angle distance_to_segment =
+          S2EdgeUtil::GetDistance(point,
+                                  a_loop->vertex(v),
+                                  a_loop->vertex(v + 1));
+      if (distance_to_segment < min_distance)
+        min_distance = distance_to_segment;
+    }
+  }
+
+  return min_distance;
+}

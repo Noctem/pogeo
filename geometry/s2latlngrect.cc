@@ -347,6 +347,35 @@ bool S2LatLngRect::Intersects(S2Cell const& cell) const {
   return false;
 }
 
+S2LatLng S2LatLngRect::Project(S2LatLng const& ll) const {
+  DCHECK(!is_empty());
+
+  if (Contains(ll)) {
+    return ll;
+  }
+
+  S1Angle min_distance = S1Angle::Radians(10);
+  int min_vertex_index = 0;
+  S2Point point = ll.ToPoint();
+  for (int v = 0; v < 4; ++v) {
+    S1Angle distance_to_segment =
+        S2EdgeUtil::GetDistance(point,
+                                GetVertex(v).ToPoint(),
+                                GetVertex(v + 1).ToPoint());
+    if (distance_to_segment < min_distance) {
+      min_distance = distance_to_segment;
+      min_vertex_index = v;
+    }
+  }
+
+  S2Point closest_point = S2EdgeUtil::GetClosestPoint(
+      point,
+      GetVertex(min_vertex_index).ToPoint(),
+      GetVertex(min_vertex_index + 1).ToPoint());
+
+  return S2LatLng(closest_point);
+}
+
 S1Angle S2LatLngRect::GetDistance(S2LatLngRect const& other) const {
   S2LatLngRect const& a = *this;
   S2LatLngRect const& b = other;

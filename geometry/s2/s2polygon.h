@@ -245,6 +245,8 @@ class S2Polygon : public S2Region {
   // The polygon must not be empty.
   S2Point Project(S2Point const& point) const;
 
+  S1Angle GetDistance(S2Point const& point) const;
+
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 

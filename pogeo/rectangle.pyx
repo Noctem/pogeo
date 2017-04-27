@@ -3,8 +3,9 @@
 
 from libc.math cimport pow
 
-from .const cimport EARTH_RADIUS_KILOMETERS
+from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
@@ -54,6 +55,16 @@ cdef class Rectangle:
             x = (x ^ y) * mult
             mult += <Py_hash_t>(82520 + 8)
         return x + 97531
+
+    def distance(self, Location loc):
+        cdef S2LatLng ll = S2LatLng.FromDegrees(loc.latitude, loc.longitude)
+        cdef S1Angle angle = self.latlngrect.GetDistance(ll)
+        return angle.radians() * EARTH_RADIUS_METERS
+
+    def project(self, Location loc):
+        cdef S2LatLng ll = S2LatLng.FromDegrees(loc.latitude, loc.longitude)
+        ll = self.latlngrect.Project(ll)
+        return Location(ll.lat().degrees(), ll.lng().degrees())
 
     @property
     def bounds(self):

@@ -207,6 +207,14 @@ class S2Loop : public S2Region {
   // within "max_error" of each other.  (For testing purposes.)
   bool BoundaryNear(S2Loop const* b, double max_error = 1e-15) const;
 
+  // If the point is not contained by the loop returns a point on the
+  // loop closest to the given point. Otherwise returns the point itself.
+  // The loop must not be empty.
+  S2Point Project(S2Point const& point) const;
+
+  S1Angle GetDistance(S2Point const& point) const;
+
+
   // This method computes the oriented surface integral of some quantity f(x)
   // over the loop interior, given a function f_tri(A,B,C) that returns the
   // corresponding integral over the spherical triangle ABC.  Here "oriented
