@@ -5,5 +5,6 @@ __license__ = 'Apache License'
 __copyright__ = 'Copyright (c) 2017 David Christenson <https://github.com/Noctem>'
 
 from .location import Location
+from .loop import Loop
 from .polygon import Polygon
 from .utils import get_bearing, get_distance, get_distance_meters, get_cell_ids
