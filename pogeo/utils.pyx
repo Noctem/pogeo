@@ -16,6 +16,7 @@ from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
 from .geo.s2cap cimport S2Cap
 from .geo.s2cellid cimport S2CellId
+from .geo.s2edgeutil cimport S2EdgeUtil
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2regioncoverer cimport S2RegionCoverer
 from .types cimport vector_uint64
@@ -52,6 +53,33 @@ cpdef double get_distance(Location p1, Location p2, char unit=3):
 def get_distance_meters(Location p1, Location p2):
     cdef S1Angle angle = S1Angle(p1.point, p2.point)
     return angle.radians() * EARTH_RADIUS_METERS
+
+
+def distance_to_latlon(Location p, double distance):
+    cdef double r = distance / EARTH_RADIUS_METERS
+    cdef S1Angle a = S1Angle.Radians(r)
+    cdef double additive = 1.0 if p.latitude < 89.0 else -1.0
+    cdef S2Point dest = coords_to_s2point(p.latitude + additive, p.longitude)
+    cdef S2Point s = S2EdgeUtil.InterpolateAtDistance(a, p.point, dest)
+    cdef S2LatLng ll = S2LatLng(s)
+    cdef double latdiff = ll.lat().degrees() - p.latitude
+    additive = 1.0 if p.longitude < 189.0 else -1.0
+    dest = coords_to_s2point(p.latitude, p.longitude + additive)
+    s = S2EdgeUtil.InterpolateAtDistance(a, p.point, dest)
+    ll = S2LatLng(s)
+    cdef double londiff = ll.lng().degrees() - p.longitude
+    return latdiff, londiff
+
+
+def diagonal_distance(Location p, double distance):
+    cdef double r = distance / EARTH_RADIUS_METERS
+    cdef S1Angle a = S1Angle.Radians(r)
+    cdef double lat_add = 10.0 if p.latitude < 80.0 else -10.0
+    cdef double lon_add = 10.0 if p.longitude < 180.0 else -10.0
+    cdef S2Point dest = coords_to_s2point(p.latitude + lat_add, p.longitude + lon_add)
+    cdef S2Point s = S2EdgeUtil.InterpolateAtDistance(a, p.point, dest)
+    cdef S2LatLng ll = S2LatLng(s)
+    return ll.lat().degrees() - p.latitude, ll.lng().degrees() - p.longitude
 
 
 def get_cell_ids(Location p):
