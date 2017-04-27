@@ -7,7 +7,7 @@ from libcpp.vector cimport vector
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 from .const cimport EARTH_RADIUS_KILOMETERS
-from .cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from .geo.s2 cimport S2, S2Point
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
@@ -18,9 +18,9 @@ from .utils cimport coords_to_s2point
 
 
 cdef class Polygon:
-    def __cinit__(self, tuple boundaries):
+    def __cinit__(self, tuple boundaries, tuple holes=None):
         cdef:
-            tuple points, coords
+            tuple points
             double lat, lon
             vector[S2Point] pv
             S2Point a, b, c
@@ -29,7 +29,11 @@ cdef class Polygon:
             bool ccw
 
         for points in boundaries:
-            self.create_loop(points, &builder)
+            self.create_loop(points, &builder, 0)
+
+        if holes:
+            for points in holes:
+                self.create_loop(points, &builder, 1)
 
         builder.AssemblePolygon(&self.polygon, &edge_list)
         cdef S2LatLngRect rect = self.polygon.GetRectBound()
@@ -38,13 +42,20 @@ cdef class Polygon:
         self.north = rect.lat_hi().degrees()
         self.west = rect.lng_lo().degrees()
 
-    cdef void create_loop(self, tuple points, S2PolygonBuilder* builder):
-        cdef vector[S2Point] v
-        cdef S2Loop loop
+    cdef void create_loop(self, tuple points, S2PolygonBuilder* builder, int depth):
+        cdef:
+            vector[S2Point] v
+            S2Loop loop
         for coords in points:
             lat, lon = coords
             v.push_back(coords_to_s2point(lat, lon))
         loop.Init(v)
+        a = v[0]
+        b = v[1]
+        c = v[2]
+        if not S2.SimpleCCW(a, b, c):
+            loop.Invert()
+        loop.set_depth(depth)
         builder.AddLoop(&loop)
 
     def __contains__(self, Location loc):

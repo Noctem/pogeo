@@ -1,7 +1,10 @@
+# distutils: language = c++
+# cython: language_level=3, cdivision=True
+
 from libc.math cimport pow
 
 from .const cimport EARTH_RADIUS_KILOMETERS
-from .cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from .geo.s2 cimport S2, S2Point
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
