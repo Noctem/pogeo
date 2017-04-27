@@ -6,7 +6,7 @@ from libcpp cimport bool
 from libcpp.vector cimport vector
 
 from .const cimport EARTH_RADIUS_KILOMETERS
-from .cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from .geo.s2 cimport S2, S2Point
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
@@ -30,8 +30,7 @@ cdef class Loop:
         a = v[0]
         b = v[1]
         c = v[2]
-        cdef bool ccw = S2.SimpleCCW(a, b, c)
-        if not ccw:
+        if not S2.SimpleCCW(a, b, c):
             self.loop.Invert()
 
         cdef S2LatLngRect rect = self.loop.GetRectBound()
