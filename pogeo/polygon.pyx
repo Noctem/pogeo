@@ -1,10 +1,13 @@
+# distutils: language = c++
+# cython: language_level=3, cdivision=True
+
 from libcpp cimport bool
 from libcpp.vector cimport vector
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 from .const cimport EARTH_RADIUS_KILOMETERS
-from .cpylib cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from .cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from .geo.s2 cimport S2, S2Point
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect

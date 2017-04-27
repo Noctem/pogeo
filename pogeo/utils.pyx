@@ -10,7 +10,7 @@ from libcpp.vector cimport vector
 
 from .array cimport array, clone
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
-from .cpylib cimport _PyTime_t, _Py_dg_dtoa, _Py_dg_strtod, _Py_dg_freedtoa, PyOS_snprintf
+from .cpython cimport _PyTime_t, _Py_dg_dtoa, _Py_dg_strtod, _Py_dg_freedtoa, PyOS_snprintf
 from .location cimport Location
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point

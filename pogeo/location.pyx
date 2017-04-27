@@ -6,7 +6,7 @@ from libc.stdint cimport int64_t, uint8_t, uint32_t
 from cyrandom.cyrandom cimport uniform
 
 from .const cimport DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES
-from .cpylib cimport _PyTime_GetSystemClock
+from .cpython cimport _PyTime_GetSystemClock
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2Point
 from .geo.s2latlng cimport S2LatLng
