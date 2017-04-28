@@ -95,8 +95,28 @@ def get_cell_ids(Location p):
     return cell_array
 
 
-cdef uint8_t closest_level(double value):
-    return S2.ClosestLevel(value / EARTH_RADIUS_METERS)
+def closest_level_width(double value):
+    return S2.ClosestLevelWidth(value / EARTH_RADIUS_METERS)
+
+
+def closest_level_edge(double value):
+    return S2.ClosestLevelEdge(value / EARTH_RADIUS_METERS)
+
+
+def closest_level_area(double value):
+    return S2.ClosestLevelArea(value / pow(EARTH_RADIUS_METERS, 2))
+
+
+def level_width(int level):
+    return S2.LevelWidth(level) * EARTH_RADIUS_METERS
+
+
+def level_edge(int level):
+    return S2.LevelEdge(level) * EARTH_RADIUS_METERS
+
+
+def level_area(int level):
+    return S2.LevelArea(level) * pow(EARTH_RADIUS_METERS, 2)
 
 
 def cellid_to_location(uint64_t cellid):

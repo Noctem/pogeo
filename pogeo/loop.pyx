@@ -11,6 +11,7 @@ from .geo.s2 cimport S2, S2Point
 from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
+from .geo.s2regioncoverer cimport S2RegionCoverer
 from .location cimport Location
 from .utils cimport coords_to_s2point
 
@@ -20,7 +21,6 @@ cdef class Loop:
         cdef:
             double lat, lon
             vector[S2Point] v
-            S2Point a, b, c
             tuple coords
 
         for coords in points:
@@ -28,10 +28,7 @@ cdef class Loop:
             v.push_back(coords_to_s2point(lat, lon))
 
         self.loop.Init(v)
-        a = v[0]
-        b = v[1]
-        c = v[2]
-        if not S2.SimpleCCW(a, b, c):
+        if not S2.SimpleCCW(v[0], v[1], v[2]):
             self.loop.Invert()
 
         cdef S2LatLngRect rect = self.loop.GetRectBound()
@@ -58,6 +55,17 @@ cdef class Loop:
 
     def __contains__(self, Location loc):
         return self.loop.Contains(loc.point)
+
+    def get_points(self, int level):
+        cdef S2RegionCoverer coverer
+        coverer.set_min_level(level)
+        coverer.set_max_level(level)
+        cdef vector[S2Point] points
+        coverer.GetPoints(self.loop, &points)
+        cdef size_t i, size = points.size()
+        for i in range(size):
+            yield Location.from_point(points.back())
+            points.pop_back()
 
     def contains_cellid(self, uint64_t cellid):
         return self.loop.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())

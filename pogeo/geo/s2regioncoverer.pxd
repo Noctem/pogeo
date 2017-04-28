@@ -19,6 +19,7 @@ cdef extern from "s2regioncoverer.h" nogil:
         int max_cells()
         void GetCovering(S2Region region, vector[S2CellId]* covering)
         void GetCellIds(S2Region region, vector_uint64* covering)
+        void GetPoints(S2Region region, vector[S2Point]* covering)
         void GetInteriorCovering(S2Region region, vector[S2CellId]* interior)
         @staticmethod
         void GetSimpleCovering(S2Region region, S2Point start, int level, vector[S2CellId]* output)

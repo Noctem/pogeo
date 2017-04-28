@@ -3,12 +3,15 @@
 
 from libc.math cimport log2, pow
 from libc.stdint cimport uint64_t
+from libcpp.vector cimport vector
 
 from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
+from .geo.s2regioncoverer cimport S2RegionCoverer
 from .location cimport Location
 
 
@@ -58,6 +61,17 @@ cdef class Rectangle:
             and loc.latitude <= self.north
             and loc.longitude >= self.west
             and loc.longitude <= self.east)
+
+    def get_points(self, int level):
+        cdef S2RegionCoverer coverer
+        coverer.set_min_level(level)
+        coverer.set_max_level(level)
+        cdef vector[S2Point] points
+        coverer.GetPoints(self.latlngrect, &points)
+        cdef size_t i, size = points.size()
+        for i in range(size):
+            yield Location.from_point(points.back())
+            points.pop_back()
 
     def contains_cellid(self, uint64_t cellid):
         if self.unbound:

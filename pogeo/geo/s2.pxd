@@ -39,5 +39,15 @@ cdef extern from "s2.h" nogil:
         @staticmethod
         double TrueCentroid(S2Point a, S2Point b, S2Point c)
         @staticmethod
-        int ClosestLevel(double value)
+        int ClosestLevelWidth(double value)
+        @staticmethod
+        int ClosestLevelEdge(double value)
+        @staticmethod
+        int ClosestLevelArea(double value)
+        @staticmethod
+        double LevelWidth(int level)
+        @staticmethod
+        double LevelEdge(int level)
+        @staticmethod
+        double LevelArea(int level)
 
