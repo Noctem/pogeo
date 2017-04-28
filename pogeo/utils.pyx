@@ -9,7 +9,6 @@ from libcpp.vector cimport vector
 
 from .array cimport array, clone
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
-from .cpython_ cimport _PyTime_t, _Py_dg_dtoa, _Py_dg_strtod, _Py_dg_freedtoa, PyOS_snprintf
 from .location cimport Location
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
@@ -114,30 +113,3 @@ def cellid_for_location(Location p):
 
 cdef S2Point coords_to_s2point(double lat, double lon):
     return S2LatLng.FromDegrees(lat, lon).ToPoint()
-
-
-cpdef double double_round(double x, int ndigits):
-    """Simplified version of stdlib's round function.
-    """
-    cdef double rounded
-    cdef Py_ssize_t buflen, shortbuflen=27
-    cdef char shortbuf[27]
-    cdef char *buf
-    cdef char *buf_end
-    cdef char *mybuf = shortbuf
-    cdef int decpt, sign
-
-    # round to a decimal string
-    buf = _Py_dg_dtoa(x, 3, ndigits, &decpt, &sign, &buf_end)
-
-    buflen = buf_end - buf
-
-    # copy buf to shortbuf, adding exponent, sign and leading 0
-    PyOS_snprintf(shortbuf, shortbuflen, "%s0%se%d", "-" if sign else "",
-                  buf, decpt - <int>buflen)
-
-    # and convert the resulting string back to a double
-    rounded = _Py_dg_strtod(shortbuf, NULL)
-
-    _Py_dg_freedtoa(buf)
-    return rounded
