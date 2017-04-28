@@ -556,7 +556,12 @@ class S2 {
   // longest diagonal length to its shortest diagonal length.
   static double const kMaxDiagAspect;
 
-  static unsigned char ClosestLevel(double value);
+  static int ClosestLevelWidth(double value);
+  static int ClosestLevelEdge(double value);
+  static int ClosestLevelArea(double value);
+  static double LevelWidth(int level);
+  static double LevelEdge(int level);
+  static double LevelArea(int level);
 
  private:
   // Given a *valid* face for the given point p (meaning that dot product

@@ -763,6 +763,26 @@ double const S2::kMaxEdgeAspect = (
 double const S2::kMaxDiagAspect = sqrt(3);                             // 1.732
 // This is true for all projections.
 
-unsigned char S2::ClosestLevel(double value) {
+int S2::ClosestLevelWidth(double value) {
+    return kAvgWidth.GetClosestLevel(value);
+}
+
+int S2::ClosestLevelEdge(double value) {
     return kAvgEdge.GetClosestLevel(value);
+}
+
+int S2::ClosestLevelArea(double value) {
+    return kAvgArea.GetClosestLevel(value);
+}
+
+double S2::LevelWidth(int level) {
+    return kAvgWidth.GetValue(level);
+}
+
+double S2::LevelEdge(int level) {
+    return kAvgEdge.GetValue(level);
+}
+
+double S2::LevelArea(int level) {
+    return kAvgArea.GetValue(level);
 }

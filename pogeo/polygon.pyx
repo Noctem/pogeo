@@ -13,6 +13,7 @@ from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
 from .geo.s2loop cimport S2Loop
 from .geo.s2polygonbuilder cimport S2PolygonBuilder
+from .geo.s2regioncoverer cimport S2RegionCoverer
 from .location cimport Location
 from .utils cimport coords_to_s2point
 
@@ -72,6 +73,17 @@ cdef class Polygon:
 
     def __contains__(self, Location loc):
         return self.polygon.Contains(loc.point)
+
+    def get_points(self, int level):
+        cdef S2RegionCoverer coverer
+        coverer.set_min_level(level)
+        coverer.set_max_level(level)
+        cdef vector[S2Point] points
+        coverer.GetPoints(self.polygon, &points)
+        cdef size_t i, size = points.size()
+        for i in range(size):
+            yield Location.from_point(points.back())
+            points.pop_back()
 
     def contains_cellid(self, uint64_t cellid):
         return self.polygon.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())

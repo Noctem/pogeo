@@ -120,6 +120,7 @@ class S2RegionCoverer {
   // restrictions specified above.
   void GetCovering(S2Region const& region, vector<S2CellId>* covering);
   void GetCellIds(S2Region const& region, vector_uint64* covering);
+  void GetPoints(S2Region const& region, vector<S2Point>* covering);
   void GetInteriorCovering(S2Region const& region, vector<S2CellId>* interior);
 
   // Return a normalized cell union that covers (GetCellUnion) or is contained
