@@ -10,7 +10,6 @@ from .cpython_ cimport _PyTime_GetSystemClock
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2Point
 from .geo.s2latlng cimport S2LatLng
-from .utils cimport double_round
 
 try:
     from shapely.geos import lgeos
