@@ -83,13 +83,11 @@ cdef class Location:
         cdef S1Angle angle = S1Angle(self.point, other.point)
         return angle.radians() * EARTH_RADIUS_METERS
 
-    def round(self, int precision):
-        return double_round(self.latitude, precision), double_round(self.longitude, precision)
-
     def jitter(self, double amount=0.0003):
         self.latitude = uniform(self.latitude - amount, self.latitude + amount)
         self.longitude = uniform(self.longitude - amount, self.longitude + amount)
-        self.altitude = uniform(self.altitude - 2, self.altitude + 2)
+        if self.altitude:
+            self.altitude = uniform(self.altitude - 2, self.altitude + 2)
 
     def update_time(self):
         self.time = _PyTime_GetSystemClock() / 1000000000

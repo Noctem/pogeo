@@ -1,12 +1,12 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True
 
-from libc.math cimport pow
+from libc.math cimport log2, pow
+from libc.stdint cimport uint64_t
 
 from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
-from .geo.s1angle cimport S1Angle
-from .geo.s2 cimport S2, S2Point
+from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
 from .location cimport Location
@@ -36,12 +36,8 @@ cdef class Rectangle:
         self.latlngrect = S2LatLngRect(lo, hi)
         self.unbound = not bound
 
-    def __contains__(self, Location loc):
-        return self.unbound or (
-            loc.latitude >= self.south
-            and loc.latitude <= self.north
-            and loc.longitude >= self.west
-            and loc.longitude <= self.east)
+    def __bool__(self):
+        return not self.unbound
 
     def __hash__(self):
         cdef Py_uhash_t mult = 1000003
@@ -56,15 +52,36 @@ cdef class Rectangle:
             mult += <Py_hash_t>(82520 + 8)
         return x + 97531
 
+    def __contains__(self, Location loc):
+        return self.unbound or (
+            loc.latitude >= self.south
+            and loc.latitude <= self.north
+            and loc.longitude >= self.west
+            and loc.longitude <= self.east)
+
+    def contains_cellid(self, uint64_t cellid):
+        if self.unbound:
+            return True
+        return self.latlngrect.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToLatLng())
+
+    def contains_token(self, str t):
+        if self.unbound:
+            return True
+        return self.latlngrect.Contains(S2CellId.FromToken(t.encode('UTF-8')).ToLatLng())
+
     def distance(self, Location loc):
-        cdef S2LatLng ll = S2LatLng.FromDegrees(loc.latitude, loc.longitude)
-        cdef S1Angle angle = self.latlngrect.GetDistance(ll)
-        return angle.radians() * EARTH_RADIUS_METERS
+        return self.latlngrect.GetDistance(S2LatLng.FromDegrees(loc.latitude, loc.longitude)).radians() * EARTH_RADIUS_METERS
 
     def project(self, Location loc):
         cdef S2LatLng ll = S2LatLng.FromDegrees(loc.latitude, loc.longitude)
         ll = self.latlngrect.Project(ll)
         return Location(ll.lat().degrees(), ll.lng().degrees())
+
+    @property
+    def center(self):
+        return Location(
+            (self.north + self.south) / 2.0,
+            (self.west + self.east) / 2.0)
 
     @property
     def bounds(self):
