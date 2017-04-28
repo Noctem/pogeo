@@ -1,18 +1,18 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True
 
-from libc.math cimport pow
-from libcpp cimport bool
+from libc.math cimport log2, pow
+from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 
 from .const cimport EARTH_RADIUS_METERS, EARTH_RADIUS_KILOMETERS
 from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
-from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
+from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
 from .location cimport Location
-from .utils cimport coords_to_s2point, get_distance
+from .utils cimport coords_to_s2point
 
 
 cdef class Loop:
@@ -40,9 +40,8 @@ cdef class Loop:
         self.north = rect.lat_hi().degrees()
         self.west = rect.lng_lo().degrees()
 
-    def __contains__(self, Location loc):
-        cdef S2Point p = loc.point
-        return self.loop.Contains(p)
+    def __bool__(self):
+        return True
 
     def __hash__(self):
         cdef Py_uhash_t mult = 1000003
@@ -57,13 +56,24 @@ cdef class Loop:
             mult += <Py_hash_t>(82520 + 10)
         return x + 97531
 
+    def __contains__(self, Location loc):
+        return self.loop.Contains(loc.point)
+
+    def contains_cellid(self, uint64_t cellid):
+        return self.loop.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())
+
+    def contains_token(self, str t):
+        return self.loop.Contains(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
+
     def distance(self, Location loc):
-        cdef S1Angle angle = self.loop.GetDistance(loc.point)
-        return angle.radians() * EARTH_RADIUS_METERS
+        return self.loop.GetDistance(loc.point).radians() * EARTH_RADIUS_METERS
 
     def project(self, Location loc):
-        cdef S2Point closest = self.loop.Project(loc.point)
-        return Location.from_point(closest)
+        return Location.from_point(self.loop.Project(loc.point))
+
+    @property
+    def center(self):
+        return Location.from_point(self.loop.GetCentroid())
 
     @property
     def bounds(self):

@@ -11,6 +11,7 @@ from .s2region cimport S2Region
 
 cdef extern from "s2cell.h" nogil:
     cdef cppclass S2Cell(S2Region):
+        S2Cell()
         S2Cell(S2CellId id)
         @staticmethod
         FromFacePosLevel(int face, uint64_t pos, int level)

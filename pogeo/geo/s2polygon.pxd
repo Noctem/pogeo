@@ -33,6 +33,7 @@ cdef extern from "s2polygon.h" nogil:
         bool ApproxContains(S2Polygon b, S1Angle vertex_merge_radius)
         bool Intersects(S2Polygon b)
         S2Point Project(S2Point point)
+        S1Angle GetDistance(S2Point point)
         bool Contains(S2Point p)
 
         # from S2Region
