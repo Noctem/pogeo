@@ -1,7 +1,7 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True
 
-from libc.stdint cimport int64_t, uint8_t, uint32_t
+from libc.stdint cimport int64_t, uint8_t
 
 from cyrandom.cyrandom cimport uniform
 
@@ -10,6 +10,7 @@ from .cpython_ cimport _PyTime_GetSystemClock
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2Point
 from .geo.s2latlng cimport S2LatLng
+from .libcpp_ cimport max
 
 try:
     from shapely.geos import lgeos
@@ -29,12 +30,17 @@ cdef class Location:
     def __init__(self, double latitude, double longitude):
         self.point = S2LatLng.FromDegrees(latitude, longitude).ToPoint()
 
-    def __getstate__(self):
-        return self.latitude, self.longitude, self.altitude, self.time
+    def __getnewargs__(self):
+        return self.latitude, self.longitude
 
-    def __setstate__(self, state):
-        self.latitude, self.longitude, self.altitude, self.time = state
-        self.point = S2LatLng.FromDegrees(self.latitude, self.longitude).ToPoint()
+    def __getstate__(self):
+        cdef double[3] point = self.point.Data()
+        return self.altitude, self.time, <tuple>point
+
+    def __setstate__(self, tuple state):
+        cdef tuple point
+        self.altitude, self.time, point = state
+        self.point = S2Point(point[0], point[1], point[2])
 
     def __getitem__(self, char key):
         if key == 0 or key == -3:
@@ -68,19 +74,26 @@ cdef class Location:
     def __iter__(self):
         return iter((self.latitude, self.longitude, self.altitude))
 
-    def distance(self, Location other, char unit=3):
-        cdef S1Angle angle = S1Angle(self.point, other.point)
+    def distance(self, Location other):
+        return S1Angle(self.point, other.point).radians() * EARTH_RADIUS_METERS
 
+    def distance_unit(self, Location other, char unit=3):
+        cdef double radius
         if unit == 1:
-            return angle.radians() * EARTH_RADIUS_MILES
+            radius = EARTH_RADIUS_MILES
         elif unit == 2:
-            return angle.radians() * EARTH_RADIUS_KILOMETERS
+            radius = EARTH_RADIUS_KILOMETERS
         else:
-            return angle.radians() * EARTH_RADIUS_METERS
+            radius = EARTH_RADIUS_METERS
+        return S1Angle(self.point, other.point).radians() * radius
 
-    def distance_meters(self, Location other, char unit=3):
-        cdef S1Angle angle = S1Angle(self.point, other.point)
-        return angle.radians() * EARTH_RADIUS_METERS
+    def speed(self, Location other):
+        cdef double time_diff = _PyTime_GetSystemClock() / 1000000000 - self.time
+        return S1Angle(self.point, other.point).radians() * EARTH_RADIUS_METERS / time_diff
+
+    def speed_with_time(self, Location other, double current_time):
+        cdef double time_diff = max[double](current_time - self.time, 10.0)
+        return S1Angle(self.point, other.point).radians() * EARTH_RADIUS_METERS / time_diff
 
     def jitter(self, double lat_amount, double lon_amount, double alt_amount=2.0):
         self.latitude = uniform(self.latitude - lat_amount, self.latitude + lat_amount)
@@ -106,8 +119,8 @@ cdef class Location:
     def _geom(self):
         cdef uint8_t n = 2 if self.altitude == 0.0 else 3
         cdef int64_t cs = lgeos.GEOSCoordSeq_create(1, n)
-        lgeos.GEOSCoordSeq_setX(cs, 0, self.latitude)
-        lgeos.GEOSCoordSeq_setY(cs, 0, self.longitude)
+        lgeos.GEOSCoordSeq_setX(cs, 0, self.longitude)
+        lgeos.GEOSCoordSeq_setY(cs, 0, self.latitude)
         if n == 3:
             lgeos.GEOSCoordSeq_setZ(cs, 0, self.altitude)
         return lgeos.GEOSGeom_createPoint(cs)
