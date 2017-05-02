@@ -36,7 +36,13 @@ cdef class AltitudeCache:
         self.rand_min = rand_min
         self.rand_max = rand_max
 
-    def get_all(self, shape bounds, str key):
+    def __bool__(self):
+        return True if self.cache.size() > 0 else False
+
+    def __len__(self):
+        return self.cache.size()
+
+    def fetch_all(self, shape bounds, str key):
         cdef:
             vector[S2Point] points
             size_t i, size
@@ -46,11 +52,9 @@ cdef class AltitudeCache:
         size = points.size()
         for i in range(0, size, 300):
             poly = encode_s2points(points, i, min[size_t](i + 300, size))
-            self.fetch_alts(poly, key)
-        self.changed = True
+            self.fetch_polyline(poly, key)
 
-    def fetch_alts(self, string poly, str key):
-        print(poly)
+    def fetch_polyline(self, string poly, str key):
         cdef:
             dict response, result
             double lat, lon
@@ -63,8 +67,9 @@ cdef class AltitudeCache:
             lon = result['location']['lng']
             cell_id = S2CellId.FromLatLng(S2LatLng.FromDegrees(lat, lon)).parent(self.level).id()
             self.cache[cell_id] = result['elevation']
+        self.changed = True
 
-    def get(self, Location loc):
+    cpdef double get(self, Location loc):
         cdef uint64_t cell_id = S2CellId.FromPoint(loc.point).parent(self.level).id()
         cdef double alt
 
@@ -74,6 +79,15 @@ cdef class AltitudeCache:
             return uniform(alt - 2.5, alt + 2.5)
 
         return uniform(self.rand_min, self.rand_max)
+
+    def random(self):
+        return uniform(self.rand_min, self.rand_max)
+
+    def set_alt(self, Location loc):
+        loc.altitude = self.get(loc)
+
+    def set_random(self, Location loc):
+        loc.altitude = uniform(self.rand_min, self.rand_max)
 
     def pickle(self, str path):
         cdef dict state
