@@ -1,3 +1,6 @@
+# distutils: language = c++
+# cython: language_level=3, cdivision=True
+
 from libc.stdint cimport uint16_t
 from libcpp.string cimport string
 
@@ -24,7 +27,7 @@ def geocode(str query, double timeout=3.0):
     cdef:
         dict place
         list response
-        string url = 'https://nominatim.openstreetmap.org?format=json&polygon_geojson=1&q='
+        string url = string(<char *>'https://nominatim.openstreetmap.org?format=json&polygon_geojson=1&q=')
     url.append(quote(query))
     response = make_request(url, timeout)
     place = response[0]

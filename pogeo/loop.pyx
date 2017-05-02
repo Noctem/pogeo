@@ -27,11 +27,11 @@ cdef class Loop:
             lat, lon = coords
             v.push_back(coords_to_s2point(lat, lon))
 
-        self.loop.Init(v)
+        self.shape.Init(v)
         if not S2.SimpleCCW(v[0], v[1], v[2]):
-            self.loop.Invert()
+            self.shape.Invert()
 
-        cdef S2LatLngRect rect = self.loop.GetRectBound()
+        cdef S2LatLngRect rect = self.shape.GetRectBound()
         self.south = rect.lat_lo().degrees()
         self.east = rect.lng_hi().degrees()
         self.north = rect.lat_hi().degrees()
@@ -45,7 +45,7 @@ cdef class Loop:
         cdef Py_uhash_t x = 0x345678
         cdef Py_hash_t y
 
-        cdef double[5] inputs = [self.south, self.east, self.north, self.west, <double>self.loop.num_vertices()]
+        cdef double[5] inputs = [self.south, self.east, self.north, self.west, <double>self.shape.num_vertices()]
         cdef double i
         for i in inputs:
             y = _Py_HashDouble(i)
@@ -54,34 +54,34 @@ cdef class Loop:
         return x + 97531
 
     def __contains__(self, Location loc):
-        return self.loop.Contains(loc.point)
+        return self.shape.Contains(loc.point)
 
     def get_points(self, int level):
         cdef S2RegionCoverer coverer
         coverer.set_min_level(level)
         coverer.set_max_level(level)
         cdef vector[S2Point] points
-        coverer.GetPoints(self.loop, &points)
+        coverer.GetPoints(self.shape, &points)
         cdef size_t i, size = points.size()
         for i in range(size):
             yield Location.from_point(points.back())
             points.pop_back()
 
     def contains_cellid(self, uint64_t cellid):
-        return self.loop.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())
+        return self.shape.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())
 
     def contains_token(self, str t):
-        return self.loop.Contains(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
+        return self.shape.Contains(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
 
     def distance(self, Location loc):
-        return self.loop.GetDistance(loc.point).radians() * EARTH_RADIUS_METERS
+        return self.shape.GetDistance(loc.point).radians() * EARTH_RADIUS_METERS
 
     def project(self, Location loc):
-        return Location.from_point(self.loop.Project(loc.point))
+        return Location.from_point(self.shape.Project(loc.point))
 
     @property
     def center(self):
-        return Location.from_point(self.loop.GetCentroid())
+        return Location.from_point(self.shape.GetCentroid())
 
     @property
     def bounds(self):
@@ -90,4 +90,4 @@ cdef class Loop:
     @property
     def area(self):
         """Returns the square kilometers for configured area"""
-        return self.loop.GetArea() * pow(EARTH_RADIUS_KILOMETERS, 2)
+        return self.shape.GetArea() * pow(EARTH_RADIUS_KILOMETERS, 2)

@@ -36,7 +36,7 @@ cdef class Rectangle:
             self.east = lon2
         lo = S2LatLng.FromDegrees(self.south, self.west)
         hi = S2LatLng.FromDegrees(self.north, self.east)
-        self.latlngrect = S2LatLngRect(lo, hi)
+        self.shape = S2LatLngRect(lo, hi)
         self.unbound = not bound
 
     def __bool__(self):
@@ -67,7 +67,7 @@ cdef class Rectangle:
         coverer.set_min_level(level)
         coverer.set_max_level(level)
         cdef vector[S2Point] points
-        coverer.GetPoints(self.latlngrect, &points)
+        coverer.GetPoints(self.shape, &points)
         cdef size_t i, size = points.size()
         for i in range(size):
             yield Location.from_point(points.back())
@@ -76,19 +76,19 @@ cdef class Rectangle:
     def contains_cellid(self, uint64_t cellid):
         if self.unbound:
             return True
-        return self.latlngrect.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToLatLng())
+        return self.shape.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToLatLng())
 
     def contains_token(self, str t):
         if self.unbound:
             return True
-        return self.latlngrect.Contains(S2CellId.FromToken(t.encode('UTF-8')).ToLatLng())
+        return self.shape.Contains(S2CellId.FromToken(t.encode('UTF-8')).ToLatLng())
 
     def distance(self, Location loc):
-        return self.latlngrect.GetDistance(S2LatLng.FromDegrees(loc.latitude, loc.longitude)).radians() * EARTH_RADIUS_METERS
+        return self.shape.GetDistance(S2LatLng.FromDegrees(loc.latitude, loc.longitude)).radians() * EARTH_RADIUS_METERS
 
     def project(self, Location loc):
         cdef S2LatLng ll = S2LatLng.FromDegrees(loc.latitude, loc.longitude)
-        ll = self.latlngrect.Project(ll)
+        ll = self.shape.Project(ll)
         return Location(ll.lat().degrees(), ll.lng().degrees())
 
     @property
@@ -104,6 +104,6 @@ cdef class Rectangle:
     @property
     def area(self):
         """Returns the square kilometers for configured area"""
-        return self.latlngrect.Area() * pow(EARTH_RADIUS_KILOMETERS, 2)
+        return self.shape.Area() * pow(EARTH_RADIUS_KILOMETERS, 2)
 
 
