@@ -17,7 +17,7 @@ from .geo.s2cellid cimport S2CellId
 from .geo.s2edgeutil cimport S2EdgeUtil
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2regioncoverer cimport S2RegionCoverer
-from .types cimport vector_uint64
+from .types cimport shape, vector_uint64
 
 DEF S2_LEVEL = 15
 
@@ -95,6 +95,14 @@ def get_cell_ids(Location p):
     return cell_array
 
 
+cdef vector[S2Point] get_s2points(shape bounds, int level):
+    cdef S2RegionCoverer coverer
+    coverer.set_min_level(level)
+    coverer.set_max_level(level)
+    cdef vector[S2Point] points
+    coverer.GetPoints(bounds.shape, &points)
+    return points
+
 def closest_level_width(double value):
     return S2.ClosestLevelWidth(value / EARTH_RADIUS_METERS)
 
@@ -127,7 +135,7 @@ def token_to_location(str t):
     return Location.from_point(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
 
 
-def cellid_for_location(Location p):
+def location_to_cellid(Location p):
     return S2CellId.FromPoint(p.point).parent(S2_LEVEL).id()
 
 

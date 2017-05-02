@@ -20,7 +20,7 @@ else:
     extra_args = ['-std=c++11']
     environ['CFLAGS'] = ' '.join(extra_args)
 
-s2 = [('s2', {
+libs = [('s2', {
         'language': 'c++',
         'macros': macros,
         'include_dirs': include_dirs,
@@ -59,7 +59,13 @@ s2 = [('s2', {
             'geometry/s2region.cc',
             'geometry/s2regioncoverer.cc',
             'geometry/s2regionintersection.cc',
-            'geometry/s2regionunion.cc']})]
+            'geometry/s2regionunion.cc']}),
+        ('_urlencode', {
+            'language': 'c++',
+            'include_dirs': include_dirs,
+            'extra_compile_args': extra_args,
+            'extra_link_args': extra_args,
+            'sources': ['pogeo/_urlencode.cpp']})]
 
 try:
     from Cython.Build import cythonize
@@ -67,7 +73,15 @@ try:
 except ImportError:
     file_ext = 'cpp'
 
-exts = [Extension('pogeo.const',
+exts = [Extension('pogeo.altitude',
+                  define_macros=macros,
+                  extra_compile_args=extra_args,
+                  extra_link_args=extra_args,
+                  include_dirs=include_dirs,
+                  libraries=libraries,
+                  sources=['pogeo/altitude.' + file_ext],
+                  language='c++'),
+        Extension('pogeo.const',
                   extra_compile_args=extra_args,
                   extra_link_args=extra_args,
                   sources=['pogeo/const.' + file_ext],
@@ -82,7 +96,7 @@ exts = [Extension('pogeo.const',
                   language='c++'),
         Extension('pogeo.geocoder',
                   include_dirs=include_dirs,
-                  sources=['pogeo/_urlencode.cpp', 'pogeo/geocoder.' + file_ext],
+                  sources=['pogeo/geocoder.' + file_ext],
                   language='c++'),
         Extension('pogeo.location',
                   define_macros=macros,
@@ -155,8 +169,8 @@ setup(name='pogeo',
           'Programming Language :: Python :: 3.6',
           'Topic :: Scientific/Engineering :: GIS'],
       keywords='pogeo geography S2 distance geo geometry',
-      libraries=s2,
+      libraries=libs,
       packages=['pogeo', 'pogeo.geo'],
-      package_data={'pogeo': ['cellcache.pxd', 'const.pxd', 'location.pxd', 'loop.pxd', 'polygon.pxd', 'rectangle.pxd', 'utils.pxd'],
+      package_data={'pogeo': ['altitude.pxd', 'cellcache.pxd', 'const.pxd', 'location.pxd', 'loop.pxd', 'polygon.pxd', 'polyline.pxd', 'rectangle.pxd', 'utils.pxd'],
                     'pogeo.geo': '*.pxd'},
       ext_modules=exts)
