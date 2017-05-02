@@ -62,10 +62,10 @@ libs = [('s2', {
             'geometry/s2regionunion.cc']}),
         ('_urlencode', {
             'language': 'c++',
-            'include_dirs': include_dirs,
+            'include_dirs': ['include'],
             'extra_compile_args': extra_args,
             'extra_link_args': extra_args,
-            'sources': ['pogeo/_urlencode.cpp']})]
+            'sources': ['lib/_urlencode.cpp']})]
 
 try:
     from Cython.Build import cythonize
