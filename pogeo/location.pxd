@@ -9,4 +9,4 @@ cdef class Location:
     cdef readonly uint32_t time
     cdef S2Point point
     @staticmethod
-    cdef from_point(S2Point point)
+    cdef Location from_point(S2Point point)

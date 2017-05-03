@@ -1,7 +1,7 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True
 
-from libc.stdint cimport uint8_t, uint64_t
+from libc.stdint cimport uint8_t, uint16_t, uint64_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
@@ -59,7 +59,7 @@ cdef class AltitudeCache:
             dict response, result
             double lat, lon
             uint64_t cell_id
-            str url = 'https://maps.googleapis.com/maps/api/elevation/json?locations={}&key={}'.format(urlencode(poly).decode('utf-8'), key)
+            str url = 'https://maps.googleapis.com/maps/api/elevation/json?locations=enc%3A{}&key={}'.format(urlencode(poly).decode('utf-8'), key)
         page = urlopen(url, timeout=10.0)
         response = json_loads(str(page.read(), encoding=page.headers.get_param("charset") or "utf-8"))
         for result in response['results']:
