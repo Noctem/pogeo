@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True
+# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
 
 from libc.math cimport log2, pow
 from libc.stdint cimport uint64_t
@@ -81,7 +81,7 @@ cdef class Rectangle:
     def contains_token(self, str t):
         if self.unbound:
             return True
-        return self.shape.Contains(S2CellId.FromToken(t.encode('UTF-8')).ToLatLng())
+        return self.shape.Contains(S2CellId.FromToken(t).ToLatLng())
 
     def distance(self, Location loc):
         return self.shape.GetDistance(S2LatLng.FromDegrees(loc.latitude, loc.longitude)).radians() * EARTH_RADIUS_METERS

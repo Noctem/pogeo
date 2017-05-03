@@ -1,13 +1,13 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True
+# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
 
-from libc.math cimport log2, pow
+from libc.math cimport log2, M_PI, pow
 from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 
 from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
-from .geo.s2 cimport S2, S2Point
+from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
@@ -50,7 +50,9 @@ cdef class Polygon:
             lat, lon = coords
             v.push_back(coords_to_s2point(lat, lon))
         loop.Init(v)
-        if not S2.SimpleCCW(v[0], v[1], v[2]):
+        # if loop covers more than half of the Earth's surface it was probably
+        # erroneously constructed clockwise
+        if loop.GetArea() > (M_PI * 2):
             loop.Invert()
         loop.set_depth(depth)
         builder.AddLoop(&loop)
@@ -89,7 +91,7 @@ cdef class Polygon:
         return self.shape.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())
 
     def contains_token(self, str t):
-        return self.shape.Contains(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
+        return self.shape.Contains(S2CellId.FromToken(t).ToPointRaw())
 
     def distance(self, Location loc):
         return self.shape.GetDistance(loc.point).radians() * EARTH_RADIUS_METERS

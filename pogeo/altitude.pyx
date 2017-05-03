@@ -1,13 +1,13 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True
+# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
 
-from libc.stdint cimport uint8_t, uint16_t, uint64_t
+from libc.stdint cimport uint8_t, uint64_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
 from cython.operator cimport dereference as deref
 
-from cyrandom.cyrandom cimport uniform
+from cyrandom.cyrandom cimport random, uniform
 
 from ._urlencode cimport urlencode
 from .cpython_ cimport Py_uhash_t
@@ -18,9 +18,10 @@ from .libcpp_ cimport min
 from .location cimport Location
 from .polyline cimport encode_s2points
 from .types cimport shape
-from .utils cimport get_s2points
+from .utils cimport get_s2points, time
 
 from pickle import dump, load, HIGHEST_PROTOCOL
+from time import sleep
 from urllib.request import urlopen
 
 try:
@@ -29,10 +30,17 @@ except ImportError:
     from json import loads as json_loads
 
 
+DEF RETRY_TIMEOUT = 30.0
+DEF COORDS_PER_REQUEST = 512
+
+
 cdef class AltitudeCache:
-    def __cinit__(self, uint8_t level, double rand_min, double rand_max):
+    def __cinit__(self, uint8_t level, str key, double rand_min=390.0, double rand_max=490.0):
         self.changed = False
         self.level = level
+        if key and not key.startswith("AIza"):
+            raise ValueError("Invalid Google API key provided.")
+        self.key = key
         self.rand_min = rand_min
         self.rand_max = rand_max
 
@@ -42,26 +50,58 @@ cdef class AltitudeCache:
     def __len__(self):
         return self.cache.size()
 
-    def fetch_all(self, shape bounds, str key):
+    def fetch_all(self, shape bounds):
         cdef:
             vector[S2Point] points
             size_t i, size
             string poly
+            str url
         self.bounds_hash = bounds.__hash__()
         points = get_s2points(bounds, self.level)
         size = points.size()
-        for i in range(0, size, 300):
-            poly = encode_s2points(points, i, min[size_t](i + 300, size))
-            self.fetch_polyline(poly, key)
+        for i in range(0, size, COORDS_PER_REQUEST):
+            poly = encode_s2points(points, i, min[size_t](i + COORDS_PER_REQUEST, size))
+            url = 'https://maps.googleapis.com/maps/api/elevation/json?locations=enc%3A{}&key={}'.format(urlencode(poly), self.key)
+            self.request(url)
 
-    def fetch_polyline(self, string poly, str key):
+    def request(self, str url, float first_request_time=0.0, uint8_t retry_counter=0):
         cdef:
             dict response, result
             double lat, lon
             uint64_t cell_id
-            str url = 'https://maps.googleapis.com/maps/api/elevation/json?locations=enc%3A{}&key={}'.format(urlencode(poly).decode('utf-8'), key)
+            float elapsed
+            double delay_seconds
+
+        if first_request_time == 0.0:
+            first_request_time = time()
+        else:
+            elapsed = first_request_time - time()
+            if elapsed > RETRY_TIMEOUT:
+                raise ApiTimeout('{} elapsed since first request.'.format(elapsed))
+
+            # 0.5 * (1.5 ^ i) is an increased sleep time of 1.5x per iteration,
+            # starting at 0.5s when retry_counter=0. The first retry will occur
+            # at 1, so subtract that first and jitter by 50%.
+            delay_seconds = (0.5 * 1.5 ** (retry_counter - 1)) * (random() + 0.5)
+            print('Sleeping for {:.1f} seconds before retrying altitude request.'.format(delay_seconds))
+            sleep(delay_seconds)
+
         page = urlopen(url, timeout=10.0)
+        if page.code == 500 or page.code == 503 or page.code == 504:
+            self.request(url, first_request_time, retry_counter + 1)
+
         response = json_loads(str(page.read(), encoding=page.headers.get_param("charset") or "utf-8"))
+
+        cdef str status = response['status']
+        if status == 'OK':
+            pass
+        elif status == 'ZERO_RESULTS':
+            return
+        elif status == 'OVER_QUERY_LIMIT':
+            self.request(url, first_request_time, retry_counter + 1)
+        else:
+            raise ApiError(response.get('error_message', status))
+
         for result in response['results']:
             lat = result['location']['lat']
             lon = result['location']['lng']
@@ -109,3 +149,11 @@ cdef class AltitudeCache:
             self.cache = state['cache']
             return True
         return False
+
+
+class ApiError(Exception):
+    """Represents an exception returned by the remote API."""
+
+
+class ApiTimeout(Exception):
+    """The request timed out."""

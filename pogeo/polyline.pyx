@@ -55,9 +55,9 @@ cdef string encode_s2points(vector[S2Point] &points, size_t start, size_t end):
     for i in range(start, end):
         ll = S2LatLng(points[i])
         prev_lat = curr_lat
-        curr_lat = <int32_t>round(ll.lat().degrees() * 100000.0)
+        curr_lat = ll.lat().e5()
         write(output, curr_lat, prev_lat)
         prev_lon = curr_lon
-        curr_lon = <int32_t>round(ll.lng().degrees() * 100000.0)
+        curr_lon = ll.lng().e5()
         write(output, curr_lon, prev_lon)
     return output

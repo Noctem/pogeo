@@ -1,3 +1,5 @@
+from libc.stdint cimport int32_t
+
 from .s2 cimport S2Point
 from .s2latlng cimport S2LatLng
 
@@ -13,6 +15,9 @@ cdef extern from "s1angle.h" nogil:
         S1Angle(S2LatLng x, S2LatLng y)
         double radians()
         double degrees()
+        int32_t e5()
+        int32_t e6()
+        int32_t e7()
         S1Angle abs()
         S1Angle Normalized()
         void Normalize()

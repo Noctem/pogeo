@@ -1,14 +1,15 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True
+# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
 
 from libc.string cimport memmove
 from libc.math cimport atan2, cos, fmod, log2, sin
-from libc.stdint cimport uint8_t, uint64_t
+from libc.stdint cimport uint8_t, uint32_t, uint64_t
 from libcpp.unordered_set cimport unordered_set
 from libcpp.vector cimport vector
 
 from .array cimport array, clone
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
+from .cpython_ cimport _PyTime_GetSystemClock
 from .location cimport Location
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
@@ -103,6 +104,7 @@ cdef vector[S2Point] get_s2points(shape bounds, int level):
     coverer.GetPoints(bounds.shape, &points)
     return points
 
+
 def closest_level_width(double value):
     return S2.ClosestLevelWidth(value / EARTH_RADIUS_METERS)
 
@@ -137,16 +139,24 @@ def cellid_to_coords(uint64_t cellid):
 
 
 def token_to_location(str t):
-    return Location.from_point(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
+    return Location.from_point(S2CellId.FromToken(t).ToPointRaw())
 
 
 def token_to_coords(str t):
-    cdef S2LatLng ll = S2LatLng(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
+    cdef S2LatLng ll = S2LatLng(S2CellId.FromToken(t).ToPointRaw())
     return ll.lat().degrees(), ll.lng().degrees()
 
 
 def location_to_cellid(Location p):
     return S2CellId.FromPoint(p.point).parent(S2_LEVEL).id()
+
+
+cdef float time():
+    return _PyTime_GetSystemClock() / 1000000000
+
+
+cdef uint32_t int_time():
+    return _PyTime_GetSystemClock() // 1000000000
 
 
 cdef S2Point coords_to_s2point(double lat, double lon):
