@@ -131,8 +131,18 @@ def cellid_to_location(uint64_t cellid):
     return Location.from_point(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())
 
 
+def cellid_to_coords(uint64_t cellid):
+    cdef S2LatLng ll = S2LatLng(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())
+    return ll.lat().degrees(), ll.lng().degrees()
+
+
 def token_to_location(str t):
     return Location.from_point(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
+
+
+def token_to_coords(str t):
+    cdef S2LatLng ll = S2LatLng(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
+    return ll.lat().degrees(), ll.lng().degrees()
 
 
 def location_to_cellid(Location p):

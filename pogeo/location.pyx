@@ -102,10 +102,10 @@ cdef class Location:
             self.altitude = uniform(self.altitude - alt_amount, self.altitude + alt_amount)
 
     def update_time(self):
-        self.time = _PyTime_GetSystemClock() / 1000000000
+        self.time = _PyTime_GetSystemClock() // 1000000000
 
     @staticmethod
-    cdef from_point(S2Point point):
+    cdef Location from_point(S2Point point):
         cdef S2LatLng latlng = S2LatLng(point)
         cdef Location location = Location.__new__(Location, latlng.lat().degrees(), latlng.lng().degrees())
         location.point = point
