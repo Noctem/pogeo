@@ -6,11 +6,11 @@ from sys import platform
 from setuptools import setup, Extension
 
 libraries = None
-macros = None
+macros = [('NDEBUG', None)]
 include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math', 'include']
 
 if platform == 'win32':
-    macros = [('PTW32_STATIC_LIB', None)]
+    macros.append(('PTW32_STATIC_LIB', None))
     libraries = ['pthreadVC2', 'Advapi32', 'User32']
     extra_args = None
 elif platform == 'darwin':

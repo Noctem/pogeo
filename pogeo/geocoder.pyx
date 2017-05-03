@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True
+# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
 
 from libc.stdint cimport uint16_t
 from libcpp.string cimport string
@@ -15,11 +15,11 @@ except ImportError:
 
 
 cdef string quote(str s):
-    return urlencode(s.encode('utf-8'))
+    return urlencode(s)
 
 
 def make_request(string url, double timeout):
-    page = urlopen(url.decode('utf-8'), timeout=timeout)
+    page = urlopen(url, timeout=timeout)
     return json_loads(str(page.read(), encoding=page.headers.get_param("charset") or "utf-8"))
 
 

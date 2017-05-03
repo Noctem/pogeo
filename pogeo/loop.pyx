@@ -1,7 +1,7 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True
+# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
 
-from libc.math cimport log2, pow
+from libc.math cimport log2, M_PI, pow
 from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 
@@ -28,7 +28,9 @@ cdef class Loop:
             v.push_back(coords_to_s2point(lat, lon))
 
         self.shape.Init(v)
-        if not S2.SimpleCCW(v[0], v[1], v[2]):
+        # if loop covers more than half of the Earth's surface it was probably
+        # erroneously constructed clockwise
+        if self.shape.GetArea() > (M_PI * 2):
             self.shape.Invert()
 
         cdef S2LatLngRect rect = self.shape.GetRectBound()
@@ -71,7 +73,7 @@ cdef class Loop:
         return self.shape.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())
 
     def contains_token(self, str t):
-        return self.shape.Contains(S2CellId.FromToken(t.encode('UTF-8')).ToPointRaw())
+        return self.shape.Contains(S2CellId.FromToken(t).ToPointRaw())
 
     def distance(self, Location loc):
         return self.shape.GetDistance(loc.point).radians() * EARTH_RADIUS_METERS
