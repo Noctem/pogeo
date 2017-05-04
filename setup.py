@@ -79,7 +79,13 @@ libs = [('s2', {
             'macros': macros,
             'extra_compile_args': extra_args,
             'extra_link_args': extra_args,
-            'sources': ['lib/bitscan.cpp']})]
+            'sources': ['lib/bitscan.cpp']}),
+        ('json', {
+            'language': 'c++',
+            'include_dirs': include_dirs,
+            'extra_compile_args': extra_args,
+            'extra_link_args': extra_args,
+            'sources': ['lib/json11.cpp']})]
 
 try:
     from Cython.Build import cythonize
