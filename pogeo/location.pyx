@@ -1,6 +1,7 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True
 
+from libc.math cimport atan2, sqrt
 from libc.stdint cimport int64_t, uint8_t
 
 from cyrandom.cyrandom cimport uniform
@@ -11,6 +12,7 @@ from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2Point
 from .geo.s2latlng cimport S2LatLng
 from .libcpp_ cimport max
+from .utils cimport coords_to_s2point, get_distance, get_distance_unit, s2point_to_lat, s2point_to_lon
 
 try:
     from shapely.geos import lgeos
@@ -28,7 +30,7 @@ cdef class Location:
         self.longitude = longitude
 
     def __init__(self, double latitude, double longitude):
-        self.point = S2LatLng.FromDegrees(latitude, longitude).ToPoint()
+        self.point = coords_to_s2point(latitude, longitude)
 
     def __getnewargs__(self):
         return self.latitude, self.longitude
@@ -75,17 +77,10 @@ cdef class Location:
         return iter((self.latitude, self.longitude, self.altitude))
 
     def distance(self, Location other):
-        return S1Angle(self.point, other.point).radians() * EARTH_RADIUS_METERS
+        return get_distance(self, other)
 
     def distance_unit(self, Location other, char unit=3):
-        cdef double radius
-        if unit == 1:
-            radius = EARTH_RADIUS_MILES
-        elif unit == 2:
-            radius = EARTH_RADIUS_KILOMETERS
-        else:
-            radius = EARTH_RADIUS_METERS
-        return S1Angle(self.point, other.point).radians() * radius
+        return get_distance_unit(self, other, unit)
 
     def speed(self, Location other):
         cdef double time_diff = _PyTime_GetSystemClock() / 1000000000 - self.time
@@ -105,11 +100,12 @@ cdef class Location:
         self.time = _PyTime_GetSystemClock() // 1000000000
 
     @staticmethod
-    cdef Location from_point(S2Point point):
-        cdef S2LatLng latlng = S2LatLng(point)
-        cdef Location location = Location.__new__(Location, latlng.lat().degrees(), latlng.lng().degrees())
-        location.point = point
-        return location
+    cdef Location from_point(S2Point p):
+        cdef Location loc = Location.__new__(Location,
+            s2point_to_lat(p),
+            s2point_to_lon(p))
+        loc.point = p
+        return loc
 
     @property
     def _ndim(self):

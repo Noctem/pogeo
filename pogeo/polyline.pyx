@@ -1,11 +1,11 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True
 
-from libc.math cimport round
 from libc.stdint cimport int32_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
+from .geo.mathutil cimport MathUtil
 from .geo.s2 cimport S2Point
 from .geo.s2latlng cimport S2LatLng
 from .location cimport Location
@@ -22,8 +22,8 @@ cdef void write(string &output, int32_t val, int32_t prev):
 
 def encode_single(Location loc):
     cdef string output
-    write(output, <int32_t>round(loc.latitude * 100000.0), 0)
-    write(output, <int32_t>round(loc.longitude * 100000.0), 0)
+    write(output, MathUtil.FastIntRound(loc.latitude * 1e5), 0)
+    write(output, MathUtil.FastIntRound(loc.longitude * 1e5), 0)
     return output
 
 
@@ -37,10 +37,10 @@ def encode_multiple(tuple points):
     for i in range(size):
         loc = points[i]
         prev_lat = curr_lat
-        curr_lat = <int32_t>round(loc.latitude * 100000.0)
+        curr_lat = MathUtil.FastIntRound(loc.latitude * 1e5)
         write(output, curr_lat, prev_lat)
         prev_lon = curr_lon
-        curr_lon = <int32_t>round(loc.longitude * 100000.0)
+        curr_lon = MathUtil.FastIntRound(loc.longitude * 1e5)
         write(output, curr_lon, prev_lon)
     return output
 

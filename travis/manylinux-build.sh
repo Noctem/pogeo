@@ -15,8 +15,9 @@ fi
 curl -L "$TOOLCHAIN_URL" -o toolchain.tar.bz2
 tar -C / -xf toolchain.tar.bz2
 
+export MANYLINUX=1
 export PATH="/toolchain/bin:${PATH}"
-export CFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++ ${MFLAG}"
+export CFLAGS="-I/toolchain/include ${MFLAG}"
 export CXXFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++ ${MFLAG}"
 
 # Compile wheels

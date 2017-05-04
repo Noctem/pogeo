@@ -6,8 +6,7 @@ from .loop cimport Loop
 from .polygon cimport Polygon
 from .rectangle cimport Rectangle
 
-ctypedef vector[uint64_t] vector_uint64
-ctypedef unordered_map[uint64_t, vector_uint64] cell_map
+ctypedef unordered_map[uint64_t, vector[uint64_t]] cell_map
 ctypedef fused shape:
     Loop
     Polygon

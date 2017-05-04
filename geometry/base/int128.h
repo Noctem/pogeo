@@ -18,10 +18,8 @@ class uint128 {
 public:
   uint128();  // Sets to 0, but don't trust on this behavior.
   uint128(uint64 top, uint64 bottom);
-#ifndef SWIG
   uint128(int bottom);
   uint128(uint32 bottom);   // Top 96 bits = 0
-#endif
   uint128(uint64 bottom);   // hi_ = 0
   uint128(const uint128 &val);
 
@@ -108,14 +106,13 @@ inline uint128::uint128(): lo_(0), hi_(0) { }
 inline uint128::uint128(uint64 top, uint64 bottom) : lo_(bottom), hi_(top) { }
 inline uint128::uint128(const uint128 &v) : lo_(v.lo_), hi_(v.hi_) { }
 inline uint128::uint128(uint64 bottom) : lo_(bottom), hi_(0) { }
-#ifndef SWIG
 inline uint128::uint128(uint32 bottom) : lo_(bottom), hi_(0) { }
 inline uint128::uint128(int bottom) : lo_(bottom), hi_(0) {
   if (bottom < 0) {
     --hi_;
   }
 }
-#endif
+
 inline void uint128::Initialize(uint64 top, uint64 bottom) {
   hi_ = top;
   lo_ = bottom;

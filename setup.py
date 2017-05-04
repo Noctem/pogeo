@@ -15,10 +15,19 @@ if platform == 'win32':
     extra_args = None
 elif platform == 'darwin':
     extra_args = ['-stdlib=libc++', '-std=c++11']
-    environ['CFLAGS'] = ' '.join(extra_args)
+    if 'CFLAGS' in environ:
+        environ['CFLAGS'] += ' ' + ' '.join(extra_args)
+    else:
+        environ['CFLAGS'] = ' '.join(extra_args)
 else:
-    extra_args = ['-std=c++11']
-    environ['CFLAGS'] = ' '.join(extra_args)
+    if 'MANYLINUX' in environ:
+        extra_args = ['-std=c++11', '-static-libgcc', '-static-libstdc++']
+    else:
+        extra_args = ['-std=c++11']
+    if 'CFLAGS' in environ:
+        environ['CFLAGS'] += ' ' + ' '.join(extra_args)
+    else:
+        environ['CFLAGS'] = ' '.join(extra_args)
 
 libs = [('s2', {
         'language': 'c++',
@@ -62,10 +71,15 @@ libs = [('s2', {
             'geometry/s2regionunion.cc']}),
         ('_urlencode', {
             'language': 'c++',
-            'include_dirs': ['include'],
             'extra_compile_args': extra_args,
             'extra_link_args': extra_args,
-            'sources': ['lib/_urlencode.cpp']})]
+            'sources': ['lib/_urlencode.cpp']}),
+        ('bitscan', {
+            'language': 'c++',
+            'macros': macros,
+            'extra_compile_args': extra_args,
+            'extra_link_args': extra_args,
+            'sources': ['lib/bitscan.cpp']})]
 
 try:
     from Cython.Build import cythonize

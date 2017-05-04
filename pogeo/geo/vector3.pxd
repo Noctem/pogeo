@@ -14,7 +14,7 @@ cdef extern from "vector3.h" nogil:
         int Size()
         void Set(VType x, VType y, VType z)
         Self& operator=(Self& vb)
-        VType& operator[](int)
+        VType& operator[](const int)
         void x(VType &v)
         VType x()
         void y(VType &v)

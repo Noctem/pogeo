@@ -3,6 +3,7 @@
 
 from libc.stdint cimport uint64_t
 from libc.string cimport memmove
+from libcpp.vector cimport vector
 
 from cython.operator cimport postincrement as incr, dereference as deref
 
@@ -11,7 +12,6 @@ from .const cimport AXIS_HEIGHT
 from .geo.s2cap cimport S2Cap
 from .geo.s2cellid cimport S2CellId
 from .location cimport Location
-from .types cimport vector_uint64
 from .utils cimport ARRAY_TEMPLATE
 
 DEF S2_LEVEL = 15
@@ -25,7 +25,7 @@ cdef class CellCache:
     def __getstate__(self):
         cdef:
             uint64_t cell
-            vector_uint64 cells
+            vector[uint64_t] cells
             array cell_array
             size_t size
             dict state = {}
@@ -37,7 +37,7 @@ cdef class CellCache:
 
             size = cells.size()
             cell_array = clone(ARRAY_TEMPLATE, size)
-            memmove(&cell_array.data.as_ulonglongs[0], &cells[0], size * 8)
+            memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t))
             state[cell] = cell_array
             incr(it)
         return state
@@ -45,15 +45,15 @@ cdef class CellCache:
     def __setstate__(self, dict state):
         cdef:
             uint64_t cell
-            vector_uint64 cells
+            vector[uint64_t] cells
         for cell, cells in state.items():
-            self.cache[cell] = <vector_uint64>cells
+            self.cache[cell] = <vector[uint64_t]>cells
 
     def get_cell_ids(self, Location p):
         cdef:
             size_t size
             array cell_array
-            vector_uint64 cells
+            vector[uint64_t] cells
             uint64_t cell = S2CellId.FromPoint(p.point).parent(S2_LEVEL).id()
 
         it = self.cache.find(cell)
@@ -61,7 +61,7 @@ cdef class CellCache:
             cells = deref(it).second
             size = cells.size()
             cell_array = clone(ARRAY_TEMPLATE, size)
-            memmove(&cell_array.data.as_ulonglongs[0], &cells[0], size * 8)
+            memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t))
             return cell_array
 
         cdef S2Cap cap = S2Cap.FromAxisHeight(p.point, AXIS_HEIGHT)

@@ -9,4 +9,4 @@ from .location import Location
 from .loop import Loop
 from .polygon import Polygon
 from .rectangle import Rectangle
-from .utils import cellid_to_coords, cellid_to_location, diagonal_distance, get_bearing, get_cell_ids, get_distance, get_distance_meters, level_edge, token_to_coords, token_to_location
+from .utils import cellid_to_coords, cellid_to_location, diagonal_distance, get_bearing, get_cell_ids, get_distance, level_edge, token_to_coords, token_to_location
