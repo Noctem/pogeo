@@ -17,12 +17,7 @@
 // most google3 code doesn't have to work with type traits directly.
 #include "base/type_traits.h"
 
-// The swigged version of an abstract class must be concrete if any methods
-// return objects of the abstract type. We keep it abstract in C++ and
-// concrete for swig.
-#ifndef SWIG
 #define ABSTRACT = 0
-#endif
 
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class

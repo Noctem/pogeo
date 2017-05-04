@@ -18,7 +18,7 @@ from .libcpp_ cimport min
 from .location cimport Location
 from .polyline cimport encode_s2points
 from .types cimport shape
-from .utils cimport get_s2points, time
+from .utils cimport coords_to_s2point, get_s2points, time
 
 from pickle import dump, load, HIGHEST_PROTOCOL
 from time import sleep
@@ -105,7 +105,7 @@ cdef class AltitudeCache:
         for result in response['results']:
             lat = result['location']['lat']
             lon = result['location']['lng']
-            cell_id = S2CellId.FromLatLng(S2LatLng.FromDegrees(lat, lon)).parent(self.level).id()
+            cell_id = S2CellId.FromPoint(coords_to_s2point(lat, lon)).parent(self.level).id()
             self.cache[cell_id] = result['elevation']
         self.changed = True
 

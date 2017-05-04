@@ -489,8 +489,6 @@ inline S2CellId S2CellId::End(int level) {
 
 ostream& operator<<(ostream& os, S2CellId const& id);
 
-#ifndef SWIG
-
 namespace std {
   template<> struct hash<S2CellId> {
     size_t operator()(S2CellId const& id) const {
@@ -498,7 +496,5 @@ namespace std {
     }
   };
 }  // namespace std
-
-#endif  // SWIG
 
 #endif  // UTIL_GEOMETRY_S2CELLID_H_

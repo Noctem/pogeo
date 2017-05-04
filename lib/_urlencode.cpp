@@ -1,6 +1,6 @@
 #include <string>
 
-using namespace std;
+using std::string;
 
 string charToHex(char c){
   string result;

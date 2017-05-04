@@ -3,7 +3,7 @@
 //
 //
 // These are weird things we need to do to get this compiling on
-// random systems (and on SWIG).
+// random systems.
 
 #ifndef BASE_PORT_H_
 #define BASE_PORT_H_
@@ -330,7 +330,7 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 
 // GCC-specific features
 
-#if (defined(COMPILER_GCC3) || defined(COMPILER_ICC) || defined(__APPLE__)) && !defined(SWIG)
+#if (defined(COMPILER_GCC3) || defined(COMPILER_ICC) || defined(__APPLE__))
 
 //
 // Tell the compiler to do printf format string checking if the
@@ -901,13 +901,9 @@ typedef short int16_t;
 struct PortableHashBase { };
 #endif
 
-// The SWIGged version of an abstract class must be concrete if any methods
-// return objects of the abstract type.
-//
+
 // This location is deprecated, the new preferred location is in base/macros.h.
-#ifndef SWIG
 #define ABSTRACT = 0
-#endif
 
 
 #if defined(OS_WINDOWS) || defined(__APPLE__)
