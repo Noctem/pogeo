@@ -2,3 +2,4 @@ recursive-include pogeo *.pyx
 recursive-include pogeo *.pxd
 recursive-include . *.h
 recursive-include lib *.cpp
+recursive-include include *.hpp
