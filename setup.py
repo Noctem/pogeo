@@ -165,6 +165,14 @@ exts = [Extension('pogeo.altitude',
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/utils.' + file_ext],
+                  language='c++'),
+        Extension('pogeo.webcache',
+                  define_macros=macros,
+                  extra_compile_args=extra_args,
+                  extra_link_args=extra_args,
+                  include_dirs=include_dirs,
+                  libraries=libraries,
+                  sources=['pogeo/webcache.' + file_ext],
                   language='c++')]
 
 if file_ext == 'pyx':
@@ -191,6 +199,6 @@ setup(name='pogeo',
       keywords='pogeo geography S2 distance geo geometry',
       libraries=libs,
       packages=['pogeo', 'pogeo.geo'],
-      package_data={'pogeo': ['altitude.pxd', 'cellcache.pxd', 'const.pxd', 'location.pxd', 'loop.pxd', 'polygon.pxd', 'polyline.pxd', 'rectangle.pxd', 'utils.pxd'],
+      package_data={'pogeo': ['altitude.pxd', 'cellcache.pxd', 'const.pxd', 'location.pxd', 'loop.pxd', 'polygon.pxd', 'polyline.pxd', 'rectangle.pxd', 'utils.pxd', 'webcache.pxd'],
                     'pogeo.geo': '*.pxd'},
       ext_modules=exts)

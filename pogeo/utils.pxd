@@ -1,4 +1,4 @@
-from libc.stdint cimport uint32_t
+from libc.stdint cimport uint32_t, uint64_t
 from libcpp.vector cimport vector
 
 from .array cimport array
@@ -7,6 +7,7 @@ from .location cimport Location
 from .types cimport shape
 
 cdef array ARRAY_TEMPLATE
+cdef S2Point cellid_to_s2point(uint64_t cellid)
 cpdef double get_bearing(Location point1, Location point2)
 cpdef double get_distance(Location p1, Location p2)
 cpdef double get_distance_unit(Location p1, Location p2, char unit)
