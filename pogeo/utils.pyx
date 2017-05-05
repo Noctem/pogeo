@@ -19,6 +19,7 @@ from .geo.s2edgeutil cimport S2EdgeUtil
 from .geo.s2regioncoverer cimport S2RegionCoverer
 from .types cimport shape
 
+
 DEF S2_LEVEL = 15
 
 cdef array ARRAY_TEMPLATE = array('Q', [])
@@ -120,8 +121,16 @@ def token_to_coords(str t):
     return s2point_to_lat(p), s2point_to_lon(p)
 
 
-def location_to_cellid(Location p):
-    return S2CellId.FromPoint(p.point).parent(S2_LEVEL).id()
+def location_to_cellid(Location p, int level=S2_LEVEL):
+    return S2CellId.FromPoint(p.point).parent(level).id()
+
+
+def location_to_token(Location p, int level=S2_LEVEL):
+    return S2CellId.FromPoint(p.point).parent(level).ToToken()
+
+
+cdef S2Point cellid_to_s2point(uint64_t cellid):
+    return S2CellId(cellid << bitScanReverse(cellid)).ToPointRaw()
 
 
 cpdef double get_bearing(Location point1, Location point2):
