@@ -146,11 +146,11 @@ cpdef double get_bearing(Location point1, Location point2):
     return fmod(initial_bearing * RAD_TO_DEG + 360, 360)
 
 
-cpdef inline double get_distance(Location p1, Location p2):
+cpdef double get_distance(Location p1, Location p2):
     return S1Angle(p1.point, p2.point).radians() * EARTH_RADIUS_METERS
 
 
-cpdef inline double get_distance_unit(Location p1, Location p2, char unit):
+cpdef double get_distance_unit(Location p1, Location p2, char unit):
     if unit == 1:
         radius = EARTH_RADIUS_MILES
     elif unit == 2:
@@ -169,19 +169,19 @@ cdef vector[S2Point] get_s2points(shape bounds, int level):
     return points
 
 
-cdef inline float time():
+cdef float time():
     return _PyTime_GetSystemClock() / 1000000000.0
 
 
-cdef inline uint32_t int_time():
+cdef uint32_t int_time():
     return _PyTime_GetSystemClock() // 1000000000
 
 
-cdef inline double s2point_to_lat(S2Point p):
+cdef double s2point_to_lat(S2Point p):
     return atan2(p[2], sqrt(p[0]*p[0] + p[1]*p[1])) * RAD_TO_DEG
 
 
-cdef inline double s2point_to_lon(S2Point p):
+cdef double s2point_to_lon(S2Point p):
     return atan2(p[1], p[0]) * RAD_TO_DEG
 
 

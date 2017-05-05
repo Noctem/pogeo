@@ -79,7 +79,7 @@ class S2CellUnion : public S2Region {
   void Denormalize(int min_level, int level_mod,
                    vector<S2CellId>* output) const;
 
-  void GetCellIds(int min_level, vector<uint64>* output) const;
+  void GetCellIds(int min_level, vector<uint64_t>* output) const;
   void GetPoints(int min_level, vector<S2Point>* output) const;
 
   // If there are more than "excess" elements of the cell_ids() vector that
