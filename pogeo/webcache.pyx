@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=utf-8
+# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=utf-8, boundscheck=False
 
 from libc.stdint cimport int16_t, uint64_t
 from libcpp.set cimport set
@@ -7,21 +7,26 @@ from libcpp.string cimport string
 
 from cython.operator cimport preincrement as incr, dereference as deref
 
+from ._sqlalchemy cimport get_results
 from .geo.s2 cimport S2Point
 from .libcpp_ cimport remove_if
 from .json cimport Json
 from .utils cimport int_time, cellid_to_s2point, s2point_to_lat, s2point_to_lon
 
-from contextlib import contextmanager
+DEF INDEX = 0
+DEF POKEMON_ID = 1
+DEF SPAWN_ID = 2
+DEF EXPIRATION = 3
 
 
 cdef class WebCache:
-    def __cinit__(self, set[int16_t] trash, object names, tuple query, object session_maker):
+    def __cinit__(self, set[int16_t] trash, dict names, tuple filter_ids, tuple columns, object session_maker):
         self.trash = trash
-        self.names = {k: v for k,v in names.items()}
-        self.query = query
+        self.names = {k: v.encode('utf-8') for k,v in names.items()}
+        self.columns = columns
         self.last_update = 0
         self.session_maker = session_maker
+        self.filter_ids = filter_ids
 
     cdef void update_cache(self):
         cdef:
@@ -29,33 +34,58 @@ cdef class WebCache:
             S2Point point
             int id_
             int16_t pokemon_id
-            object pokemons
+            list results
+            tuple pokemon
+            object query, session
+            Py_ssize_t i, length
+            string i_id = string(b'id')
+            string i_lat = string(b'lat')
+            string i_lon = string(b'lon')
+            string i_trash = string(b'trash')
+            string i_name = string(b'name')
+            string i_expires = string(b'expires_at')
 
         self.last_update = int_time()
-        with self.session() as session:
-            pokemons = session.query(*self.query).filter(self.query[3] > self.last_update, self.query[0] > self.last_id)
-            for pokemon in pokemons:
-                jobject = Json.object_()
 
-                id_ = pokemon.id
-                if id_ > self.last_id:
-                    self.last_id = id_
+        session = self.session_maker(autoflush=False)
+        try:
+            query = session.query(*self.columns).filter(self.columns[EXPIRATION] > int_time(), self.columns[INDEX] > self.last_id)
+            if self.filter_ids:
+                query = query.filter(~self.query[POKEMON_ID].in_(self.filter_ids))
+            results = get_results(query)
+        except Exception:
+            session.rollback()
+            session.close()
+            raise
+        else:
+            del query, session
 
-                jobject[string(b'id')] = Json(id_)
+        length = len(results)
 
-                point = cellid_to_s2point(<uint64_t>pokemon.spawn_id)
-                jobject[string(b'lat')] = Json(s2point_to_lat(point))
-                jobject[string(b'lon')] = Json(s2point_to_lon(point))
+        for i in range(length):
+            pokemon = results[i]
 
-                pokemon_id = pokemon.pokemon_id
+            jobject = Json.object_()
 
-                jobject[string(b'trash')] = Json(self.trash.find(pokemon_id) != self.trash.end())
-                jobject[string(b'name')] = Json(self.names[pokemon_id])
-                jobject[string(b'expires_at')] = Json(<int>pokemon.expire_timestamp)
+            id_ = pokemon[INDEX]
+            if id_ > self.last_id:
+                self.last_id = id_
 
-                self.cache.push_back(Json(jobject))
+            jobject[i_id] = Json(id_)
 
-    cdef string get_first(self):
+            point = cellid_to_s2point(<uint64_t>pokemon[SPAWN_ID])
+            jobject[i_lat] = Json(s2point_to_lat(point))
+            jobject[i_lon] = Json(s2point_to_lon(point))
+
+            pokemon_id = pokemon[POKEMON_ID]
+
+            jobject[i_trash] = Json(self.trash.find(pokemon_id) != self.trash.end())
+            jobject[i_name] = Json(self.names[pokemon_id])
+            jobject[i_expires] = Json(<int>pokemon[EXPIRATION])
+
+            self.cache.push_back(Json(jobject))
+
+    cdef unicode get_first(self):
         cdef string time_index = string(b'expires_at')
         it = self.cache.begin()
         while it != self.cache.end():
@@ -91,14 +121,3 @@ cdef class WebCache:
                 incr(it)
 
         return Json(jarray).dump()
-
-    @contextmanager
-    def session(self):
-        """Provide a transactional scope around a series of operations."""
-        session = self.session_maker(autoflush=False)
-        try:
-            yield session
-        except Exception:
-            session.rollback()
-        finally:
-            session.close()

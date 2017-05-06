@@ -14,10 +14,11 @@ cdef class WebCache:
         Json.array cache
         set[int16_t] trash
         unordered_map[int16_t, string] names
-        tuple query
+        tuple filter_ids
+        tuple columns
         object session_maker
         int last_id
         uint32_t last_update
 
     cdef void update_cache(self)
-    cdef string get_first(self)
+    cdef unicode get_first(self)
