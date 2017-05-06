@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
+# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=ascii
 
 from libc.string cimport memmove
 from libc.math cimport atan2, cos, fmod, log2, sin, sqrt
@@ -112,11 +112,11 @@ def cellid_to_coords(uint64_t cellid):
     return s2point_to_lat(p), s2point_to_lon(p)
 
 
-def token_to_location(str t):
+def token_to_location(unicode t):
     return Location.from_point(S2CellId.FromToken(t).ToPointRaw())
 
 
-def token_to_coords(str t):
+def token_to_coords(unicode t):
     cdef S2Point p = S2CellId.FromToken(t).ToPointRaw()
     return s2point_to_lat(p), s2point_to_lon(p)
 

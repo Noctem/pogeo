@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
+# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=ascii
 
 from libc.stdint cimport uint8_t, uint64_t
 from libcpp.string cimport string
@@ -35,7 +35,7 @@ DEF COORDS_PER_REQUEST = 512
 
 
 cdef class AltitudeCache:
-    def __cinit__(self, uint8_t level, str key, double rand_min=390.0, double rand_max=490.0):
+    def __cinit__(self, uint8_t level, unicode key, double rand_min=390.0, double rand_max=490.0):
         self.changed = False
         self.level = level
         if key and not key.startswith("AIza"):
@@ -55,16 +55,14 @@ cdef class AltitudeCache:
             vector[S2Point] points
             size_t i, size
             string poly
-            str url
         self.bounds_hash = bounds.__hash__()
         points = get_s2points(bounds, self.level)
         size = points.size()
         for i in range(0, size, COORDS_PER_REQUEST):
-            poly = encode_s2points(points, i, min[size_t](i + COORDS_PER_REQUEST, size))
-            url = 'https://maps.googleapis.com/maps/api/elevation/json?locations=enc%3A{}&key={}'.format(urlencode(poly), self.key)
-            self.request(url)
+            poly = urlencode(encode_s2points(points, i, min[size_t](i + COORDS_PER_REQUEST, size)))
+            self.request(f'https://maps.googleapis.com/maps/api/elevation/json?locations=enc%3A{poly}&key={self.key}')
 
-    def request(self, str url, float first_request_time=0.0, uint8_t retry_counter=0):
+    def request(self, unicode url, float first_request_time=0.0, uint8_t retry_counter=0):
         cdef:
             dict response, result
             double lat, lon
@@ -77,20 +75,20 @@ cdef class AltitudeCache:
         else:
             elapsed = first_request_time - time()
             if elapsed > RETRY_TIMEOUT:
-                raise ApiTimeout('{} elapsed since first request.'.format(elapsed))
+                raise ApiTimeout(f'{elapsed} elapsed since first request.')
 
             # 0.5 * (1.5 ^ i) is an increased sleep time of 1.5x per iteration,
             # starting at 0.5s when retry_counter=0. The first retry will occur
             # at 1, so subtract that first and jitter by 50%.
             delay_seconds = (0.5 * 1.5 ** (retry_counter - 1)) * (random() + 0.5)
-            print('Sleeping for {:.1f} seconds before retrying altitude request.'.format(delay_seconds))
+            print(f'Sleeping for {delay_seconds:.1f} seconds before retrying altitude request.')
             sleep(delay_seconds)
 
         page = urlopen(url, timeout=10.0)
         if page.code == 500 or page.code == 503 or page.code == 504:
             self.request(url, first_request_time, retry_counter + 1)
 
-        response = json_loads(str(page.read(), encoding=page.headers.get_param("charset") or "utf-8"))
+        response = json_loads(page.read().decode(page.headers.get_param("charset") or "utf-8"))
 
         cdef str status = response['status']
         if status == 'OK':
@@ -141,7 +139,7 @@ cdef class AltitudeCache:
                 dump(state, f, HIGHEST_PROTOCOL)
                 self.changed = False
 
-    def unpickle(self, str path, bounds):
+    def unpickle(self, unicode path, bounds):
         cdef dict state
         with open(path, 'rb') as f:
             state = load(f)

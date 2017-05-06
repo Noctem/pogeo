@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
+# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=utf-8
 
 from libc.stdint cimport int16_t, uint64_t
 from libcpp.set cimport set
@@ -18,7 +18,7 @@ from contextlib import contextmanager
 cdef class WebCache:
     def __cinit__(self, set[int16_t] trash, object names, tuple query, object session_maker):
         self.trash = trash
-        self.names = {k: v.encode('utf-8') for k,v in names.items()}
+        self.names = {k: v for k,v in names.items()}
         self.query = query
         self.last_update = 0
         self.session_maker = session_maker
@@ -41,22 +41,22 @@ cdef class WebCache:
                 if id_ > self.last_id:
                     self.last_id = id_
 
-                jobject[string(<char *>'id')] = Json(id_)
+                jobject[string(b'id')] = Json(id_)
 
                 point = cellid_to_s2point(<uint64_t>pokemon.spawn_id)
-                jobject[string(<char *>'lat')] = Json(s2point_to_lat(point))
-                jobject[string(<char *>'lon')] = Json(s2point_to_lon(point))
+                jobject[string(b'lat')] = Json(s2point_to_lat(point))
+                jobject[string(b'lon')] = Json(s2point_to_lon(point))
 
                 pokemon_id = pokemon.pokemon_id
 
-                jobject[string(<char *>'trash')] = Json(self.trash.find(pokemon_id) != self.trash.end())
-                jobject[string(<char *>'name')] = Json(self.names[pokemon_id])
-                jobject[string(<char *>'expires_at')] = Json(<int>pokemon.expire_timestamp)
+                jobject[string(b'trash')] = Json(self.trash.find(pokemon_id) != self.trash.end())
+                jobject[string(b'name')] = Json(self.names[pokemon_id])
+                jobject[string(b'expires_at')] = Json(<int>pokemon.expire_timestamp)
 
                 self.cache.push_back(Json(jobject))
 
     cdef string get_first(self):
-        cdef string time_index = string(<char *>'expires_at')
+        cdef string time_index = string(b'expires_at')
         it = self.cache.begin()
         while it != self.cache.end():
             if deref(it)[time_index].int_value() < int_time():
@@ -75,8 +75,8 @@ cdef class WebCache:
         cdef:
             Json.array jarray
             Json obj
-            string id_index = string(<char *>'id')
-            string time_index = string(<char *>'expires_at')
+            string id_index = string(b'id')
+            string time_index = string(b'expires_at')
 
         it = self.cache.begin()
         while it != self.cache.end():
