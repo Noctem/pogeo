@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
+# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=utf-8
 
 from libc.stdint cimport uint16_t
 from libcpp.string cimport string
@@ -14,22 +14,17 @@ except ImportError:
     from json import loads as json_loads
 
 
-cdef string quote(str s):
-    return urlencode(s)
-
-
 def make_request(string url, double timeout):
     page = urlopen(url, timeout=timeout)
-    return json_loads(str(page.read(), encoding=page.headers.get_param("charset") or "utf-8"))
+    return json_loads(page.read().decode(page.headers.get_param("charset") or "utf-8"))
 
 
-def geocode(str query, double timeout=3.0):
+def geocode(unicode query, double timeout=3.0):
     cdef:
         dict place
         list response
-        string url = string(<char *>'https://nominatim.openstreetmap.org?format=json&polygon_geojson=1&q=')
-    url.append(quote(query))
+        string url = string(b'https://nominatim.openstreetmap.org?format=json&polygon_geojson=1&q=')
+    url.append(urlencode(query))
     response = make_request(url, timeout)
     place = response[0]
     return place
-

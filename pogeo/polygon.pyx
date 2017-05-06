@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=str, c_string_encoding=utf-8
+# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=ascii
 
 from libc.math cimport log2, M_PI, pow
 from libc.stdint cimport uint64_t
@@ -90,7 +90,7 @@ cdef class Polygon:
     def contains_cellid(self, uint64_t cellid):
         return self.shape.Contains(S2CellId(cellid << (63 - <int>log2(cellid))).ToPointRaw())
 
-    def contains_token(self, str t):
+    def contains_token(self, unicode t):
         return self.shape.Contains(S2CellId.FromToken(t).ToPointRaw())
 
     def distance(self, Location loc):
