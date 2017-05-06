@@ -93,7 +93,12 @@ try:
 except ImportError:
     file_ext = 'cpp'
 
-exts = [Extension('pogeo.altitude',
+exts = [Extension('pogeo._sqlalchemy',
+                  extra_compile_args=extra_args,
+                  extra_link_args=extra_args,
+                  sources=['pogeo/_sqlalchemy.' + file_ext],
+                  language='c++'),
+        Extension('pogeo.altitude',
                   define_macros=macros,
                   extra_compile_args=extra_args,
                   extra_link_args=extra_args,
