@@ -16,8 +16,32 @@ cdef:
     frozenset _none_set = frozenset([None, NEVER_SET, PASSIVE_NO_RESULT])
 
 
-cpdef list get_results(object query):
-    """Return an list of tuples for a query."""
+cdef list fetchall(object query):
+    """Return a list of results for a query."""
+    cdef list process, rows
+
+    context = query._compile_context()
+    conn = query._get_bind_args(
+        context,
+        query._connection_from_session,
+        close_with_result=True)
+    cursor = conn.execute(context.statement, query._params)
+    del conn
+
+    context.runid = loading._new_runid()
+
+    try:
+        return cursor.fetchall()
+    except Exception as err:
+        cursor.close()
+        exc_type, exc_value, exc_tb = exc_info()
+        if err.__traceback__ is not exc_tb:
+            raise err.with_traceback(exc_tb)
+        raise err
+
+
+def get_results(object query):
+    """Return a list of lists for a query."""
     cdef list process, rows
 
     context = query._compile_context()
@@ -35,7 +59,7 @@ cpdef list get_results(object query):
         process = [query_entity.row_processor(query, context, cursor)[0]
                    for query_entity in query._entities]
         rows = cursor.fetchall()
-        return [tuple([proc(row) for proc in process])
+        return [[proc(row) for proc in process]
                 for row in rows]
     except Exception as err:
         cursor.close()

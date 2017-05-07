@@ -1,1 +1,1 @@
-cpdef list get_results(object query)
+cdef list fetchall(object query)
