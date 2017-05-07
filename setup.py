@@ -64,10 +64,10 @@ libs = [('s2', {
             'geometry/s2regioncoverer.cc',
             'geometry/s2regionintersection.cc',
             'geometry/s2regionunion.cc']}),
-        ('_urlencode', {
+        ('urlencode', {
             'language': 'c++',
             'cflags': extra_args,
-            'sources': ['lib/_urlencode.cpp']}),
+            'sources': ['lib/urlencode.cpp']}),
         ('bitscan', {
             'language': 'c++',
             'macros': macros if platform != 'win32' else None,

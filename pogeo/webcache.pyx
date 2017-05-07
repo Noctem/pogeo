@@ -9,9 +9,8 @@ from libcpp.string cimport string
 from cython.operator cimport preincrement as incr, dereference as deref
 
 from ._gzip cimport compress
+from ._json cimport Json
 from .geo.s2 cimport S2Point
-from .libcpp_ cimport remove_if
-from .json cimport Json
 from .utils cimport int_time, cellid_to_s2point, s2point_to_lat, s2point_to_lon
 
 from sqlalchemy.orm import loading

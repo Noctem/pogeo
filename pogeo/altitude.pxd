@@ -4,7 +4,7 @@ from libc.stdint cimport uint8_t, uint64_t
 from libcpp cimport bool
 from libcpp.unordered_map cimport unordered_map
 
-from .cpython_ cimport Py_hash_t
+from ._cpython cimport Py_hash_t
 from .location cimport Location
 
 

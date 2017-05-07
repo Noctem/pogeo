@@ -5,8 +5,8 @@ from libc.math cimport log2, M_PI, pow
 from libc.stdint cimport uint64_t
 from libcpp.vector cimport vector
 
+from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from .const cimport EARTH_RADIUS_METERS, EARTH_RADIUS_KILOMETERS
-from .cpython_ cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from .geo.s2 cimport S2, S2Point
 from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
