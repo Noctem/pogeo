@@ -9,12 +9,12 @@ from cython.operator cimport dereference as deref
 
 from cyrandom.cyrandom cimport random, uniform
 
+from ._cpython cimport Py_uhash_t
+from ._libcpp cimport min
 from ._urlencode cimport urlencode
-from .cpython_ cimport Py_uhash_t
 from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
-from .libcpp_ cimport min
 from .location cimport Location
 from .polyline cimport encode_s2points
 from .types cimport shape

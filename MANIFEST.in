@@ -1,5 +1,6 @@
-recursive-include pogeo *.pyx
-recursive-include pogeo *.pxd
 recursive-include . *.h
+recursive-include lib *.c
 recursive-include lib *.cpp
 recursive-include include *.hpp
+recursive-include pogeo *.pxd
+recursive-include pogeo *.pyx

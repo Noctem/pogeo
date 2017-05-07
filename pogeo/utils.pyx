@@ -6,10 +6,10 @@ from libc.math cimport atan2, cos, fmod, log2, sin, sqrt
 from libc.stdint cimport uint32_t, uint64_t
 from libcpp.vector cimport vector
 
-from .array cimport array, clone
-from .bitscan cimport bitScanReverse
+from ._array cimport array, clone
+from ._bitscan cimport bitScanReverse
+from ._cpython cimport _PyTime_GetSystemClock
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
-from .cpython_ cimport _PyTime_GetSystemClock
 from .location cimport Location
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
