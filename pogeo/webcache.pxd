@@ -2,9 +2,10 @@
 # cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=utf-8
 
 from libc.stdint cimport int16_t, uint32_t
+from libcpp cimport bool
 from libcpp.set cimport set
 from libcpp.string cimport string
-from libcpp.unordered_map cimport unordered_map
+from libcpp.map cimport map
 
 from .json cimport Json
 
@@ -13,12 +14,17 @@ cdef class WebCache:
     cdef:
         Json.array cache
         set[int16_t] trash
-        unordered_map[int16_t, string] names
+        map[int16_t, string] names
+        map[int16_t, string] moves
+        map[int16_t, int16_t] damage
         tuple filter_ids
+        bool extra
         tuple columns
         object session_maker
         int last_id
         uint32_t last_update
 
     cdef void update_cache(self)
-    cdef unicode get_first(self)
+    cdef void get_first(self)
+    cdef void process_results(self, object cursor)
+    cdef void process_extra(self, tuple pokemon, Json.object_ &jobject)

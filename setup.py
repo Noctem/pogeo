@@ -14,26 +14,21 @@ if platform == 'win32':
     libraries = ['pthreadVC2', 'Advapi32', 'User32']
     extra_args = None
 elif platform == 'darwin':
-    extra_args = ['-stdlib=libc++', '-std=c++11']
-    if 'CFLAGS' in environ:
-        environ['CFLAGS'] += ' ' + ' '.join(extra_args)
-    else:
-        environ['CFLAGS'] = ' '.join(extra_args)
+    extra_args = ['-stdlib=libc++', '-std=c++11', '-O3']
+    if 'TRAVIS' not in environ:
+        extra_args.append('-march=native')
 else:
+    extra_args = ['-std=c++11', '-O3']
     if 'MANYLINUX' in environ:
-        extra_args = ['-std=c++11', '-static-libgcc', '-static-libstdc++']
-    else:
-        extra_args = ['-std=c++11']
-    if 'CFLAGS' in environ:
-        environ['CFLAGS'] += ' ' + ' '.join(extra_args)
-    else:
-        environ['CFLAGS'] = ' '.join(extra_args)
+        extra_args.extend(['-static-libgcc', '-static-libstdc++'])
+    elif 'TRAVIS' not in environ:
+        extra_args.append('-march=native')
 
 libs = [('s2', {
         'language': 'c++',
         'macros': macros,
         'include_dirs': include_dirs,
-        'extra_compile_args': extra_args,
+        'cflags': extra_args,
         'extra_link_args': extra_args,
         'libraries': libraries,
         'sources': [
@@ -71,21 +66,38 @@ libs = [('s2', {
             'geometry/s2regionunion.cc']}),
         ('_urlencode', {
             'language': 'c++',
-            'extra_compile_args': extra_args,
-            'extra_link_args': extra_args,
+            'cflags': extra_args,
             'sources': ['lib/_urlencode.cpp']}),
         ('bitscan', {
             'language': 'c++',
-            'macros': macros,
-            'extra_compile_args': extra_args,
-            'extra_link_args': extra_args,
+            'macros': macros if platform != 'win32' else None,
+            'cflags': extra_args,
             'sources': ['lib/bitscan.cpp']}),
         ('json', {
             'language': 'c++',
-            'include_dirs': include_dirs,
-            'extra_compile_args': extra_args,
-            'extra_link_args': extra_args,
-            'sources': ['lib/json11.cpp']})]
+            'include_dirs': ['include'],
+            'cflags': extra_args,
+            'sources': ['lib/json11.cpp']}),
+        ('gzip', {
+            'include_dirs': ['include', 'include/zlib'],
+            'sources': [
+                'lib/gzip.cpp',
+                'lib/zlib/adler32.c',
+                'lib/zlib/compress.c',
+                'lib/zlib/crc32.c',
+                'lib/zlib/deflate.c',
+                'lib/zlib/gzclose.c',
+                'lib/zlib/gzlib.c',
+                'lib/zlib/gzread.c',
+                'lib/zlib/gzwrite.c',
+                'lib/zlib/infback.c',
+                'lib/zlib/inffast.c',
+                'lib/zlib/inflate.c',
+                'lib/zlib/inftrees.c',
+                'lib/zlib/trees.c',
+                'lib/zlib/uncompr.c',
+                'lib/zlib/zutil.c'
+            ]})]
 
 try:
     from Cython.Build import cythonize

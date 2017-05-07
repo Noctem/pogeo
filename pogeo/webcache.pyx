@@ -1,69 +1,98 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=utf-8, boundscheck=False
+# cython: language_level=3
 
 from libc.stdint cimport int16_t, uint64_t
+from libcpp cimport bool
 from libcpp.set cimport set
 from libcpp.string cimport string
 
 from cython.operator cimport preincrement as incr, dereference as deref
 
-from ._sqlalchemy cimport get_results
+from ._gzip cimport compress
 from .geo.s2 cimport S2Point
 from .libcpp_ cimport remove_if
 from .json cimport Json
 from .utils cimport int_time, cellid_to_s2point, s2point_to_lat, s2point_to_lon
 
+from sqlalchemy.orm import loading
+
 DEF INDEX = 0
 DEF POKEMON_ID = 1
 DEF SPAWN_ID = 2
 DEF EXPIRATION = 3
+DEF MOVE1 = 4
+DEF MOVE2 = 5
+DEF ATKIV = 6
+DEF DEFIV = 7
+DEF STAIV = 8
+
+DEF COMPRESSION = 9
 
 
 cdef class WebCache:
-    def __cinit__(self, set[int16_t] trash, dict names, tuple filter_ids, tuple columns, object session_maker):
+    def __cinit__(
+            self, set[int16_t] trash, dict names, object moves, object damage,
+            tuple idfilter, object Sighting, object session_maker):
         self.trash = trash
         self.names = {k: v.encode('utf-8') for k,v in names.items()}
-        self.columns = columns
-        self.last_update = 0
+        self.filter_ids = idfilter
+
+        if moves:
+            self.columns = (
+                Sighting.id, Sighting.pokemon_id, Sighting.spawn_id, Sighting.expire_timestamp,
+                Sighting.move_1, Sighting.move_2, Sighting.atk_iv, Sighting.def_iv, Sighting.sta_iv)
+            self.moves = {k: v.encode('utf-8') for k,v in moves.items()}
+            self.damage = <dict>damage
+            self.extra = True
+        else:
+            self.columns = Sighting.id, Sighting.pokemon_id, Sighting.spawn_id, Sighting.expire_timestamp
+            self.extra = False
+
         self.session_maker = session_maker
-        self.filter_ids = filter_ids
+        self.last_update = 0
 
     cdef void update_cache(self):
+        self.last_update = int_time()
+        session = self.session_maker(autoflush=False)
+        try:
+            query = session.query(*self.columns).filter(self.columns[EXPIRATION] > self.last_update, self.columns[INDEX] > self.last_id)
+            if self.filter_ids is not None:
+                query = query.filter(~self.query[POKEMON_ID].in_(self.filter_ids))
+
+            context = query._compile_context()
+            conn = query._get_bind_args(
+                context,
+                query._connection_from_session,
+                close_with_result=True)
+
+            cursor = conn.execute(context.statement, query._params)
+            context.runid = loading._new_runid()
+            self.process_results(cursor.cursor)
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            cursor.close()
+            session.close()
+
+    cdef void process_results(self, object cursor):
         cdef:
-            Json.object_ jobject
-            S2Point point
-            int id_
-            int16_t pokemon_id
-            list results
             tuple pokemon
-            object query, session
-            Py_ssize_t i, length
+            Json.object_ jobject
             string i_id = string(b'id')
             string i_lat = string(b'lat')
             string i_lon = string(b'lon')
             string i_trash = string(b'trash')
             string i_name = string(b'name')
-            string i_expires = string(b'expires_at')
+            string i_expire = string(b'expire')
+            int id_
+            int16_t pokemon_id
+            S2Point point
 
-        self.last_update = int_time()
-
-        session = self.session_maker(autoflush=False)
-        try:
-            query = session.query(*self.columns).filter(self.columns[EXPIRATION] > int_time(), self.columns[INDEX] > self.last_id)
-            if self.filter_ids:
-                query = query.filter(~self.query[POKEMON_ID].in_(self.filter_ids))
-            results = get_results(query)
-        except Exception:
-            session.rollback()
-            session.close()
-            raise
-        else:
-            del query, session
-
-        length = len(results)
-
-        for i in range(length):
-            pokemon = results[i]
+        while True:
+            pokemon = <tuple>cursor.fetchone()
+            if pokemon is None:
+                return
 
             jobject = Json.object_()
 
@@ -78,35 +107,56 @@ cdef class WebCache:
             jobject[i_lon] = Json(s2point_to_lon(point))
 
             pokemon_id = pokemon[POKEMON_ID]
-
             jobject[i_trash] = Json(self.trash.find(pokemon_id) != self.trash.end())
             jobject[i_name] = Json(self.names[pokemon_id])
-            jobject[i_expires] = Json(<int>pokemon[EXPIRATION])
+            jobject[i_expire] = Json(<int>pokemon[EXPIRATION])
+
+            if self.extra and pokemon[MOVE1] is not None:
+                self.process_extra(pokemon, jobject)
 
             self.cache.push_back(Json(jobject))
 
-    cdef unicode get_first(self):
-        cdef string time_index = string(b'expires_at')
+    cdef void process_extra(self, tuple pokemon, Json.object_ &jobject):
+        cdef int16_t move1, move2
+
+        move1 = pokemon[MOVE1]
+        move2 = pokemon[MOVE2]
+
+        jobject[string(b'atk')] = Json(<int>pokemon[ATKIV])
+        jobject[string(b'def')] = Json(<int>pokemon[DEFIV])
+        jobject[string(b'sta')] = Json(<int>pokemon[STAIV])
+        jobject[string(b'move1')] = Json(self.moves[move1])
+        jobject[string(b'move2')] = Json(self.moves[move2])
+        jobject[string(b'damage1')] = Json(self.damage[move1])
+        jobject[string(b'damage2')] = Json(self.damage[move2])
+
+    cdef void get_first(self):
+        cdef string time_index = string(b'expire')
         it = self.cache.begin()
         while it != self.cache.end():
             if deref(it)[time_index].int_value() < int_time():
                 self.cache.erase(it)
             else:
                 incr(it)
-        return Json(self.cache).dump()
 
-    def get_json(self, int last_id):
+    def get_json(self, int last_id, bool gz=True):
         if self.last_update + 5 < int_time():
             self.update_cache()
 
+        cdef string compressed
         if last_id == 0:
-            return self.get_first()
+            self.get_first()
+            if gz:
+                compress(Json(self.cache).dump(), compressed, COMPRESSION)
+                return <bytes>compressed
+            else:
+                return Json(self.cache).dump().encode('utf-8')
 
         cdef:
             Json.array jarray
             Json obj
             string id_index = string(b'id')
-            string time_index = string(b'expires_at')
+            string time_index = string(b'expire')
 
         it = self.cache.begin()
         while it != self.cache.end():
@@ -120,4 +170,8 @@ cdef class WebCache:
                 jarray.push_back(obj)
                 incr(it)
 
-        return Json(jarray).dump()
+        if gz:
+            compress(Json(jarray).dump(), compressed, COMPRESSION)
+            return <bytes>compressed
+        else:
+            return Json(jarray).dump().encode('utf-8')
