@@ -8,28 +8,32 @@ from setuptools import setup, Extension
 libraries = None
 macros = [('NDEBUG', None)]
 include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math', 'include']
+MANY_LINUX = False
 
 if platform == 'win32':
+    libraries = ['pthreadVC2']
     macros.append(('PTW32_STATIC_LIB', None))
-    libraries = ['pthreadVC2', 'Advapi32', 'User32']
-    extra_args = None
+    c_args = cpp_args = None
 elif platform == 'darwin':
-    extra_args = ['-stdlib=libc++', '-std=c++11', '-O3']
+    c_args = ['-O3']
     if 'TRAVIS' not in environ:
-        extra_args.append('-march=native')
+        c_args.append('-march=native')
+    cpp_args = c_args + ['-std=c++11', '-stdlib=libc++']
 else:
-    extra_args = ['-std=c++11', '-O3']
+    c_args = ['-O3']
+
     if 'MANYLINUX' in environ:
-        extra_args.extend(['-static-libgcc', '-static-libstdc++'])
+        MANY_LINUX = True
+        c_args.extend(['-static-libgcc', '-static-libstdc++'])
     elif 'TRAVIS' not in environ:
-        extra_args.append('-march=native')
+        c_args.append('-march=native')
+    cpp_args = c_args + ['-std=c++11']
 
 libs = [('s2', {
         'language': 'c++',
         'macros': macros,
         'include_dirs': include_dirs,
-        'cflags': extra_args,
-        'extra_link_args': extra_args,
+        'cflags': cpp_args,
         'libraries': libraries,
         'sources': [
             'geometry/base/int128.cc',
@@ -66,22 +70,22 @@ libs = [('s2', {
             'geometry/s2regionunion.cc']}),
         ('urlencode', {
             'language': 'c++',
-            'cflags': extra_args,
+            'cflags': cpp_args,
             'sources': ['lib/urlencode.cpp']}),
         ('bitscan', {
             'language': 'c++',
-            'macros': macros if platform != 'win32' else None,
-            'cflags': extra_args,
+            'macros': macros,
+            'cflags': cpp_args,
             'sources': ['lib/bitscan.cpp']}),
         ('json', {
             'language': 'c++',
             'include_dirs': ['include'],
-            'cflags': extra_args,
+            'cflags': cpp_args,
             'sources': ['lib/json11.cpp']}),
         ('zlib', {
             'language': 'c',
             'include_dirs': ['include/zlib'],
-            'cflags': ['-O3'] if platform != 'win32' else None,
+            'cflags': c_args if not MANY_LINUX else c_args + ['-static'],
             'sources': [
                 'lib/zlib/adler32.c',
                 'lib/zlib/compress.c',
@@ -93,7 +97,7 @@ libs = [('s2', {
         ('gzip', {
             'language': 'cpp',
             'include_dirs': ['include', 'include/zlib'],
-            'cflags': extra_args,
+            'cflags': cpp_args,
             'sources': ['lib/gzip.cpp']})]
 
 try:
@@ -104,81 +108,83 @@ except ImportError:
 
 exts = [Extension('pogeo.altitude',
                   define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/altitude.' + file_ext],
                   language='c++'),
         Extension('pogeo.const',
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   sources=['pogeo/const.' + file_ext],
                   language='c++'),
         Extension('pogeo.cellcache',
                   define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/cellcache.' + file_ext],
                   language='c++'),
         Extension('pogeo.geocoder',
                   include_dirs=include_dirs,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   sources=['pogeo/geocoder.' + file_ext],
                   language='c++'),
         Extension('pogeo.location',
                   define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/location.' + file_ext],
                   language='c++'),
         Extension('pogeo.loop',
                   define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/loop.' + file_ext],
                   language='c++'),
         Extension('pogeo.polygon',
                   define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/polygon.' + file_ext],
                   language='c++'),
         Extension('pogeo.polyline',
                   define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/polyline.' + file_ext],
                   language='c++'),
         Extension('pogeo.rectangle',
                   define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/rectangle.' + file_ext],
                   language='c++'),
         Extension('pogeo.utils',
                   define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args,
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/utils.' + file_ext],
                   language='c++'),
         Extension('pogeo.webcache',
                   define_macros=macros,
-                  extra_compile_args=extra_args,
-                  extra_link_args=extra_args,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args if not MANY_LINUX else cpp_args + ['-Wl,-Bstatic', '-lzlib'],
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/webcache.' + file_ext],
