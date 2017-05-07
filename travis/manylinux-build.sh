@@ -18,17 +18,17 @@ tar -C / -xf toolchain.tar.bz2
 export MANYLINUX=1
 export PATH="/toolchain/bin:${PATH}"
 export CFLAGS="-I/toolchain/include ${MFLAG}"
-export CXXFLAGS="-I/toolchain/include -static-libgcc -static-libstdc++ ${MFLAG}"
+export CXXFLAGS="-I/toolchain/include ${MFLAG}"
 
 # Compile wheels
 for PIP in /opt/python/cp3[56789]*/bin/pip; do
 	"$PIP" install -U cython cyrandom
-	"$PIP" wheel /io/ -w wheelhouse/
+	"$PIP" wheel -v /io/ -w wheelhouse/
 done
 
 # Repair for manylinux compatibility
 for WHL in wheelhouse/*.whl; do
-	auditwheel repair "$WHL" -w /io/wheelhouse/
+	auditwheel repair "$WHL" -w /io/wheelhouse/ || auditwheel -v show "$WHL"
 done
 
 # Install packages and test
