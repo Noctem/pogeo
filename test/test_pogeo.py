@@ -3,7 +3,7 @@
 from array import array
 from pickle import loads as pickle_loads, dumps as pickle_dumps
 from time import time
-from unittest import main, TestCase
+from unittest import main, skip, TestCase
 
 from pogeo import CellCache, Location, Loop, Polygon, Rectangle
 from pogeo.altitude import AltitudeCache
@@ -48,6 +48,7 @@ class TestCellCache(TestCase):
 
 
 class TestGeocoder(TestCase):
+    @skip('relies on network connection and external service')
     def test_geocode(self):
         place = geocode('Salt Lake Temple')
         self.assertEqual(place['place_id'], '73589485')
