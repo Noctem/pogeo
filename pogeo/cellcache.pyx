@@ -22,6 +22,9 @@ cdef class CellCache:
         self.coverer.set_min_level(S2_LEVEL)
         self.coverer.set_max_level(S2_LEVEL)
 
+    def __len__(self):
+        return self.cache.size()
+
     def __getstate__(self):
         cdef:
             uint64_t cell
@@ -37,7 +40,7 @@ cdef class CellCache:
 
             size = cells.size()
             cell_array = clone(ARRAY_TEMPLATE, size)
-            memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t))
+            memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t) * size)
             state[cell] = cell_array
             incr(it)
         return state
@@ -61,7 +64,7 @@ cdef class CellCache:
             cells = deref(it).second
             size = cells.size()
             cell_array = clone(ARRAY_TEMPLATE, size)
-            memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t))
+            memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t) * size)
             return cell_array
 
         cdef S2Cap cap = S2Cap.FromAxisHeight(p.point, AXIS_HEIGHT)
@@ -70,5 +73,5 @@ cdef class CellCache:
 
         size = cells.size()
         cell_array = clone(ARRAY_TEMPLATE, size)
-        memmove(&cell_array.data.as_ulonglongs[0], &cells[0], size * 8)
+        memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t) * size)
         return cell_array

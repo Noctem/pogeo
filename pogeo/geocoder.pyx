@@ -14,17 +14,13 @@ except ImportError:
     from json import loads as json_loads
 
 
-def make_request(string url, double timeout):
-    page = urlopen(url, timeout=timeout)
-    return json_loads(page.read().decode(page.headers.get_param("charset") or "utf-8"))
-
-
 def geocode(unicode query, double timeout=3.0):
     cdef:
         dict place
         list response
-        string url = string(b'https://nominatim.openstreetmap.org?format=json&polygon_geojson=1&q=')
-    url.append(urlencode(query))
-    response = make_request(url, timeout)
+    query = urlencode(query.encode('utf-8'))
+    cdef unicode url = f'https://nominatim.openstreetmap.org?format=json&polygon_geojson=1&q={query}'
+    page = urlopen(url, timeout=timeout)
+    response = json_loads(page.read().decode(page.headers.get_param("charset") or "utf-8"))
     place = response[0]
     return place
