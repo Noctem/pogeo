@@ -7,7 +7,7 @@ from libc.stdint cimport uint32_t, uint64_t
 from libcpp.vector cimport vector
 
 from ._array cimport array, clone
-from ._bitscan cimport bitScanReverse
+from ._bitscan cimport leadingZeros
 from ._cpython cimport _PyTime_GetSystemClock
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
 from .location cimport Location
@@ -104,11 +104,11 @@ def level_area(int level):
 
 
 def cellid_to_location(uint64_t cellid):
-    return Location.from_point(S2CellId(cellid << bitScanReverse(cellid)).ToPointRaw())
+    return Location.from_point(S2CellId(cellid << leadingZeros(cellid)).ToPointRaw())
 
 
 def cellid_to_coords(uint64_t cellid):
-    cdef S2Point p = S2CellId(cellid << bitScanReverse(cellid)).ToPointRaw()
+    cdef S2Point p = S2CellId(cellid << leadingZeros(cellid)).ToPointRaw()
     return s2point_to_lat(p), s2point_to_lon(p)
 
 
@@ -130,7 +130,7 @@ def location_to_token(Location p, int level=S2_LEVEL):
 
 
 cdef S2Point cellid_to_s2point(uint64_t cellid):
-    return S2CellId(cellid << bitScanReverse(cellid)).ToPointRaw()
+    return S2CellId(cellid << leadingZeros(cellid)).ToPointRaw()
 
 
 cpdef double get_bearing(Location point1, Location point2):

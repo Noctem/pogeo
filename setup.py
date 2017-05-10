@@ -72,11 +72,6 @@ libs = [('s2', {
             'language': 'c++',
             'cflags': cpp_args,
             'sources': ['lib/urlencode.cpp']}),
-        ('bitscan', {
-            'language': 'c++',
-            'macros': macros,
-            'cflags': cpp_args,
-            'sources': ['lib/bitscan.cpp']}),
         ('json', {
             'language': 'c++',
             'include_dirs': ['include'],
