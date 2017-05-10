@@ -27,7 +27,6 @@ using std::vector;
 // in this file since so many clients were dependent on these
 // routines being defined in stringprintf.h.
 
-
 // The max arguments supported by StringPrintfVector
 extern const int kStringPrintfVectorMaxArgs;
 

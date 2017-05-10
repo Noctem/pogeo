@@ -10,10 +10,9 @@ using std::multimap;
 #include <vector>
 using std::vector;
 
-
+#include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include <gtest/gtest.h>
 #include "s2.h"
 #include "s2cap.h"
 #include "s2latlngrect.h"
@@ -35,12 +34,12 @@ TEST(S2Cell, TestFaces) {
       edge_counts[cell.GetEdgeRaw(k)] += 1;
       vertex_counts[cell.GetVertexRaw(k)] += 1;
       EXPECT_DOUBLE_EQ(0.0, cell.GetVertexRaw(k).DotProd(cell.GetEdgeRaw(k)));
-      EXPECT_DOUBLE_EQ(0.0,
-                       cell.GetVertexRaw((k+1)&3).DotProd(cell.GetEdgeRaw(k)));
-      EXPECT_DOUBLE_EQ(1.0,
-                       cell.GetVertexRaw(k)
-                       .CrossProd(cell.GetVertexRaw((k+1)&3))
-                       .Normalize().DotProd(cell.GetEdge(k)));
+      EXPECT_DOUBLE_EQ(
+          0.0, cell.GetVertexRaw((k + 1) & 3).DotProd(cell.GetEdgeRaw(k)));
+      EXPECT_DOUBLE_EQ(1.0, cell.GetVertexRaw(k)
+                                .CrossProd(cell.GetVertexRaw((k + 1) & 3))
+                                .Normalize()
+                                .DotProd(cell.GetEdge(k)));
     }
   }
   // Check that edges have multiplicity 2 and vertices have multiplicity 3.
@@ -63,14 +62,28 @@ struct LevelStats {
   double min_angle_span, max_angle_span, avg_angle_span;
   double min_approx_ratio, max_approx_ratio;
   LevelStats()
-    : count(0), min_area(100), max_area(0), avg_area(0),
-      min_width(100), max_width(0), avg_width(0),
-      min_edge(100), max_edge(0), avg_edge(0), max_edge_aspect(0),
-      min_diag(100), max_diag(0), avg_diag(0), max_diag_aspect(0),
-      min_angle_span(100), max_angle_span(0), avg_angle_span(0),
-      min_approx_ratio(100), max_approx_ratio(0) {}
+      : count(0),
+        min_area(100),
+        max_area(0),
+        avg_area(0),
+        min_width(100),
+        max_width(0),
+        avg_width(0),
+        min_edge(100),
+        max_edge(0),
+        avg_edge(0),
+        max_edge_aspect(0),
+        min_diag(100),
+        max_diag(0),
+        avg_diag(0),
+        max_diag_aspect(0),
+        min_angle_span(100),
+        max_angle_span(0),
+        avg_angle_span(0),
+        min_approx_ratio(100),
+        max_approx_ratio(0) {}
 };
-static vector<LevelStats> level_stats(S2CellId::kMaxLevel+1);
+static vector<LevelStats> level_stats(S2CellId::kMaxLevel + 1);
 
 static void GatherStats(S2Cell const& cell) {
   LevelStats* s = &level_stats[cell.level()];
@@ -81,19 +94,19 @@ static void GatherStats(S2Cell const& cell) {
   double min_width = 100, max_width = 0;
   double min_angle_span = 100, max_angle_span = 0;
   for (int i = 0; i < 4; ++i) {
-    double edge = cell.GetVertexRaw(i).Angle(cell.GetVertexRaw((i+1)&3));
+    double edge = cell.GetVertexRaw(i).Angle(cell.GetVertexRaw((i + 1) & 3));
     min_edge = min(edge, min_edge);
     max_edge = max(edge, max_edge);
     avg_edge += 0.25 * edge;
-    S2Point mid = cell.GetVertexRaw(i) + cell.GetVertexRaw((i+1)&3);
-    double width = M_PI_2 - mid.Angle(cell.GetEdgeRaw(i^2));
+    S2Point mid = cell.GetVertexRaw(i) + cell.GetVertexRaw((i + 1) & 3);
+    double width = M_PI_2 - mid.Angle(cell.GetEdgeRaw(i ^ 2));
     min_width = min(width, min_width);
     max_width = max(width, max_width);
     if (i < 2) {
-      double diag = cell.GetVertexRaw(i).Angle(cell.GetVertexRaw(i^2));
+      double diag = cell.GetVertexRaw(i).Angle(cell.GetVertexRaw(i ^ 2));
       min_diag = min(diag, min_diag);
       max_diag = max(diag, max_diag);
-      double angle_span = cell.GetEdgeRaw(i).Angle(-cell.GetEdgeRaw(i^2));
+      double angle_span = cell.GetEdgeRaw(i).Angle(-cell.GetEdgeRaw(i ^ 2));
       min_angle_span = min(angle_span, min_angle_span);
       max_angle_span = max(angle_span, max_angle_span);
     }
@@ -190,10 +203,8 @@ static void TestSubdivide(S2Cell const& cell) {
         int cap_count = 0;
         int rect_count = 0;
         for (int k = 0; k < 4; ++k) {
-          if (child_cap.Contains(children[j].GetVertex(k)))
-            ++cap_count;
-          if (child_rect.Contains(children[j].GetVertexRaw(k)))
-            ++rect_count;
+          if (child_cap.Contains(children[j].GetVertex(k))) ++cap_count;
+          if (child_rect.Contains(children[j].GetVertexRaw(k))) ++rect_count;
         }
         EXPECT_LE(cap_count, 2);
         if (child_rect.lat_lo().radians() > -M_PI_2 &&
@@ -214,8 +225,7 @@ static void TestSubdivide(S2Cell const& cell) {
     S2Point corner = edge + S2::GetVAxis(children[i].face());
     for (int j = 0; j < 4; ++j) {
       S2Point p = children[i].GetVertexRaw(j);
-      if (p == center || p == edge || p == corner)
-        force_subdivide = true;
+      if (p == center || p == edge || p == corner) force_subdivide = true;
     }
     if (force_subdivide || cell.level() < (DEBUG_MODE ? 5 : 6) ||
         S2Testing::rnd.OneIn(DEBUG_MODE ? 5 : 4)) {
@@ -240,13 +250,11 @@ static void TestSubdivide(S2Cell const& cell) {
 }
 
 template <int dim>
-static void CheckMinMaxAvg(
-    char const* label, int level, double count, double abs_error,
-    double min_value, double max_value, double avg_value,
-    S2::Metric<dim> const& min_metric,
-    S2::Metric<dim> const& max_metric,
-    S2::Metric<dim> const& avg_metric) {
-
+static void CheckMinMaxAvg(char const* label, int level, double count,
+                           double abs_error, double min_value, double max_value,
+                           double avg_value, S2::Metric<dim> const& min_metric,
+                           S2::Metric<dim> const& max_metric,
+                           S2::Metric<dim> const& avg_metric) {
   // All metrics are minimums, maximums, or averages of differential
   // quantities, and therefore will not be exact for cells at any finite
   // level.  The differential minimum is always a lower bound, and the maximum
@@ -268,12 +276,12 @@ static void CheckMinMaxAvg(
   double min_error = min_value - min_metric.GetValue(level);
   double max_error = max_metric.GetValue(level) - max_value;
   double avg_error = fabs(avg_metric.GetValue(level) - avg_value);
-  printf("%-10s (%6.0f samples, tolerance %8.3g) - min (%9.3g : %9.3g) "
-         "max (%9.3g : %9.3g), avg (%9.3g : %9.3g)\n",
-         label, count, tolerance,
-         min_error / min_value, min_error / tolerance,
-         max_error / max_value, max_error / tolerance,
-         avg_error / avg_value, avg_error / tolerance);
+  printf(
+      "%-10s (%6.0f samples, tolerance %8.3g) - min (%9.3g : %9.3g) "
+      "max (%9.3g : %9.3g), avg (%9.3g : %9.3g)\n",
+      label, count, tolerance, min_error / min_value, min_error / tolerance,
+      max_error / max_value, max_error / tolerance, avg_error / avg_value,
+      avg_error / tolerance);
 
   EXPECT_LE(min_metric.GetValue(level), min_value + abs_error);
   EXPECT_GE(min_metric.GetValue(level), min_value - tolerance);
@@ -295,8 +303,11 @@ TEST(S2Cell, TestSubdivide) {
   // cell to the shortest edge of that same cell (and similarly for the
   // maximum diagonal aspect).
 
-  printf("Level    Area      Edge          Diag          Approx       Average\n");
-  printf("        Ratio  Ratio Aspect  Ratio Aspect    Min    Max    Min    Max\n");
+  printf(
+      "Level    Area      Edge          Diag          Approx       Average\n");
+  printf(
+      "        Ratio  Ratio Aspect  Ratio Aspect    Min    Max    Min    "
+      "Max\n");
   for (int i = 0; i <= S2CellId::kMaxLevel; ++i) {
     LevelStats* s = &level_stats[i];
     if (s->count > 0) {
@@ -306,10 +317,9 @@ TEST(S2Cell, TestSubdivide) {
       s->avg_diag /= s->count;
       s->avg_angle_span /= s->count;
     }
-    printf("%5d  %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f\n",
-           i, s->max_area / s->min_area,
-           s->max_edge / s->min_edge, s->max_edge_aspect,
-           s->max_diag / s->min_diag, s->max_diag_aspect,
+    printf("%5d  %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f %6.3f\n", i,
+           s->max_area / s->min_area, s->max_edge / s->min_edge,
+           s->max_edge_aspect, s->max_diag / s->min_diag, s->max_diag_aspect,
            s->min_approx_ratio, s->max_approx_ratio,
            S2Cell::AverageArea(i) / s->max_area,
            S2Cell::AverageArea(i) / s->min_area);
@@ -326,21 +336,18 @@ TEST(S2Cell, TestSubdivide) {
     // so we need to allow for this amount of discrepancy with the theoretical
     // minimums and maximums.  The area calculation is accurate to about 1e-15
     // times the cell width.
-    CheckMinMaxAvg("area", i, s->count, 1e-15 * s->min_width,
-                   s->min_area, s->max_area, s->avg_area,
-                   S2::kMinArea, S2::kMaxArea, S2::kAvgArea);
-    CheckMinMaxAvg("width", i, s->count, 1e-15,
-                   s->min_width, s->max_width, s->avg_width,
-                   S2::kMinWidth, S2::kMaxWidth, S2::kAvgWidth);
-    CheckMinMaxAvg("edge", i, s->count, 1e-15,
-                   s->min_edge, s->max_edge, s->avg_edge,
-                   S2::kMinEdge, S2::kMaxEdge, S2::kAvgEdge);
-    CheckMinMaxAvg("diagonal", i, s->count, 1e-15,
-                   s->min_diag, s->max_diag, s->avg_diag,
-                   S2::kMinDiag, S2::kMaxDiag, S2::kAvgDiag);
-    CheckMinMaxAvg("angle span", i, s->count, 1e-15,
-                   s->min_angle_span, s->max_angle_span, s->avg_angle_span,
-                   S2::kMinAngleSpan, S2::kMaxAngleSpan, S2::kAvgAngleSpan);
+    CheckMinMaxAvg("area", i, s->count, 1e-15 * s->min_width, s->min_area,
+                   s->max_area, s->avg_area, S2::kMinArea, S2::kMaxArea,
+                   S2::kAvgArea);
+    CheckMinMaxAvg("width", i, s->count, 1e-15, s->min_width, s->max_width,
+                   s->avg_width, S2::kMinWidth, S2::kMaxWidth, S2::kAvgWidth);
+    CheckMinMaxAvg("edge", i, s->count, 1e-15, s->min_edge, s->max_edge,
+                   s->avg_edge, S2::kMinEdge, S2::kMaxEdge, S2::kAvgEdge);
+    CheckMinMaxAvg("diagonal", i, s->count, 1e-15, s->min_diag, s->max_diag,
+                   s->avg_diag, S2::kMinDiag, S2::kMaxDiag, S2::kAvgDiag);
+    CheckMinMaxAvg("angle span", i, s->count, 1e-15, s->min_angle_span,
+                   s->max_angle_span, s->avg_angle_span, S2::kMinAngleSpan,
+                   S2::kMaxAngleSpan, S2::kAvgAngleSpan);
 
     // The aspect ratio calculations are ratios of lengths and are therefore
     // less accurate at higher subdivision levels.

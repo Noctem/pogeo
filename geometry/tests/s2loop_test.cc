@@ -19,18 +19,17 @@ using std::multiset;
 #include <vector>
 using std::vector;
 
-
+#include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include <gtest/gtest.h>
-#include "util/coding/coder.h"
 #include "s2cell.h"
 #include "s2edgeindex.h"
 #include "s2edgeutil.h"
 #include "s2loop.h"
 #include "s2testing.h"
-#include "util/math/matrix3x3.h"
+#include "util/coding/coder.h"
 #include "util/math/matrix3x3-inl.h"
+#include "util/math/matrix3x3.h"
 
 class S2LoopTestBase : public testing::Test {
  protected:
@@ -60,77 +59,80 @@ class S2LoopTestBase : public testing::Test {
   S2Loop const* const loop_d;
 
  public:
-  S2LoopTestBase():
-      // The northern hemisphere, defined using two pairs of antipodal points.
-      north_hemi(S2Testing::MakeLoop("0:-180, 0:-90, 0:0, 0:90")),
+  S2LoopTestBase()
+      :  // The northern hemisphere, defined using two pairs of antipodal
+         // points.
+        north_hemi(S2Testing::MakeLoop("0:-180, 0:-90, 0:0, 0:90")),
 
-      // The northern hemisphere, defined using three points 120 degrees apart.
-      north_hemi3(S2Testing::MakeLoop("0:-180, 0:-60, 0:60")),
+        // The northern hemisphere, defined using three points 120 degrees
+        // apart.
+        north_hemi3(S2Testing::MakeLoop("0:-180, 0:-60, 0:60")),
 
-      // The southern hemisphere, defined using two pairs of antipodal points.
-      south_hemi(S2Testing::MakeLoop("0:90, 0:0, 0:-90, 0:-180")),
+        // The southern hemisphere, defined using two pairs of antipodal points.
+        south_hemi(S2Testing::MakeLoop("0:90, 0:0, 0:-90, 0:-180")),
 
-      // The western hemisphere, defined using two pairs of antipodal points.
-      west_hemi(S2Testing::MakeLoop("0:-180, -90:0, 0:0, 90:0")),
+        // The western hemisphere, defined using two pairs of antipodal points.
+        west_hemi(S2Testing::MakeLoop("0:-180, -90:0, 0:0, 90:0")),
 
-      // The eastern hemisphere, defined using two pairs of antipodal points.
-      east_hemi(S2Testing::MakeLoop("90:0, 0:0, -90:0, 0:-180")),
+        // The eastern hemisphere, defined using two pairs of antipodal points.
+        east_hemi(S2Testing::MakeLoop("90:0, 0:0, -90:0, 0:-180")),
 
-      // The "near" hemisphere, defined using two pairs of antipodal points.
-      near_hemi(S2Testing::MakeLoop("0:-90, -90:0, 0:90, 90:0")),
+        // The "near" hemisphere, defined using two pairs of antipodal points.
+        near_hemi(S2Testing::MakeLoop("0:-90, -90:0, 0:90, 90:0")),
 
-      // The "far" hemisphere, defined using two pairs of antipodal points.
-      far_hemi(S2Testing::MakeLoop("90:0, 0:90, -90:0, 0:-90")),
+        // The "far" hemisphere, defined using two pairs of antipodal points.
+        far_hemi(S2Testing::MakeLoop("90:0, 0:90, -90:0, 0:-90")),
 
-      // A spiral stripe that slightly over-wraps the equator.
-      candy_cane(S2Testing::MakeLoop("-20:150, -20:-70, 0:70, 10:-150, "
-                                     "10:70, -10:-70")),
+        // A spiral stripe that slightly over-wraps the equator.
+        candy_cane(S2Testing::MakeLoop("-20:150, -20:-70, 0:70, 10:-150, "
+                                       "10:70, -10:-70")),
 
-      // A small clockwise loop in the northern & eastern hemisperes.
-      small_ne_cw(S2Testing::MakeLoop("35:20, 45:20, 40:25")),
+        // A small clockwise loop in the northern & eastern hemisperes.
+        small_ne_cw(S2Testing::MakeLoop("35:20, 45:20, 40:25")),
 
-      // Loop around the north pole at 80 degrees.
-      arctic_80(S2Testing::MakeLoop("80:-150, 80:-30, 80:90")),
+        // Loop around the north pole at 80 degrees.
+        arctic_80(S2Testing::MakeLoop("80:-150, 80:-30, 80:90")),
 
-      // Loop around the south pole at 80 degrees.
-      antarctic_80(S2Testing::MakeLoop("-80:120, -80:0, -80:-120")),
+        // Loop around the south pole at 80 degrees.
+        antarctic_80(S2Testing::MakeLoop("-80:120, -80:0, -80:-120")),
 
-      // A completely degenerate triangle along the equator that RobustCCW()
-      // considers to be CCW.
-      line_triangle(S2Testing::MakeLoop("0:1, 0:3, 0:2")),
+        // A completely degenerate triangle along the equator that RobustCCW()
+        // considers to be CCW.
+        line_triangle(S2Testing::MakeLoop("0:1, 0:3, 0:2")),
 
-      // A nearly-degenerate CCW chevron near the equator with very long sides
-      // (about 80 degrees).  Its area is less than 1e-640, which is too small
-      // to represent in double precision.
-      skinny_chevron(S2Testing::MakeLoop("0:0, -1e-320:80, 0:1e-320, 1e-320:80")),
+        // A nearly-degenerate CCW chevron near the equator with very long sides
+        // (about 80 degrees).  Its area is less than 1e-640, which is too small
+        // to represent in double precision.
+        skinny_chevron(
+            S2Testing::MakeLoop("0:0, -1e-320:80, 0:1e-320, 1e-320:80")),
 
-      // A diamond-shaped loop around the point 0:180.
-      loop_a(S2Testing::MakeLoop("0:178, -1:180, 0:-179, 1:-180")),
+        // A diamond-shaped loop around the point 0:180.
+        loop_a(S2Testing::MakeLoop("0:178, -1:180, 0:-179, 1:-180")),
 
-      // Another diamond-shaped loop around the point 0:180.
-      loop_b(S2Testing::MakeLoop("0:179, -1:180, 0:-178, 1:-180")),
+        // Another diamond-shaped loop around the point 0:180.
+        loop_b(S2Testing::MakeLoop("0:179, -1:180, 0:-178, 1:-180")),
 
-      // The intersection of A and B.
-      a_intersect_b(S2Testing::MakeLoop("0:179, -1:180, 0:-179, 1:-180")),
+        // The intersection of A and B.
+        a_intersect_b(S2Testing::MakeLoop("0:179, -1:180, 0:-179, 1:-180")),
 
-      // The union of A and B.
-      a_union_b(S2Testing::MakeLoop("0:178, -1:180, 0:-178, 1:-180")),
+        // The union of A and B.
+        a_union_b(S2Testing::MakeLoop("0:178, -1:180, 0:-178, 1:-180")),
 
-      // A minus B (concave).
-      a_minus_b(S2Testing::MakeLoop("0:178, -1:180, 0:179, 1:-180")),
+        // A minus B (concave).
+        a_minus_b(S2Testing::MakeLoop("0:178, -1:180, 0:179, 1:-180")),
 
-      // B minus A (concave).
-      b_minus_a(S2Testing::MakeLoop("0:-179, -1:180, 0:-178, 1:-180")),
+        // B minus A (concave).
+        b_minus_a(S2Testing::MakeLoop("0:-179, -1:180, 0:-178, 1:-180")),
 
-      // A shape gotten from a by adding one triangle to one edge, and
-      // subtracting another triangle on an opposite edge.
-      loop_c(S2Testing::MakeLoop(
-          "0:178, 0:180, -1:180, 0:-179, 1:-179, 1:-180")),
+        // A shape gotten from a by adding one triangle to one edge, and
+        // subtracting another triangle on an opposite edge.
+        loop_c(S2Testing::MakeLoop(
+            "0:178, 0:180, -1:180, 0:-179, 1:-179, 1:-180")),
 
-      // A shape gotten from a by adding one triangle to one edge, and
-      // adding another triangle on an opposite edge.
-      loop_d(S2Testing::MakeLoop(
-          "0:178, -1:178, -1:180, 0:-179, 1:-179, 1:-180"))
+        // A shape gotten from a by adding one triangle to one edge, and
+        // adding another triangle on an opposite edge.
+        loop_d(S2Testing::MakeLoop(
+            "0:178, -1:178, -1:180, 0:-179, 1:-179, 1:-180"))
 
   {}
 
@@ -214,8 +216,7 @@ TEST_F(S2LoopTestBase, GetAreaAndCentroid) {
     vector<S2Point> vertices;
     for (double theta = 0; theta < 2 * M_PI;
          theta += S2Testing::rnd.RandDouble() * max_dtheta) {
-      vertices.push_back(cos(theta) * cos(phi) * x +
-                         sin(theta) * cos(phi) * y +
+      vertices.push_back(cos(theta) * cos(phi) * x + sin(theta) * cos(phi) * y +
                          sin(phi) * z);
     }
     S2Loop loop(vertices);
@@ -223,7 +224,7 @@ TEST_F(S2LoopTestBase, GetAreaAndCentroid) {
     S2Point centroid = loop.GetCentroid();
     double expected_area = 2 * M_PI * height;
     EXPECT_LE(fabs(area - expected_area), 2 * M_PI * kMaxDist);
-    EXPECT_GE(fabs(area - expected_area), 0.01 * kMaxDist); // high probability
+    EXPECT_GE(fabs(area - expected_area), 0.01 * kMaxDist);  // high probability
     S2Point expected_centroid = expected_area * (1 - 0.5 * height) * z;
     EXPECT_LE((centroid - expected_centroid).Norm(), 2 * kMaxDist);
   }
@@ -291,9 +292,7 @@ TEST_F(S2LoopTestBase, NormalizedCompatibleWithContains) {
   CheckNormalizeAndContain(skinny_chevron);
 }
 
-extern void DeleteLoop(S2Loop* loop) {
-  delete loop;
-}
+extern void DeleteLoop(S2Loop* loop) { delete loop; }
 
 TEST_F(S2LoopTestBase, Contains) {
   EXPECT_TRUE(candy_cane->Contains(S2LatLng::FromDegrees(5, 71).ToPoint()));
@@ -324,8 +323,8 @@ TEST_F(S2LoopTestBase, Contains) {
     vector<S2Loop*> loops;
     vector<S2Point> loop_vertices;
     set<S2Point> points;
-    for (S2CellId id = S2CellId::Begin(level);
-         id != S2CellId::End(level); id = id.next()) {
+    for (S2CellId id = S2CellId::Begin(level); id != S2CellId::End(level);
+         id = id.next()) {
       S2Cell cell(id);
       points.insert(cell.GetCenter());
       for (int k = 0; k < 4; ++k) {
@@ -335,8 +334,8 @@ TEST_F(S2LoopTestBase, Contains) {
       loops.push_back(new S2Loop(loop_vertices));
       loop_vertices.clear();
     }
-    for (set<S2Point>::const_iterator i = points.begin();
-        i != points.end(); ++i) {
+    for (set<S2Point>::const_iterator i = points.begin(); i != points.end();
+         ++i) {
       int count = 0;
       for (int j = 0; j < loops.size(); ++j) {
         if (loops[j]->Contains(*i)) ++count;
@@ -354,8 +353,7 @@ TEST_F(S2LoopTestBase, Contains) {
 
 static void TestRelationWithDesc(S2Loop const* a, S2Loop const* b,
                                  int contains_or_crosses, bool intersects,
-                                 bool nestable,
-                                 const char* test_description) {
+                                 bool nestable, const char* test_description) {
   SCOPED_TRACE(test_description);
   EXPECT_EQ(a->Contains(b), contains_or_crosses == 1);
   EXPECT_EQ(a->Intersects(b), intersects);
@@ -366,7 +364,7 @@ static void TestRelationWithDesc(S2Loop const* a, S2Loop const* b,
 }
 
 TEST_F(S2LoopTestBase, LoopRelations) {
-#define TestRelation(a, b, contains, intersects, nestable)                   \
+#define TestRelation(a, b, contains, intersects, nestable) \
   TestRelationWithDesc(a, b, contains, intersects, nestable, "args " #a ", " #b)
 
   TestRelation(north_hemi, north_hemi, 1, true, false);
@@ -526,16 +524,15 @@ void DebugDumpCrossings(S2Loop const* loop) {
   printf("Contains(kOrigin): %d\n", loop->Contains(S2::Origin()));
   for (int i = 1; i <= loop->num_vertices(); ++i) {
     S2Point a = S2::Ortho(loop->vertex(i));
-    S2Point b = loop->vertex(i-1);
-    S2Point c = loop->vertex(i+1);
+    S2Point b = loop->vertex(i - 1);
+    S2Point c = loop->vertex(i + 1);
     S2Point o = loop->vertex(i);
-    printf("Vertex %d: [%.17g, %.17g, %.17g], "
-           "%d%dR=%d, %d%d%d=%d, R%d%d=%d, inside: %d\n",
-           i, loop->vertex(i).x(), loop->vertex(i).y(), loop->vertex(i).z(),
-           i-1, i, S2::RobustCCW(b, o, a),
-           i+1, i, i-1, S2::RobustCCW(c, o, b),
-           i, i+1, S2::RobustCCW(a, o, c),
-           S2::OrderedCCW(a, b, c, o));
+    printf(
+        "Vertex %d: [%.17g, %.17g, %.17g], "
+        "%d%dR=%d, %d%d%d=%d, R%d%d=%d, inside: %d\n",
+        i, loop->vertex(i).x(), loop->vertex(i).y(), loop->vertex(i).z(), i - 1,
+        i, S2::RobustCCW(b, o, a), i + 1, i, i - 1, S2::RobustCCW(c, o, b), i,
+        i + 1, S2::RobustCCW(a, o, c), S2::OrderedCCW(a, b, c, o));
   }
   for (int i = 0; i < loop->num_vertices() + 2; ++i) {
     S2Point orig = S2::Origin();
@@ -550,7 +547,7 @@ void DebugDumpCrossings(S2Loop const* loop) {
     }
     for (int j = 0; j < loop->num_vertices(); ++j) {
       printf(" %d", S2EdgeUtil::EdgeOrVertexCrossing(
-                 orig, dest, loop->vertex(j), loop->vertex(j+1)));
+                        orig, dest, loop->vertex(j), loop->vertex(j + 1)));
     }
     printf("\n");
   }
@@ -560,16 +557,14 @@ void DebugDumpCrossings(S2Loop const* loop) {
     S2Point b = loop->vertex(i);
     S2Point c = S2::Origin();
     S2Point o = loop->vertex(1);
-    printf("%d1R=%d, M1%d=%d, R1M=%d, crosses: %d\n",
-           i, S2::RobustCCW(b, o, a),
-           i, S2::RobustCCW(c, o, b),
-           S2::RobustCCW(a, o, c),
+    printf("%d1R=%d, M1%d=%d, R1M=%d, crosses: %d\n", i, S2::RobustCCW(b, o, a),
+           i, S2::RobustCCW(c, o, b), S2::RobustCCW(a, o, c),
            S2EdgeUtil::EdgeOrVertexCrossing(c, o, b, a));
   }
 }
 
-static void TestNear(char const* a_str, char const* b_str,
-                     double max_error, bool expected) {
+static void TestNear(char const* a_str, char const* b_str, double max_error,
+                     bool expected) {
   unique_ptr<S2Loop> a(S2Testing::MakeLoop(a_str));
   unique_ptr<S2Loop> b(S2Testing::MakeLoop(b_str));
   EXPECT_EQ(a->BoundaryNear(b.get(), max_error), expected);
@@ -579,24 +574,22 @@ static void TestNear(char const* a_str, char const* b_str,
 TEST(S2Loop, BoundaryNear) {
   double degree = S1Angle::Degrees(1).radians();
 
-  TestNear("0:0, 0:10, 5:5",
-           "0:0.1, -0.1:9.9, 5:5.2",
-           0.5 * degree, true);
+  TestNear("0:0, 0:10, 5:5", "0:0.1, -0.1:9.9, 5:5.2", 0.5 * degree, true);
   TestNear("0:0, 0:3, 0:7, 0:10, 3:7, 5:5",
-           "0:0, 0:10, 2:8, 5:5, 4:4, 3:3, 1:1",
-           1e-3, true);
+           "0:0, 0:10, 2:8, 5:5, 4:4, 3:3, 1:1", 1e-3, true);
 
   // All vertices close to some edge, but not equivalent.
-  TestNear("0:0, 0:2, 2:2, 2:0",
-           "0:0, 1.9999:1, 0:2, 2:2, 2:0",
-           0.5 * degree, false);
+  TestNear("0:0, 0:2, 2:2, 2:0", "0:0, 1.9999:1, 0:2, 2:2, 2:0", 0.5 * degree,
+           false);
 
   // Two triangles that backtrack a bit on different edges.  A simple
   // greedy matching algorithm would fail on this example.
-  const char* t1 = "0.1:0, 0.1:1, 0.1:2, 0.1:3, 0.1:4, 1:4, 2:4, 3:4, "
-                   "2:4.1, 1:4.1, 2:4.2, 3:4.2, 4:4.2, 5:4.2";
-  char const* t2 = "0:0, 0:1, 0:2, 0:3, 0.1:2, 0.1:1, 0.2:2, 0.2:3, "
-                   "0.2:4, 1:4.1, 2:4, 3:4, 4:4, 5:4";
+  const char* t1 =
+      "0.1:0, 0.1:1, 0.1:2, 0.1:3, 0.1:4, 1:4, 2:4, 3:4, "
+      "2:4.1, 1:4.1, 2:4.2, 3:4.2, 4:4.2, 5:4.2";
+  char const* t2 =
+      "0:0, 0:1, 0:2, 0:3, 0.1:2, 0.1:1, 0.2:2, 0.2:3, "
+      "0.2:4, 1:4.1, 2:4, 3:4, 4:4, 5:4";
   TestNear(t1, t2, 1.5 * degree, true);
   TestNear(t1, t2, 0.5 * degree, false);
 }
@@ -706,8 +699,7 @@ TEST(s2loop, IsValidDetectsInvalidLoops) {
   delete l3;
 }
 
-TEST(s2loop, IsValidDetectsLargeInvalidLoops) {
-}
+TEST(s2loop, IsValidDetectsLargeInvalidLoops) {}
 
 // This isn't available in googletest
 #if 0
@@ -765,4 +757,3 @@ static void BM_ContainsQuery(int iters, int num_vertices) {
 }
 BENCHMARK_RANGE(BM_ContainsQuery, 4, 1 << 16);
 #endif
-

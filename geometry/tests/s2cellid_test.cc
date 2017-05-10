@@ -17,11 +17,10 @@ using std::unordered_map;
 #include <vector>
 using std::vector;
 
-
+#include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/integral_types.h"
 #include "base/logging.h"
-#include <gtest/gtest.h>
 #include "s2.h"
 #include "s2latlng.h"
 #include "s2testing.h"
@@ -29,8 +28,8 @@ using std::vector;
 
 #if 0
 #define int8 HTM_int8  // To avoid conflicts with our own 'int8'
-#include "third_party/htm/include/SpatialIndex.h"
 #include "third_party/htm/include/RangeConvex.h"
+#include "third_party/htm/include/SpatialIndex.h"
 #undef int8
 #endif
 
@@ -43,8 +42,8 @@ using std::vector;
 // "HTM build level to use");
 
 static S2CellId GetCellId(double lat_degrees, double lng_degrees) {
-  S2CellId id = S2CellId::FromLatLng(S2LatLng::FromDegrees(lat_degrees,
-                                                           lng_degrees));
+  S2CellId id =
+      S2CellId::FromLatLng(S2LatLng::FromDegrees(lat_degrees, lng_degrees));
   LOG(INFO) << hex << id.id();
   return id;
 }
@@ -65,8 +64,8 @@ TEST(S2CellId, FaceDefinitions) {
 }
 
 TEST(S2CellId, ParentChildRelationships) {
-  S2CellId id = S2CellId::FromFacePosLevel(3, 0x12345678,
-                                           S2CellId::kMaxLevel - 4);
+  S2CellId id =
+      S2CellId::FromFacePosLevel(3, 0x12345678, S2CellId::kMaxLevel - 4);
   EXPECT_TRUE(id.is_valid());
   EXPECT_EQ(id.face(), 3);
   EXPECT_EQ(id.pos(), 0x12345700);
@@ -113,8 +112,8 @@ TEST(S2CellId, Wrapping) {
 }
 
 TEST(S2CellId, Advance) {
-  S2CellId id = S2CellId::FromFacePosLevel(3, 0x12345678,
-                                           S2CellId::kMaxLevel - 4);
+  S2CellId id =
+      S2CellId::FromFacePosLevel(3, 0x12345678, S2CellId::kMaxLevel - 4);
   // Check basic properties of advance().
   EXPECT_EQ(S2CellId::Begin(0).advance(7), S2CellId::End(0));
   EXPECT_EQ(S2CellId::Begin(0).advance(12), S2CellId::End(0));
@@ -126,7 +125,7 @@ TEST(S2CellId, Advance) {
   EXPECT_EQ(id.child_begin(S2CellId::kMaxLevel).advance(256),
             id.next().child_begin(S2CellId::kMaxLevel));
   EXPECT_EQ(S2CellId::FromFacePosLevel(1, 0, S2CellId::kMaxLevel)
-            .advance(static_cast<int64>(4) << (2 * S2CellId::kMaxLevel)),
+                .advance(static_cast<int64>(4) << (2 * S2CellId::kMaxLevel)),
             S2CellId::FromFacePosLevel(5, 0, S2CellId::kMaxLevel));
 
   // Check basic properties of advance_wrap().
@@ -140,9 +139,10 @@ TEST(S2CellId, Advance) {
             S2CellId::Begin(5).advance_wrap(-11788));
   EXPECT_EQ(id.child_begin(S2CellId::kMaxLevel).advance_wrap(256),
             id.next().child_begin(S2CellId::kMaxLevel));
-  EXPECT_EQ(S2CellId::FromFacePosLevel(5, 0, S2CellId::kMaxLevel)
-            .advance_wrap(static_cast<int64>(2) << (2 * S2CellId::kMaxLevel)),
-            S2CellId::FromFacePosLevel(1, 0, S2CellId::kMaxLevel));
+  EXPECT_EQ(
+      S2CellId::FromFacePosLevel(5, 0, S2CellId::kMaxLevel)
+          .advance_wrap(static_cast<int64>(2) << (2 * S2CellId::kMaxLevel)),
+      S2CellId::FromFacePosLevel(1, 0, S2CellId::kMaxLevel));
 }
 
 TEST(S2CellId, Inverses) {
@@ -168,7 +168,6 @@ TEST(S2CellId, Tokens) {
   string token = S2CellId::None().ToToken();
   EXPECT_EQ(S2CellId::FromToken(token), S2CellId::None());
 }
-
 
 static const int kMaxExpandLevel = 3;
 
@@ -212,8 +211,9 @@ TEST(S2CellId, Containment) {
         }
       }
       EXPECT_EQ(cells[i].contains(cells[j]), contained);
-      EXPECT_EQ(cells[j] >= cells[i].range_min() &&
-                cells[j] <= cells[i].range_max(), contained);
+      EXPECT_EQ(
+          cells[j] >= cells[i].range_min() && cells[j] <= cells[i].range_max(),
+          contained);
       EXPECT_EQ(cells[i].intersects(cells[j]),
                 cells[i].contains(cells[j]) || cells[j].contains(cells[i]));
     }
@@ -286,7 +286,7 @@ static void TestAllNeighbors(S2CellId const& id, int level) {
 
 TEST(S2CellId, Neighbors) {
   // Check the edge neighbors of face 1.
-  static int out_faces[] = { 5, 3, 2, 0 };
+  static int out_faces[] = {5, 3, 2, 0};
   S2CellId face_nbrs[4];
   S2CellId::FromFacePosLevel(1, 0, 0).GetEdgeNeighbors(face_nbrs);
   for (int i = 0; i < 4; ++i) {
@@ -299,9 +299,9 @@ TEST(S2CellId, Neighbors) {
   S2CellId::FromPoint(S2Point(0, 0, 1)).AppendVertexNeighbors(5, &nbrs);
   sort(nbrs.begin(), nbrs.end());
   for (int i = 0; i < 4; ++i) {
-    EXPECT_EQ(nbrs[i], S2CellId::FromFaceIJ(
-                 2, (1 << 29) - (i < 2), (1 << 29) - (i == 0 || i == 3))
-             .parent(5));
+    EXPECT_EQ(nbrs[i], S2CellId::FromFaceIJ(2, (1 << 29) - (i < 2),
+                                            (1 << 29) - (i == 0 || i == 3))
+                           .parent(5));
   }
   nbrs.clear();
 
@@ -378,7 +378,6 @@ TEST(S2CellId, ToPointBenchmark) {
   printf("\tToPoint:    %8.3f usecs\n", 1e6 * test_time / FLAGS_iters);
   EXPECT_NE(sum, 0);  // Don't let the loop get optimized away.
 }
-
 
 TEST(S2CellId, FromPointBenchmark) {
   // This "test" is really a benchmark, so skip it unless we're optimized.

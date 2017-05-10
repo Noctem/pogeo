@@ -8,14 +8,13 @@ using std::ostream;
 using std::cout;
 using std::endl;
 
-
 #include "base/basictypes.h"
 #include "base/logging.h"
-#include "s1angle.h"
 #include "r1interval.h"
+#include "s1angle.h"
 #include "s1interval.h"
-#include "s2region.h"
 #include "s2latlng.h"
+#include "s2region.h"
 
 // An S2LatLngRect represents a closed latitude-longitude rectangle.  It is
 // capable of representing the empty and full rectangles as well as
@@ -71,8 +70,8 @@ class S2LatLngRect : public S2Region {
   S1Angle lng_hi() const { return S1Angle::Radians(lng_.hi()); }
   R1Interval const& lat() const { return lat_; }
   S1Interval const& lng() const { return lng_; }
-  R1Interval *mutable_lat() { return &lat_; }
-  S1Interval *mutable_lng() { return &lng_; }
+  R1Interval* mutable_lat() { return &lat_; }
+  S1Interval* mutable_lng() { return &lng_; }
   S2LatLng lo() const { return S2LatLng(lat_lo(), lng_lo()); }
   S2LatLng hi() const { return S2LatLng(lat_hi(), lng_hi()); }
 
@@ -250,8 +249,8 @@ class S2LatLngRect : public S2Region {
 
   // Return true if the edge AB intersects the given edge of constant
   // latitude.
-  static bool IntersectsLatEdge(S2Point const& a, S2Point const& b,
-                                double lat, S1Interval const& lng);
+  static bool IntersectsLatEdge(S2Point const& a, S2Point const& b, double lat,
+                                S1Interval const& lng);
 
   // Helper function. See .cc for description.
   static S1Angle GetDirectedHausdorffDistance(double lng_diff,
@@ -270,23 +269,20 @@ class S2LatLngRect : public S2Region {
 };
 
 inline S2LatLngRect::S2LatLngRect(S2LatLng const& lo, S2LatLng const& hi)
-  : lat_(lo.lat().radians(), hi.lat().radians()),
-    lng_(lo.lng().radians(), hi.lng().radians()) {
+    : lat_(lo.lat().radians(), hi.lat().radians()),
+      lng_(lo.lng().radians(), hi.lng().radians()) {
   DCHECK(is_valid()) << lo << ", " << hi;
 }
 
 inline S2LatLngRect::S2LatLngRect(R1Interval const& lat, S1Interval const& lng)
-  : lat_(lat), lng_(lng) {
+    : lat_(lat), lng_(lng) {
   DCHECK(is_valid()) << lat << ", " << lng;
 }
 
 inline S2LatLngRect::S2LatLngRect()
-    : lat_(R1Interval::Empty()), lng_(S1Interval::Empty()) {
-}
+    : lat_(R1Interval::Empty()), lng_(S1Interval::Empty()) {}
 
-inline S2LatLngRect S2LatLngRect::Empty() {
-  return S2LatLngRect();
-}
+inline S2LatLngRect S2LatLngRect::Empty() { return S2LatLngRect(); }
 
 inline S2LatLngRect S2LatLngRect::Full() {
   return S2LatLngRect(FullLat(), FullLng());
@@ -294,15 +290,11 @@ inline S2LatLngRect S2LatLngRect::Full() {
 
 inline bool S2LatLngRect::is_valid() const {
   // The lat/lng ranges must either be both empty or both non-empty.
-  return (fabs(lat_.lo()) <= M_PI_2 &&
-          fabs(lat_.hi()) <= M_PI_2 &&
-          lng_.is_valid() &&
-          lat_.is_empty() == lng_.is_empty());
+  return (fabs(lat_.lo()) <= M_PI_2 && fabs(lat_.hi()) <= M_PI_2 &&
+          lng_.is_valid() && lat_.is_empty() == lng_.is_empty());
 }
 
-inline bool S2LatLngRect::is_empty() const {
-  return lat_.is_empty();
-}
+inline bool S2LatLngRect::is_empty() const { return lat_.is_empty(); }
 
 inline bool S2LatLngRect::is_full() const {
   return lat_ == FullLat() && lng_.is_full();

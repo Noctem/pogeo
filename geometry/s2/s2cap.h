@@ -147,8 +147,7 @@ class S2Cap : public S2Region {
   bool ApproxEquals(S2Cap const& other, double max_error = 1e-14);
 
  private:
-  S2Cap(S2Point const& axis, double height)
-    : axis_(axis), height_(height) {
+  S2Cap(S2Point const& axis, double height) : axis_(axis), height_(height) {
     DCHECK(is_valid());
   }
 

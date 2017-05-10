@@ -5,7 +5,6 @@
 // A simple class to handle vectors in 2D
 // See the vector2-inl.h file for more details
 
-
 #ifndef UTIL_MATH_VECTOR2_H__
 #define UTIL_MATH_VECTOR2_H__
 
@@ -13,15 +12,18 @@
 using std::ostream;
 using std::cout;
 using std::endl;
-  // NOLINT(readability/streams)
+// NOLINT(readability/streams)
 #include "base/basictypes.h"
 
-template <typename VType> class Vector2;
+template <typename VType>
+class Vector2;
 
 // TODO(user): Look into creating conversion operators to remove the
 // need to forward-declare Vector3 and Vector4.
-template <typename VType> class Vector3;
-template <typename VType> class Vector4;
+template <typename VType>
+class Vector3;
+template <typename VType>
+class Vector4;
 
 // Template class for 2D vectors.
 // All definitions for these functions are in vector2-inl.h.  That header will
@@ -35,8 +37,9 @@ class Vector2 {
   // FloatType is the type returned by Norm() and Angle().  These methods are
   // special because they return floating-point values even when VType is an
   // integer.
-  typedef typename base::if_<base::is_integral<VType>::value,
-                             double, VType>::type FloatType;
+  typedef
+      typename base::if_<base::is_integral<VType>::value, double, VType>::type
+          FloatType;
 
  public:
   typedef Vector2<VType> Self;
@@ -58,15 +61,15 @@ class Vector2 {
   static int Size() { return 2; }
   // Modify the coordinates of the current vector
   void Set(const VType x, const VType y);
-  const Self& operator=(const Self &vb);
+  const Self &operator=(const Self &vb);
   // Add two vectors, component by component
-  Self& operator+=(const Self &vb);
+  Self &operator+=(const Self &vb);
   // Subtract two vectors, component by component
-  Self& operator-=(const Self &vb);
+  Self &operator-=(const Self &vb);
   // Multiply a vector by a scalar
-  Self& operator*=(const VType k);
+  Self &operator*=(const VType k);
   // Divide a vector by a scalar
-  Self& operator/=(const VType k);
+  Self &operator/=(const VType k);
   // Multiply two vectors component by component
   Self MulComponents(const Self &vb) const;
   // Divide two vectors component by component
@@ -88,7 +91,7 @@ class Vector2 {
   // of the result are silently discarded.
   VType CrossProd(const Self &vb) const;
   // Access component #b for read/write operations
-  VType& operator[](const int b);
+  VType &operator[](const int b);
   // Access component #b for read only operations
   VType operator[](const int b) const;
   // Labeled Accessor methods.
@@ -99,8 +102,8 @@ class Vector2 {
 
   // return a pointer to the data array for interface with other libraries
   // like opencv
-  VType* Data();
-  const VType* Data() const;
+  VType *Data();
+  const VType *Data() const;
   // Return the squared Euclidean norm of the vector.  Be aware that if VType
   // is an integer type, the high bits of the result are silently discarded.
   VType Norm2(void) const;
@@ -177,13 +180,13 @@ template <typename VType2>
 Vector2<VType2> Min(const Vector2<VType2> &v1, const Vector2<VType2> &v2);
 // debug printing
 template <typename VType2>
-std::ostream &operator <<(std::ostream &out, // NOLINT
-                          const Vector2<VType2> &va);
+std::ostream &operator<<(std::ostream &out,  // NOLINT
+                         const Vector2<VType2> &va);
 
 // TODO(user): Declare extern templates for these types.
-typedef Vector2<uint8>  Vector2_b;
-typedef Vector2<int>    Vector2_i;
-typedef Vector2<float>  Vector2_f;
+typedef Vector2<uint8> Vector2_b;
+typedef Vector2<int> Vector2_i;
+typedef Vector2<float> Vector2_f;
 typedef Vector2<double> Vector2_d;
 
 #endif  // UTIL_MATH_VECTOR2_H__

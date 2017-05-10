@@ -10,22 +10,21 @@ using std::multimap;
 #include <vector>
 using std::vector;
 
-
 #include "base/logging.h"
 #include "base/macros.h"
 #include "s2edgeindex.h"
-#include "s2region.h"
-#include "s2latlngrect.h"
 #include "s2edgeutil.h"
+#include "s2latlngrect.h"
+#include "s2region.h"
 
 class S2Loop;
 // Defined in the cc file. A helper class for AreBoundariesCrossing.
 class WedgeProcessor;
 
 // Indexing structure to efficiently compute intersections.
-class S2LoopIndex: public S2EdgeIndex {
+class S2LoopIndex : public S2EdgeIndex {
  public:
-  explicit S2LoopIndex(S2Loop const* loop): loop_(loop) {}
+  explicit S2LoopIndex(S2Loop const* loop) : loop_(loop) {}
   virtual ~S2LoopIndex() {}
 
   // There is no need to overwrite Reset(), as the only data that's
@@ -80,7 +79,6 @@ class S2Loop : public S2Region {
   // is checked at loop creation time, so IsValid()
   // should always return true.
   bool IsValid() const;
-
 
   // These two versions are deprecated and ignore max_adjacent.
   // DEPRECATED.
@@ -214,7 +212,6 @@ class S2Loop : public S2Region {
 
   S1Angle GetDistance(S2Point const& point) const;
 
-
   // This method computes the oriented surface integral of some quantity f(x)
   // over the loop interior, given a function f_tri(A,B,C) that returns the
   // corresponding integral over the spherical triangle ABC.  Here "oriented
@@ -240,8 +237,8 @@ class S2Loop : public S2Region {
   // Also requires that the default constructor for T must initialize the
   // value to zero.  (This is true for built-in types such as "double".)
   template <class T>
-  T GetSurfaceIntegral(T f_tri(S2Point const&, S2Point const&, S2Point const&))
-      const;
+  T GetSurfaceIntegral(T f_tri(S2Point const&, S2Point const&,
+                               S2Point const&)) const;
 
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
@@ -278,8 +275,7 @@ class S2Loop : public S2Region {
   // is copied from the decoder using memcpy. If it is false, vertices_
   // will point to the memory area inside the decoder, and the field
   // owns_vertices_ is set to false.
-  bool DecodeInternal(Decoder* const decoder,
-                      bool within_scope);
+  bool DecodeInternal(Decoder* const decoder, bool within_scope);
 
   // Internal implementation of the Intersects() method above.
   bool IntersectsInternal(S2Loop const* b) const;
@@ -310,8 +306,8 @@ class S2Loop : public S2Region {
   //
   // See Contains(), Intersects() and ContainsOrCrosses() for the
   // three uses of this function.
-  bool AreBoundariesCrossing(
-      S2Loop const* b, WedgeProcessor* wedge_processor) const;
+  bool AreBoundariesCrossing(S2Loop const* b,
+                             WedgeProcessor* wedge_processor) const;
 
   // When the loop is modified (the only cae being Invert() at this time),
   // the indexing structures need to be deleted as they become invalid.
@@ -400,7 +396,7 @@ T S2Loop::GetSurfaceIntegral(T f_tri(S2Point const&, S2Point const&,
     DCHECK(i == 1 || origin.Angle(vertex(i)) < kMaxLength);
     DCHECK(origin == vertex(0) || fabs(origin.DotProd(vertex(0))) < 1e-15);
 
-    if (vertex(i+1).Angle(origin) > kMaxLength) {
+    if (vertex(i + 1).Angle(origin) > kMaxLength) {
       // We are about to create an unstable edge, so choose a new origin O'
       // for the triangle fan.
       S2Point old_origin = origin;
@@ -426,7 +422,7 @@ T S2Loop::GetSurfaceIntegral(T f_tri(S2Point const&, S2Point const&,
       sum += f_tri(old_origin, vertex(i), origin);
     }
     // Advance the edge (O,V_i) to (O,V_i+1).
-    sum += f_tri(origin, vertex(i), vertex(i+1));
+    sum += f_tri(origin, vertex(i), vertex(i + 1));
   }
   // If the origin is not V_0, we need to sum one more triangle.
   if (origin != vertex(0)) {

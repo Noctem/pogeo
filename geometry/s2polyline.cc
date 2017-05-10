@@ -9,37 +9,30 @@ using std::vector;
 
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include "util/math/matrix3x3-inl.h"
 #include "s2polyline.h"
+#include "util/math/matrix3x3-inl.h"
 
-#include "util/coding/coder.h"
 #include "s2cap.h"
 #include "s2cell.h"
-#include "s2latlng.h"
 #include "s2edgeutil.h"
+#include "s2latlng.h"
+#include "util/coding/coder.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 
-S2Polyline::S2Polyline()
-  : num_vertices_(0),
-    vertices_(NULL) {
-}
+S2Polyline::S2Polyline() : num_vertices_(0), vertices_(NULL) {}
 
 S2Polyline::S2Polyline(vector<S2Point> const& vertices)
-  : num_vertices_(0),
-    vertices_(NULL) {
+    : num_vertices_(0), vertices_(NULL) {
   Init(vertices);
 }
 
 S2Polyline::S2Polyline(vector<S2LatLng> const& vertices)
-  : num_vertices_(0),
-    vertices_(NULL) {
+    : num_vertices_(0), vertices_(NULL) {
   Init(vertices);
 }
 
-S2Polyline::~S2Polyline() {
-  delete[] vertices_;
-}
+S2Polyline::~S2Polyline() { delete[] vertices_; }
 
 void S2Polyline::Init(vector<S2Point> const& vertices) {
   if (FLAGS_s2debug) {
@@ -80,7 +73,7 @@ bool S2Polyline::IsValid(vector<S2Point> const& v) {
 
   // Adjacent vertices must not be identical or antipodal.
   for (int i = 1; i < n; ++i) {
-    if (v[i-1] == v[i] || v[i-1] == -v[i]) {
+    if (v[i - 1] == v[i] || v[i - 1] == -v[i]) {
       LOG(INFO) << "Vertices " << (i - 1) << " and " << i
                 << " are identical or antipodal";
       return false;
@@ -89,21 +82,17 @@ bool S2Polyline::IsValid(vector<S2Point> const& v) {
   return true;
 }
 
-
 S2Polyline::S2Polyline(S2Polyline const* src)
-  : num_vertices_(src->num_vertices_),
-    vertices_(new S2Point[num_vertices_]) {
+    : num_vertices_(src->num_vertices_), vertices_(new S2Point[num_vertices_]) {
   memcpy(vertices_, src->vertices_, num_vertices_ * sizeof(vertices_[0]));
 }
 
-S2Polyline* S2Polyline::Clone() const {
-  return new S2Polyline(this);
-}
+S2Polyline* S2Polyline::Clone() const { return new S2Polyline(this); }
 
 S1Angle S2Polyline::GetLength() const {
   S1Angle length;
   for (int i = 1; i < num_vertices(); ++i) {
-    length += S1Angle(vertex(i-1), vertex(i));
+    length += S1Angle(vertex(i - 1), vertex(i));
   }
   return length;
 }
@@ -114,8 +103,8 @@ S2Point S2Polyline::GetCentroid() const {
     // The centroid (multiplied by length) is a vector toward the midpoint
     // of the edge, whose length is twice the sin of half the angle between
     // the two vertices.  Defining theta to be this angle, we have:
-    S2Point vsum = vertex(i-1) + vertex(i);    // Length == 2*cos(theta)
-    S2Point vdiff = vertex(i-1) - vertex(i);   // Length == 2*sin(theta)
+    S2Point vsum = vertex(i - 1) + vertex(i);   // Length == 2*cos(theta)
+    S2Point vdiff = vertex(i - 1) - vertex(i);  // Length == 2*sin(theta)
     double cos2 = vsum.Norm2();
     double sin2 = vdiff.Norm2();
     DCHECK_GT(cos2, 0);  // Otherwise edge is undefined, and result is NaN.
@@ -135,15 +124,15 @@ S2Point S2Polyline::GetSuffix(double fraction, int* next_vertex) const {
   }
   S1Angle length_sum;
   for (int i = 1; i < num_vertices(); ++i) {
-    length_sum += S1Angle(vertex(i-1), vertex(i));
+    length_sum += S1Angle(vertex(i - 1), vertex(i));
   }
   S1Angle target = fraction * length_sum;
   for (int i = 1; i < num_vertices(); ++i) {
-    S1Angle length(vertex(i-1), vertex(i));
+    S1Angle length(vertex(i - 1), vertex(i));
     if (target < length) {
       // This interpolates with respect to arc length rather than
       // straight-line distance, and produces a unit-length result.
-      S2Point result = S2EdgeUtil::InterpolateAtDistance(target, vertex(i-1),
+      S2Point result = S2EdgeUtil::InterpolateAtDistance(target, vertex(i - 1),
                                                          vertex(i), length);
       // It is possible that (result == vertex(i)) due to rounding errors.
       *next_vertex = (result == vertex(i)) ? (i + 1) : i;
@@ -167,11 +156,12 @@ double S2Polyline::UnInterpolate(S2Point const& point, int next_vertex) const {
   }
   S1Angle length_sum;
   for (int i = 1; i < next_vertex; ++i) {
-    length_sum += S1Angle(vertex(i-1), vertex(i));
+    length_sum += S1Angle(vertex(i - 1), vertex(i));
   }
-  S1Angle length_to_point = length_sum + S1Angle(vertex(next_vertex-1), point);
+  S1Angle length_to_point =
+      length_sum + S1Angle(vertex(next_vertex - 1), point);
   for (int i = next_vertex; i < num_vertices(); ++i) {
-    length_sum += S1Angle(vertex(i-1), vertex(i));
+    length_sum += S1Angle(vertex(i - 1), vertex(i));
   }
   // The ratio can be greater than 1.0 due to rounding errors or because the
   // point is not exactly on the polyline.
@@ -193,8 +183,8 @@ S2Point S2Polyline::Project(S2Point const& point, int* next_vertex) const {
 
   // Find the line segment in the polyline that is closest to the point given.
   for (int i = 1; i < num_vertices(); ++i) {
-    S1Angle distance_to_segment = S2EdgeUtil::GetDistance(point, vertex(i-1),
-                                                          vertex(i));
+    S1Angle distance_to_segment =
+        S2EdgeUtil::GetDistance(point, vertex(i - 1), vertex(i));
     if (distance_to_segment < min_distance) {
       min_distance = distance_to_segment;
       min_index = i;
@@ -204,7 +194,7 @@ S2Point S2Polyline::Project(S2Point const& point, int* next_vertex) const {
 
   // Compute the point on the segment found that is closest to the point given.
   S2Point closest_point = S2EdgeUtil::GetClosestPoint(
-      point, vertex(min_index-1), vertex(min_index));
+      point, vertex(min_index - 1), vertex(min_index));
 
   *next_vertex = min_index + (closest_point == vertex(min_index) ? 1 : 0);
   return closest_point;
@@ -222,20 +212,19 @@ bool S2Polyline::IsOnRight(S2Point const& point) const {
   // If the closest point C is an interior vertex of the polyline, let B and D
   // be the previous and next vertices.  The given point P is on the right of
   // the polyline (locally) if B, P, D are ordered CCW around vertex C.
-  if (closest_point == vertex(next_vertex-1) && next_vertex > 1 &&
+  if (closest_point == vertex(next_vertex - 1) && next_vertex > 1 &&
       next_vertex < num_vertices()) {
-    if (point == vertex(next_vertex-1))
+    if (point == vertex(next_vertex - 1))
       return false;  // Polyline vertices are not on the RHS.
-    return S2::OrderedCCW(vertex(next_vertex-2), point, vertex(next_vertex),
-                          vertex(next_vertex-1));
+    return S2::OrderedCCW(vertex(next_vertex - 2), point, vertex(next_vertex),
+                          vertex(next_vertex - 1));
   }
 
   // Otherwise, the closest point C is incident to exactly one polyline edge.
   // We test the point P against that edge.
-  if (next_vertex == num_vertices())
-    --next_vertex;
+  if (next_vertex == num_vertices()) --next_vertex;
 
-  return S2::RobustCCW(point, vertex(next_vertex), vertex(next_vertex-1)) > 0;
+  return S2::RobustCCW(point, vertex(next_vertex), vertex(next_vertex - 1)) > 0;
 }
 
 bool S2Polyline::Intersects(S2Polyline const* line) const {
@@ -249,8 +238,8 @@ bool S2Polyline::Intersects(S2Polyline const* line) const {
 
   // TODO(user) look into S2EdgeIndex to make this near linear in performance.
   for (int i = 1; i < num_vertices(); ++i) {
-    S2EdgeUtil::EdgeCrosser crosser(
-        &vertex(i - 1), &vertex(i), &line->vertex(0));
+    S2EdgeUtil::EdgeCrosser crosser(&vertex(i - 1), &vertex(i),
+                                    &line->vertex(0));
     for (int j = 1; j < line->num_vertices(); ++j) {
       if (crosser.RobustCrossing(&line->vertex(j)) >= 0) {
         return true;
@@ -260,9 +249,7 @@ bool S2Polyline::Intersects(S2Polyline const* line) const {
   return false;
 }
 
-void S2Polyline::Reverse() {
-  reverse(vertices_, vertices_ + num_vertices_);
-}
+void S2Polyline::Reverse() { reverse(vertices_, vertices_ + num_vertices_); }
 
 S2LatLngRect S2Polyline::GetRectBound() const {
   S2EdgeUtil::RectBounder bounder;
@@ -272,9 +259,7 @@ S2LatLngRect S2Polyline::GetRectBound() const {
   return bounder.GetBound();
 }
 
-S2Cap S2Polyline::GetCapBound() const {
-  return GetRectBound().GetCapBound();
-}
+S2Cap S2Polyline::GetCapBound() const { return GetRectBound().GetCapBound(); }
 
 bool S2Polyline::MayIntersect(S2Cell const& cell) const {
   if (num_vertices() == 0) return false;
@@ -290,8 +275,8 @@ bool S2Polyline::MayIntersect(S2Cell const& cell) const {
     cell_vertices[i] = cell.GetVertex(i);
   }
   for (int j = 0; j < 4; ++j) {
-    S2EdgeUtil::EdgeCrosser crosser(&cell_vertices[j], &cell_vertices[(j+1)&3],
-                                    &vertex(0));
+    S2EdgeUtil::EdgeCrosser crosser(&cell_vertices[j],
+                                    &cell_vertices[(j + 1) & 3], &vertex(0));
     for (int i = 1; i < num_vertices(); ++i) {
       if (crosser.RobustCrossing(&vertex(i)) >= 0) {
         // There is a proper crossing, or two vertices were the same.
@@ -334,8 +319,8 @@ namespace {
 // Given a polyline, a tolerance distance, and a start index, this function
 // returns the maximal end index such that the line segment between these two
 // vertices passes within "tolerance" of all interior vertices, in order.
-int FindEndVertex(S2Polyline const& polyline,
-                  S1Angle const& tolerance, int index) {
+int FindEndVertex(S2Polyline const& polyline, S1Angle const& tolerance,
+                  int index) {
   DCHECK_GE(tolerance.radians(), 0);
   DCHECK_LT((index + 1), polyline.num_vertices());
 
@@ -370,7 +355,7 @@ int FindEndVertex(S2Polyline const& polyline,
     // We don't allow simplification to create edges longer than 90 degrees,
     // to avoid numeric instability as lengths approach 180 degrees.  (We do
     // need to allow for original edges longer than 90 degrees, though.)
-    if (distance > M_PI/2 && last_distance > 0) break;
+    if (distance > M_PI / 2 && last_distance > 0) break;
 
     // Vertices must be in increasing order along the ray, except for the
     // initial disc around the origin.
@@ -409,7 +394,7 @@ int FindEndVertex(S2Polyline const& polyline,
   // included in the line segment, so back up by one vertex.
   return index - 1;
 }
-}
+}  // namespace
 
 void S2Polyline::SubsampleVertices(S1Angle const& tolerance,
                                    vector<int>* indices) const {
@@ -418,7 +403,7 @@ void S2Polyline::SubsampleVertices(S1Angle const& tolerance,
 
   indices->push_back(0);
   S1Angle clamped_tolerance = max(tolerance, S1Angle::Radians(0));
-  for (int index = 0; index + 1 < num_vertices(); ) {
+  for (int index = 0; index + 1 < num_vertices();) {
     int next_index = FindEndVertex(*this, clamped_tolerance, index);
     // Don't create duplicate adjacent vertices.
     if (vertex(next_index) != vertex(index)) {
@@ -463,7 +448,7 @@ struct SearchState {
 }  // namespace
 
 namespace std {
-template<>
+template <>
 struct less<SearchState> {
   // This operator is needed for storing SearchStates in a set.  The ordering
   // chosen has no special meaning.
@@ -553,22 +538,20 @@ bool S2Polyline::NearlyCoversPolyline(S2Polyline const& covered,
     S2Point i_begin, j_begin;
     if (state.i_in_progress) {
       j_begin = covered.vertex(state.j);
-      i_begin = S2EdgeUtil::GetClosestPoint(
-          j_begin, this->vertex(state.i), this->vertex(next_i));
+      i_begin = S2EdgeUtil::GetClosestPoint(j_begin, this->vertex(state.i),
+                                            this->vertex(next_i));
     } else {
       i_begin = this->vertex(state.i);
-      j_begin = S2EdgeUtil::GetClosestPoint(
-          i_begin, covered.vertex(state.j), covered.vertex(next_j));
+      j_begin = S2EdgeUtil::GetClosestPoint(i_begin, covered.vertex(state.j),
+                                            covered.vertex(next_j));
     }
 
-    if (S2EdgeUtil::IsEdgeBNearEdgeA(j_begin, covered.vertex(next_j),
-                                     i_begin, this->vertex(next_i),
-                                     max_error)) {
+    if (S2EdgeUtil::IsEdgeBNearEdgeA(j_begin, covered.vertex(next_j), i_begin,
+                                     this->vertex(next_i), max_error)) {
       pending.push_back(SearchState(next_i, state.j, false));
     }
-    if (S2EdgeUtil::IsEdgeBNearEdgeA(i_begin, this->vertex(next_i),
-                                     j_begin, covered.vertex(next_j),
-                                     max_error)) {
+    if (S2EdgeUtil::IsEdgeBNearEdgeA(i_begin, this->vertex(next_i), j_begin,
+                                     covered.vertex(next_j), max_error)) {
       pending.push_back(SearchState(state.i, next_j, true));
     }
   }

@@ -49,8 +49,6 @@
 // will intersect one of the four edges of the cross that bounds a,b,c,d.
 // The same holds true if q passes through the cell center of x.
 
-
-
 #include "s2edgeindex.h"
 
 #include <algorithm>
@@ -70,13 +68,11 @@ using std::make_pair;
 #include <memory>
 using std::unique_ptr;
 
-
 #include "base/logging.h"
 #include "s2cell.h"
 #include "s2edgeutil.h"
 #include "s2polyline.h"
 #include "s2regioncoverer.h"
-
 
 void S2EdgeIndex::Reset() {
   minimum_s2_level_used_ = S2CellId::kMaxLevel;
@@ -91,8 +87,7 @@ void S2EdgeIndex::ComputeIndex() {
   for (int i = 0; i < num_edges(); ++i) {
     S2Point from, to;
     vector<S2CellId> cover;
-    int level = GetCovering(*edge_from(i), *edge_to(i),
-                            true, &cover);
+    int level = GetCovering(*edge_from(i), *edge_to(i), true, &cover);
     minimum_s2_level_used_ = min(minimum_s2_level_used_, level);
 
     for (vector<S2CellId>::const_iterator it = cover.begin(); it != cover.end();
@@ -103,14 +98,9 @@ void S2EdgeIndex::ComputeIndex() {
   index_computed_ = true;
 }
 
-bool S2EdgeIndex::IsIndexComputed() const {
-  return index_computed_;
-}
+bool S2EdgeIndex::IsIndexComputed() const { return index_computed_; }
 
-void S2EdgeIndex::IncrementQueryCount() {
-  query_count_++;
-}
-
+void S2EdgeIndex::IncrementQueryCount() { query_count_++; }
 
 // If we have m data edges and n query edges, then the brute force cost is
 //   m * n * test_cost
@@ -144,18 +134,16 @@ void S2EdgeIndex::PredictAdditionalCalls(int n) {
   }
 }
 
-void S2EdgeIndex::GetEdgesInParentCells(
-    const vector<S2CellId>& cover,
-    const CellEdgeMultimap& mapping,
-    int minimum_s2_level_used,
-    vector<int>* candidate_crossings) {
+void S2EdgeIndex::GetEdgesInParentCells(const vector<S2CellId>& cover,
+                                        const CellEdgeMultimap& mapping,
+                                        int minimum_s2_level_used,
+                                        vector<int>* candidate_crossings) {
   // Find all parent cells of covering cells.
   set<S2CellId> parent_cells;
   for (vector<S2CellId>::const_iterator it = cover.begin(); it != cover.end();
        ++it) {
     for (int parent_level = it->level() - 1;
-         parent_level >= minimum_s2_level_used;
-         --parent_level) {
+         parent_level >= minimum_s2_level_used; --parent_level) {
       if (!parent_cells.insert(it->parent(parent_level)).second) {
         break;  // cell is already in => parents are too.
       }
@@ -163,11 +151,10 @@ void S2EdgeIndex::GetEdgesInParentCells(
   }
 
   // Put parent cell edge references into result.
-  for (set<S2CellId>::const_iterator it = parent_cells.begin(); it
-      != parent_cells.end(); ++it) {
-    pair<CellEdgeMultimap::const_iterator,
-        CellEdgeMultimap::const_iterator> range =
-        mapping.equal_range(*it);
+  for (set<S2CellId>::const_iterator it = parent_cells.begin();
+       it != parent_cells.end(); ++it) {
+    pair<CellEdgeMultimap::const_iterator, CellEdgeMultimap::const_iterator>
+        range = mapping.equal_range(*it);
     for (CellEdgeMultimap::const_iterator it2 = range.first;
          it2 != range.second; ++it2) {
       candidate_crossings->push_back(it2->second);
@@ -198,9 +185,9 @@ static bool LenientCrossing(S2Point const& a, S2Point const& b,
   return (acb * cbd >= 0) && (acb * dac >= 0);
 }
 
-bool S2EdgeIndex::EdgeIntersectsCellBoundary(
-    S2Point const& a, S2Point const& b, const S2Cell& cell) {
-  //S2Point start_vertex = cell.GetVertex(0);
+bool S2EdgeIndex::EdgeIntersectsCellBoundary(S2Point const& a, S2Point const& b,
+                                             const S2Cell& cell) {
+  // S2Point start_vertex = cell.GetVertex(0);
 
   S2Point vertices[4];
   for (int i = 0; i < 4; ++i) {
@@ -208,7 +195,7 @@ bool S2EdgeIndex::EdgeIntersectsCellBoundary(
   }
   for (int i = 0; i < 4; ++i) {
     S2Point from_point = vertices[i];
-    S2Point to_point = vertices[(i+1) % 4];
+    S2Point to_point = vertices[(i + 1) % 4];
     if (LenientCrossing(a, b, from_point, to_point)) {
       return true;
     }
@@ -216,11 +203,10 @@ bool S2EdgeIndex::EdgeIntersectsCellBoundary(
   return false;
 }
 
-void S2EdgeIndex::GetEdgesInChildrenCells(
-    S2Point const& a, S2Point const& b,
-    vector<S2CellId>* cover,
-    const CellEdgeMultimap& mapping,
-    vector<int>* candidate_crossings) {
+void S2EdgeIndex::GetEdgesInChildrenCells(S2Point const& a, S2Point const& b,
+                                          vector<S2CellId>* cover,
+                                          const CellEdgeMultimap& mapping,
+                                          vector<int>* candidate_crossings) {
   CellEdgeMultimap::const_iterator it, start, end;
 
   int num_cells = 0;
@@ -246,9 +232,8 @@ void S2EdgeIndex::GetEdgesInChildrenCells(
           candidate_crossings->pop_back();
         }
         // Add cells at this level
-        pair<CellEdgeMultimap::const_iterator,
-             CellEdgeMultimap::const_iterator> eq =
-                                            mapping.equal_range(cell);
+        pair<CellEdgeMultimap::const_iterator, CellEdgeMultimap::const_iterator>
+            eq = mapping.equal_range(cell);
         for (it = eq.first; it != eq.second; ++it) {
           candidate_crossings->push_back(it->second);
         }
@@ -305,7 +290,6 @@ void S2EdgeIndex::FindCandidateCrossings(
       candidate_crossings->end());
 }
 
-
 // Returns the smallest cell containing all four points, or Sentinel
 // if they are not all on the same face.
 // The points don't need to be normalized.
@@ -345,10 +329,9 @@ static S2CellId ContainingCell(S2Point const& pa, S2Point const& pb) {
   return a;
 }
 
-int S2EdgeIndex::GetCovering(
-    S2Point const& a, S2Point const& b,
-    bool thicken_edge,
-    vector<S2CellId>* edge_covering) const {
+int S2EdgeIndex::GetCovering(S2Point const& a, S2Point const& b,
+                             bool thicken_edge,
+                             vector<S2CellId>* edge_covering) const {
   edge_covering->clear();
 
   // Thicken the edge in all directions by roughly 1% of the edge length when
@@ -361,8 +344,8 @@ int S2EdgeIndex::GetCovering(
   // thickening is honored (it's not a big deal if we honor it when we don't
   // request it) when doing the covering-by-cap trick.
   const double edge_length = a.Angle(b);
-  const int ideal_level = S2::kMinWidth.GetMaxLevel(
-      edge_length * (1 + 2 * kThickening));
+  const int ideal_level =
+      S2::kMinWidth.GetMaxLevel(edge_length * (1 + 2 * kThickening));
 
   S2CellId containing_cell;
   if (!thicken_edge) {
@@ -376,8 +359,7 @@ int S2EdgeIndex::GetCovering(
       containing_cell = S2CellId(0xFFF0).parent(3);
     } else {
       S2Point pq = (b - a) * kThickening;
-      S2Point ortho = pq.CrossProd(a).Normalize() *
-          edge_length * kThickening;
+      S2Point ortho = pq.CrossProd(a).Normalize() * edge_length * kThickening;
       S2Point p = a - pq;
       S2Point q = b + pq;
       // If p and q were antipodal, the edge wouldn't be lengthened,
@@ -385,8 +367,8 @@ int S2EdgeIndex::GetCovering(
       // ideal_level != 0 here.  The farther p and q can be is roughly
       // a quarter Earth away from each other, so we remain
       // Theta(kThickening).
-      containing_cell = ContainingCell(p - ortho, p + ortho,
-                                       q - ortho, q + ortho);
+      containing_cell =
+          ContainingCell(p - ortho, p + ortho, q - ortho, q + ortho);
     }
   }
 
@@ -416,9 +398,9 @@ int S2EdgeIndex::GetCovering(
   // the cap by four big-enough cells around the cell vertex closest to the
   // cap center.
   S2Point middle = ((a + b) / 2.0).Normalize();
-  int actual_level = min(ideal_level, S2CellId::kMaxLevel-1);
-  S2CellId::FromPoint(middle).AppendVertexNeighbors(
-      actual_level, edge_covering);
+  int actual_level = min(ideal_level, S2CellId::kMaxLevel - 1);
+  S2CellId::FromPoint(middle).AppendVertexNeighbors(actual_level,
+                                                    edge_covering);
   return actual_level;
 }
 

@@ -8,10 +8,10 @@
 #ifndef UTIL_ENDIAN_ENDIAN_H_
 #define UTIL_ENDIAN_ENDIAN_H_
 
+#include "base/int128.h"
 #include "base/integral_types.h"
 #include "base/logging.h"
 #include "base/port.h"
-#include "base/int128.h"
 
 inline uint64 gbswap_64(uint64 host_int) {
 #if defined(COMPILER_GCC3) && defined(__x86_64__)
@@ -20,14 +20,14 @@ inline uint64 gbswap_64(uint64 host_int) {
     return __bswap_constant_64(host_int);
   } else {
     register uint64 result;
-    __asm__ ("bswap %0" : "=r" (result) : "0" (host_int));
+    __asm__("bswap %0" : "=r"(result) : "0"(host_int));
     return result;
   }
 #elif defined(bswap_64)
   return bswap_64(host_int);
 #else
   return static_cast<uint64>(bswap_32(static_cast<uint32>(host_int >> 32))) |
-    (static_cast<uint64>(bswap_32(static_cast<uint32>(host_int))) << 32);
+         (static_cast<uint64>(bswap_32(static_cast<uint32>(host_int))) << 32);
 #endif  // bswap_64
 }
 
@@ -51,7 +51,8 @@ inline uint64 ghtonll(uint64 x) { return gbswap_64(x); }
 #define ghtonll(x) (x)
 
 #else
-#error "Unsupported bytesex: Either IS_BIG_ENDIAN or IS_LITTLE_ENDIAN must be defined"
+#error \
+    "Unsupported bytesex: Either IS_BIG_ENDIAN or IS_LITTLE_ENDIAN must be defined"
 #endif  // bytesex
 
 // Convert to little-endian storage, opposite of network format.
@@ -65,7 +66,7 @@ inline uint64 ghtonll(uint64 x) { return gbswap_64(x); }
 //    x = LittleEndian.Load16(p);
 class LittleEndian {
  public:
-  // Conversion functions.
+// Conversion functions.
 #ifdef IS_LITTLE_ENDIAN
 
   static uint16 FromHost16(uint16 x) { return x; }
@@ -95,25 +96,19 @@ class LittleEndian {
 #endif /* ENDIAN */
 
   // Functions to do unaligned loads and stores in little-endian order.
-  static uint16 Load16(const void *p) {
-    return ToHost16(UNALIGNED_LOAD16(p));
-  }
+  static uint16 Load16(const void *p) { return ToHost16(UNALIGNED_LOAD16(p)); }
 
   static void Store16(void *p, uint16 v) {
     UNALIGNED_STORE16(p, FromHost16(v));
   }
 
-  static uint32 Load32(const void *p) {
-    return ToHost32(UNALIGNED_LOAD32(p));
-  }
+  static uint32 Load32(const void *p) { return ToHost32(UNALIGNED_LOAD32(p)); }
 
   static void Store32(void *p, uint32 v) {
     UNALIGNED_STORE32(p, FromHost32(v));
   }
 
-  static uint64 Load64(const void *p) {
-    return ToHost64(UNALIGNED_LOAD64(p));
-  }
+  static uint64 Load64(const void *p) { return ToHost64(UNALIGNED_LOAD64(p)); }
 
   // Build a uint64 from 1-8 bytes.
   // 8 * len least significant bits are loaded from the memory with
@@ -131,10 +126,10 @@ class LittleEndian {
   //
   // For speed reasons this function does not work for len == 0.
   // The caller needs to guarantee that 1 <= len <= 8.
-  static uint64 Load64VariableLength(const void * const p, int len) {
+  static uint64 Load64VariableLength(const void *const p, int len) {
     DCHECK_GE(len, 1);
     DCHECK_LE(len, 8);
-    const char * const buf = static_cast<const char * const>(p);
+    const char *const buf = static_cast<const char *const>(p);
     uint64 val = 0;
     --len;
     do {
@@ -176,7 +171,6 @@ class LittleEndian {
     }
   }
 };
-
 
 // This one is safe to take as it's an extension
 #if !defined __APPLE__

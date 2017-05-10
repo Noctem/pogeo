@@ -17,13 +17,10 @@ using std::string;
 #include <vector>
 using std::vector;
 
-
+#include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "strings/stringprintf.h"
-#include <gtest/gtest.h>
-#include "util/coding/coder.h"
 #include "s2.h"
 #include "s2cap.h"
 #include "s2cellunion.h"
@@ -33,10 +30,12 @@ using std::vector;
 #include "s2polyline.h"
 #include "s2regioncoverer.h"
 #include "s2testing.h"
-#include "util/math/matrix3x3.h"
+#include "strings/stringprintf.h"
+#include "util/coding/coder.h"
 #include "util/math/matrix3x3-inl.h"
+#include "util/math/matrix3x3.h"
 
-#define FLAGS_num_loops_per_polygon_for_bm          10
+#define FLAGS_num_loops_per_polygon_for_bm 10
 //             "Number of loops per polygon to use for an s2polygon "
 //             "encode/decode benchmark. Can be a maximum of 90.");
 
@@ -54,7 +53,7 @@ string const kNearHemi = "0:-90, -90:0, 0:90, 90:0;";
 // the loops except kFar2 are non-convex.
 string const kFar0 = "0:179, 1:180, 0:-179, 2:-180;";
 string const kFar1 =
-  "0:179, -1:179, 1:180, -1:-179, 0:-179, 3:-178, 2:-180, 3:178;";
+    "0:179, -1:179, 1:180, -1:-179, 0:-179, 3:-178, 2:-180, 3:178;";
 string const kFar2 = "-1:-179, -1:179, 3:178, 3:-178;";  // opposite direction
 string const kFar3 = "-3:-178, -2:179, -3:178, 4:177, 4:-177;";
 string const kFarHemi = "0:-90, 60:90, -60:90;";
@@ -70,10 +69,12 @@ string const kSouthHemi = "0:-180, 0:60, 0:-60;";
 
 // Two different loops that surround all the Near and Far loops except
 // for the hemispheres.
-string const kNearFar1 = "-1:-9, -9:-9, -9:9, 9:9, 9:-9, 1:-9, "
-                         "1:-175, 9:-175, 9:175, -9:175, -9:-175, -1:-175;";
-string const kNearFar2 = "-8:-4, 8:-4, 2:15, 2:170, "
-                         "8:-175, -8:-175, -2:170, -2:15;";
+string const kNearFar1 =
+    "-1:-9, -9:-9, -9:9, 9:9, 9:-9, 1:-9, "
+    "1:-175, 9:-175, 9:175, -9:175, -9:-175, -1:-175;";
+string const kNearFar2 =
+    "-8:-4, 8:-4, 2:15, 2:170, "
+    "8:-175, -8:-175, -2:170, -2:15;";
 
 // Loops that result from intersection of other loops.
 string const kFarHSouthH = "0:-180, 0:90, -60:90, 0:-90;";
@@ -102,6 +103,7 @@ class S2PolygonTestBase : public testing::Test {
  public:
   S2PolygonTestBase();
   ~S2PolygonTestBase();
+
  protected:
   // Some standard polygons to use in the tests.
   S2Polygon const* const near_0;
@@ -171,7 +173,7 @@ static void CheckContains(string const& a_str, string const& b_str) {
 static void CheckContainsPoint(string const& a_str, string const& b_str) {
   unique_ptr<S2Polygon> a(S2Testing::MakePolygon(a_str));
   EXPECT_TRUE(a->VirtualContainsPoint(S2Testing::MakePoint(b_str)))
-    << " " << a_str << " did not contain " << b_str;
+      << " " << a_str << " did not contain " << b_str;
 }
 
 TEST(S2Polygon, Init) {
@@ -203,54 +205,54 @@ TEST(S2Polygon, Init) {
   CheckContainsPoint(kSouthHemi, kSouthPoint);
 }
 
-S2PolygonTestBase::S2PolygonTestBase():
-    near_0(MakePolygon(kNear0)),
-    near_10(MakePolygon(kNear0 + kNear1)),
-    near_30(MakePolygon(kNear3 + kNear0)),
-    near_32(MakePolygon(kNear2 + kNear3)),
-    near_3210(MakePolygon(kNear0 + kNear2 + kNear3 + kNear1)),
-    near_H3210(MakePolygon(kNear0 + kNear2 + kNear3 + kNearHemi + kNear1)),
+S2PolygonTestBase::S2PolygonTestBase()
+    : near_0(MakePolygon(kNear0)),
+      near_10(MakePolygon(kNear0 + kNear1)),
+      near_30(MakePolygon(kNear3 + kNear0)),
+      near_32(MakePolygon(kNear2 + kNear3)),
+      near_3210(MakePolygon(kNear0 + kNear2 + kNear3 + kNear1)),
+      near_H3210(MakePolygon(kNear0 + kNear2 + kNear3 + kNearHemi + kNear1)),
 
-    far_10(MakePolygon(kFar0 + kFar1)),
-    far_21(MakePolygon(kFar2 + kFar1)),
-    far_321(MakePolygon(kFar2 + kFar3 + kFar1)),
-    far_H20(MakePolygon(kFar2 + kFarHemi + kFar0)),
-    far_H3210(MakePolygon(kFar2 + kFarHemi + kFar0 + kFar1 + kFar3)),
+      far_10(MakePolygon(kFar0 + kFar1)),
+      far_21(MakePolygon(kFar2 + kFar1)),
+      far_321(MakePolygon(kFar2 + kFar3 + kFar1)),
+      far_H20(MakePolygon(kFar2 + kFarHemi + kFar0)),
+      far_H3210(MakePolygon(kFar2 + kFarHemi + kFar0 + kFar1 + kFar3)),
 
-    south_0ab(MakePolygon(kSouth0a + kSouth0b)),
-    south_2(MakePolygon(kSouth2)),
-    south_210b(MakePolygon(kSouth2 + kSouth0b + kSouth1)),
-    south_H21(MakePolygon(kSouth2 + kSouthHemi + kSouth1)),
-    south_H20abc(MakePolygon(
-                     kSouth2 + kSouth0b + kSouthHemi + kSouth0a + kSouth0c)),
+      south_0ab(MakePolygon(kSouth0a + kSouth0b)),
+      south_2(MakePolygon(kSouth2)),
+      south_210b(MakePolygon(kSouth2 + kSouth0b + kSouth1)),
+      south_H21(MakePolygon(kSouth2 + kSouthHemi + kSouth1)),
+      south_H20abc(
+          MakePolygon(kSouth2 + kSouth0b + kSouthHemi + kSouth0a + kSouth0c)),
 
-    nf1_n10_f2_s10abc(MakePolygon(kSouth0c + kFar2 + kNear1 + kNearFar1 +
-                                  kNear0 + kSouth1 + kSouth0b + kSouth0a)),
+      nf1_n10_f2_s10abc(MakePolygon(kSouth0c + kFar2 + kNear1 + kNearFar1 +
+                                    kNear0 + kSouth1 + kSouth0b + kSouth0a)),
 
-    nf2_n2_f210_s210ab(MakePolygon(kFar2 + kSouth0a + kFar1 + kSouth1 + kFar0 +
-                                   kSouth0b + kNearFar2 + kSouth2 + kNear2)),
+      nf2_n2_f210_s210ab(MakePolygon(kFar2 + kSouth0a + kFar1 + kSouth1 +
+                                     kFar0 + kSouth0b + kNearFar2 + kSouth2 +
+                                     kNear2)),
 
-    f32_n0(MakePolygon(kFar2 + kNear0 + kFar3)),
-    n32_s0b(MakePolygon(kNear3 + kSouth0b + kNear2)),
+      f32_n0(MakePolygon(kFar2 + kNear0 + kFar3)),
+      n32_s0b(MakePolygon(kNear3 + kSouth0b + kNear2)),
 
-    cross1(MakePolygon(kCross1)),
-    cross1_side_hole(MakePolygon(kCross1 + kCross1SideHole)),
-    cross1_center_hole(MakePolygon(kCross1 + kCrossCenterHole)),
-    cross2(MakePolygon(kCross2)),
-    cross2_side_hole(MakePolygon(kCross2 + kCross2SideHole)),
-    cross2_center_hole(MakePolygon(kCross2 + kCrossCenterHole)),
+      cross1(MakePolygon(kCross1)),
+      cross1_side_hole(MakePolygon(kCross1 + kCross1SideHole)),
+      cross1_center_hole(MakePolygon(kCross1 + kCrossCenterHole)),
+      cross2(MakePolygon(kCross2)),
+      cross2_side_hole(MakePolygon(kCross2 + kCross2SideHole)),
+      cross2_center_hole(MakePolygon(kCross2 + kCrossCenterHole)),
 
-    overlap1(MakePolygon(kOverlap1)),
-    overlap1_side_hole(MakePolygon(kOverlap1 + kOverlap1SideHole)),
-    overlap1_center_hole(MakePolygon(kOverlap1 + kOverlapCenterHole)),
-    overlap2(MakePolygon(kOverlap2)),
-    overlap2_side_hole(MakePolygon(kOverlap2 + kOverlap2SideHole)),
-    overlap2_center_hole(MakePolygon(kOverlap2 + kOverlapCenterHole)),
+      overlap1(MakePolygon(kOverlap1)),
+      overlap1_side_hole(MakePolygon(kOverlap1 + kOverlap1SideHole)),
+      overlap1_center_hole(MakePolygon(kOverlap1 + kOverlapCenterHole)),
+      overlap2(MakePolygon(kOverlap2)),
+      overlap2_side_hole(MakePolygon(kOverlap2 + kOverlap2SideHole)),
+      overlap2_center_hole(MakePolygon(kOverlap2 + kOverlapCenterHole)),
 
-    far_H(MakePolygon(kFarHemi)),
-    south_H(MakePolygon(kSouthHemi)),
-    far_H_south_H(MakePolygon(kFarHSouthH))
-{}
+      far_H(MakePolygon(kFarHemi)),
+      south_H(MakePolygon(kSouthHemi)),
+      far_H_south_H(MakePolygon(kFarHSouthH)) {}
 
 S2PolygonTestBase::~S2PolygonTestBase() {
   delete near_0;
@@ -367,9 +369,8 @@ TEST(S2Polygon, TestApproxContains) {
   intersection.InitToIntersection(&cell_as_polygon, &upper_half_polygon);
   EXPECT_FALSE(cell_as_polygon.Contains(&intersection));
 
-  EXPECT_TRUE(
-      cell_as_polygon.ApproxContains(&intersection,
-                                     S2EdgeUtil::kIntersectionTolerance));
+  EXPECT_TRUE(cell_as_polygon.ApproxContains(
+      &intersection, S2EdgeUtil::kIntersectionTolerance));
 }
 
 static void TestDisjoint(S2Polygon const* a, S2Polygon const* b) {
@@ -396,7 +397,7 @@ static void TestDisjoint(S2Polygon const* a, S2Polygon const* b) {
 
 static void TestRelationWithDesc(S2Polygon const* a, S2Polygon const* b,
                                  int contains, bool intersects,
-                                 const char *test_description) {
+                                 const char* test_description) {
   SCOPED_TRACE(test_description);
   EXPECT_EQ(contains > 0, a->Contains(b));
   EXPECT_EQ(contains < 0, b->Contains(a));
@@ -413,7 +414,7 @@ static void TestRelationWithDesc(S2Polygon const* a, S2Polygon const* b,
 
 TEST_F(S2PolygonTestBase, Relations) {
 #define TestRelation(a, b, contains, intersects) \
-    TestRelationWithDesc(a, b, contains, intersects, "args " #a ", " #b)
+  TestRelationWithDesc(a, b, contains, intersects, "args " #a ", " #b)
   TestRelation(near_10, near_30, -1, true);
   TestRelation(near_10, near_32, 0, false);
   TestRelation(near_10, near_3210, -1, true);
@@ -492,79 +493,75 @@ struct TestCase {
 };
 
 TestCase test_cases[] = {
-  // Two triangles that share an edge.
-  { "4:2, 3:1, 3:3;",
+    // Two triangles that share an edge.
+    {"4:2, 3:1, 3:3;",
 
-    "3:1, 2:2, 3:3;",
+     "3:1, 2:2, 3:3;",
 
-    "",
+     "",
 
-    "4:2, 3:1, 2:2, 3:3;",
+     "4:2, 3:1, 2:2, 3:3;",
 
-    "4:2, 3:1, 3:3;"
-  },
+     "4:2, 3:1, 3:3;"},
 
-  // Two vertical bars and a horizontal bar connecting them.
-  { "0:0, 0:2, 3:2, 3:0;   0:3, 0:5, 3:5, 3:3;",
+    // Two vertical bars and a horizontal bar connecting them.
+    {"0:0, 0:2, 3:2, 3:0;   0:3, 0:5, 3:5, 3:3;",
 
-    "1:1, 1:4, 2:4, 2:1;",
+     "1:1, 1:4, 2:4, 2:1;",
 
-    "1:1, 1:2, 2:2, 2:1;   1:3, 1:4, 2:4, 2:3;",
+     "1:1, 1:2, 2:2, 2:1;   1:3, 1:4, 2:4, 2:3;",
 
-    "0:0, 0:2, 1:2, 1:3, 0:3, 0:5, 3:5, 3:3, 2:3, 2:2, 3:2, 3:0;",
+     "0:0, 0:2, 1:2, 1:3, 0:3, 0:5, 3:5, 3:3, 2:3, 2:2, 3:2, 3:0;",
 
-    "0:0, 0:2, 1:2, 1:1, 2:1, 2:2, 3:2, 3:0;   "
-    "0:3, 0:5, 3:5, 3:3, 2:3, 2:4, 1:4, 1:3;"
-  },
+     "0:0, 0:2, 1:2, 1:1, 2:1, 2:2, 3:2, 3:0;   "
+     "0:3, 0:5, 3:5, 3:3, 2:3, 2:4, 1:4, 1:3;"},
 
-  // Two vertical bars and two horizontal bars centered around S2::Origin().
-  { "1:88, 1:93, 2:93, 2:88;   -1:88, -1:93, 0:93, 0:88;",
+    // Two vertical bars and two horizontal bars centered around S2::Origin().
+    {"1:88, 1:93, 2:93, 2:88;   -1:88, -1:93, 0:93, 0:88;",
 
-    "-2:89, -2:90, 3:90, 3:89;   -2:91, -2:92, 3:92, 3:91;",
+     "-2:89, -2:90, 3:90, 3:89;   -2:91, -2:92, 3:92, 3:91;",
 
-    "1:89, 1:90, 2:90, 2:89;   1:91, 1:92, 2:92, 2:91;   "
-    "-1:89, -1:90, 0:90, 0:89;   -1:91, -1:92, 0:92, 0:91;",
+     "1:89, 1:90, 2:90, 2:89;   1:91, 1:92, 2:92, 2:91;   "
+     "-1:89, -1:90, 0:90, 0:89;   -1:91, -1:92, 0:92, 0:91;",
 
-    "-1:88, -1:89, -2:89, -2:90, -1:90, -1:91, -2:91, -2:92, -1:92, -1:93,"
-    "0:93, 0:92, 1:92, 1:93, 2:93, 2:92, 3:92, 3:91, 2:91, 2:90, 3:90,"
-    "3:89, 2:89, 2:88, 1:88, 1:89, 0:89, 0:88;   "
-    "0:90, 0:91, 1:91, 1:90;",
+     "-1:88, -1:89, -2:89, -2:90, -1:90, -1:91, -2:91, -2:92, -1:92, -1:93,"
+     "0:93, 0:92, 1:92, 1:93, 2:93, 2:92, 3:92, 3:91, 2:91, 2:90, 3:90,"
+     "3:89, 2:89, 2:88, 1:88, 1:89, 0:89, 0:88;   "
+     "0:90, 0:91, 1:91, 1:90;",
 
-    "1:88, 1:89, 2:89, 2:88;   1:90, 1:91, 2:91, 2:90;   "
-    "1:92, 1:93, 2:93, 2:92;   -1:88, -1:89, 0:89, 0:88;   "
-    "-1:90, -1:91, 0:91, 0:90;   -1:92, -1:93, 0:93, 0:92;"
-  },
+     "1:88, 1:89, 2:89, 2:88;   1:90, 1:91, 2:91, 2:90;   "
+     "1:92, 1:93, 2:93, 2:92;   -1:88, -1:89, 0:89, 0:88;   "
+     "-1:90, -1:91, 0:91, 0:90;   -1:92, -1:93, 0:93, 0:92;"},
 
-  // Two interlocking square doughnuts centered around -S2::Origin().
-  { "-1:-93, -1:-89, 3:-89, 3:-93;   0:-92, 0:-90, 2:-90, 2:-92;",
+    // Two interlocking square doughnuts centered around -S2::Origin().
+    {"-1:-93, -1:-89, 3:-89, 3:-93;   0:-92, 0:-90, 2:-90, 2:-92;",
 
-    "-3:-91, -3:-87, 1:-87, 1:-91;   -2:-90, -2:-88, 0:-88, 0:-90;",
+     "-3:-91, -3:-87, 1:-87, 1:-91;   -2:-90, -2:-88, 0:-88, 0:-90;",
 
-    "-1:-91, -1:-90, 0:-90, 0:-91;   0:-90, 0:-89, 1:-89, 1:-90;",
+     "-1:-91, -1:-90, 0:-90, 0:-91;   0:-90, 0:-89, 1:-89, 1:-90;",
 
-    "-1:-93, -1:-91, -3:-91, -3:-87, 1:-87, 1:-89, 3:-89, 3:-93;   "
-    "0:-92, 0:-91, 1:-91, 1:-90, 2:-90, 2:-92;   "
-    "-2:-90, -2:-88, 0:-88, 0:-89, -1:-89, -1:-90;",
+     "-1:-93, -1:-91, -3:-91, -3:-87, 1:-87, 1:-89, 3:-89, 3:-93;   "
+     "0:-92, 0:-91, 1:-91, 1:-90, 2:-90, 2:-92;   "
+     "-2:-90, -2:-88, 0:-88, 0:-89, -1:-89, -1:-90;",
 
-    "-1:-93, -1:-91, 0:-91, 0:-92, 2:-92, 2:-90, 1:-90, 1:-89, 3:-89, 3:-93;   "
-    "-1:-90, -1:-89, 0:-89, 0:-90;"
-  },
+     "-1:-93, -1:-91, 0:-91, 0:-92, 2:-92, 2:-90, 1:-90, 1:-89, 3:-89, 3:-93;  "
+     " "
+     "-1:-90, -1:-89, 0:-89, 0:-90;"},
 
-  // An incredibly thin triangle intersecting a square, such that the two
-  // intersection points of the triangle with the square are identical.
-  // This results in a degenerate loop that needs to be handled correctly.
-  { "10:44, 10:46, 12:46, 12:44;",
+    // An incredibly thin triangle intersecting a square, such that the two
+    // intersection points of the triangle with the square are identical.
+    // This results in a degenerate loop that needs to be handled correctly.
+    {"10:44, 10:46, 12:46, 12:44;",
 
-    "11:45, 89:45.00000000000001, 90:45;",
+     "11:45, 89:45.00000000000001, 90:45;",
 
-    "",  // Empty intersection!
+     "",  // Empty intersection!
 
-    // Original square with extra vertex, and triangle disappears (due to
-    // default vertex_merge_radius of S2EdgeUtil::kIntersectionTolerance).
-    "10:44, 10:46, 12:46, 12:45, 12:44;",
+     // Original square with extra vertex, and triangle disappears (due to
+     // default vertex_merge_radius of S2EdgeUtil::kIntersectionTolerance).
+     "10:44, 10:46, 12:46, 12:45, 12:44;",
 
-    "10:44, 10:46, 12:46, 12:45, 12:44;"
-  },
+     "10:44, 10:46, 12:46, 12:45, 12:44;"},
 };
 
 TEST_F(S2PolygonTestBase, Operations) {
@@ -615,12 +612,13 @@ void ClearPolylineVector(vector<S2Polyline*>* polylines) {
   polylines->clear();
 }
 
-static void PolylineIntersectionSharedEdgeTest(const S2Polygon *p,
+static void PolylineIntersectionSharedEdgeTest(const S2Polygon* p,
                                                int start_vertex,
                                                int direction) {
-  SCOPED_TRACE(StringPrintf("Polyline intersection shared edge test "
-                            " start=%d direction=%d",
-                            start_vertex, direction));
+  SCOPED_TRACE(
+      StringPrintf("Polyline intersection shared edge test "
+                   " start=%d direction=%d",
+                   start_vertex, direction));
   vector<S2Point> points;
   points.push_back(p->loop(0)->vertex(start_vertex));
   points.push_back(p->loop(0)->vertex(start_vertex + direction));
@@ -675,14 +673,14 @@ TEST_F(S2PolygonTestBase, PolylineIntersection) {
     unique_ptr<S2Polygon> expected_a_and_b(MakePolygon(test->a_and_b));
 
     vector<S2Point> points;
-    vector<S2Polyline *> polylines;
+    vector<S2Polyline*> polylines;
     for (int ab = 0; ab < 2; ab++) {
-      S2Polygon *tmp = ab ? a.get() : b.get();
-      S2Polygon *tmp2 = ab ? b.get() : a.get();
+      S2Polygon* tmp = ab ? a.get() : b.get();
+      S2Polygon* tmp2 = ab ? b.get() : a.get();
       for (int l = 0; l < tmp->num_loops(); l++) {
         points.clear();
         if (tmp->loop(l)->is_hole()) {
-          for (int v = tmp->loop(l)->num_vertices(); v >=0 ; v--) {
+          for (int v = tmp->loop(l)->num_vertices(); v >= 0; v--) {
             points.push_back(tmp->loop(l)->vertex(v));
           }
         } else {
@@ -691,7 +689,7 @@ TEST_F(S2PolygonTestBase, PolylineIntersection) {
           }
         }
         S2Polyline polyline(points);
-        vector<S2Polyline *> tmp;
+        vector<S2Polyline*> tmp;
         tmp2->IntersectWithPolyline(&polyline, &tmp);
         polylines.insert(polylines.end(), tmp.begin(), tmp.end());
       }
@@ -701,8 +699,8 @@ TEST_F(S2PolygonTestBase, PolylineIntersection) {
     for (int i = 0; i < polylines.size(); i++) {
       for (int j = 0; j < polylines[i]->num_vertices() - 1; j++) {
         builder.AddEdge(polylines[i]->vertex(j), polylines[i]->vertex(j + 1));
-        VLOG(3) << " ... Adding edge: " << polylines[i]->vertex(j) << " - " <<
-            polylines[i]->vertex(j + 1);
+        VLOG(3) << " ... Adding edge: " << polylines[i]->vertex(j) << " - "
+                << polylines[i]->vertex(j + 1);
       }
     }
     ClearPolylineVector(&polylines);
@@ -714,7 +712,7 @@ TEST_F(S2PolygonTestBase, PolylineIntersection) {
 }
 
 // Remove a random polygon from "pieces" and return it.
-static S2Polygon* ChoosePiece(vector<S2Polygon*> *pieces) {
+static S2Polygon* ChoosePiece(vector<S2Polygon*>* pieces) {
   int i = S2Testing::rnd.Uniform(pieces->size());
   S2Polygon* result = (*pieces)[i];
   pieces->erase(pieces->begin() + i);
@@ -753,8 +751,8 @@ static void SplitAndAssemble(S2Polygon const* polygon) {
       S2Polygon* piece = new S2Polygon;
       piece->InitToIntersection(polygon, &window);
       pieces.push_back(piece);
-      VLOG(4) << "\nPiece " << i << ":\n  Window: "
-              << S2Testing::ToString(&window)
+      VLOG(4) << "\nPiece " << i
+              << ":\n  Window: " << S2Testing::ToString(&window)
               << "\n  Piece: " << S2Testing::ToString(piece);
     }
 
@@ -781,8 +779,9 @@ static void SplitAndAssemble(S2Polygon const* polygon) {
 
     // The moment of truth!
     EXPECT_TRUE(expected.BoundaryNear(result.get()))
-        << "\nActual:\n" << S2Testing::ToString(result.get())
-        << "\nExpected:\n" << S2Testing::ToString(&expected);
+        << "\nActual:\n"
+        << S2Testing::ToString(result.get()) << "\nExpected:\n"
+        << S2Testing::ToString(&expected);
   }
 }
 
@@ -814,7 +813,8 @@ TEST(S2Polygon, InitToCellUnionBorder) {
     S2CellId big_cell =
         S2Testing::GetRandomCellId(S2Testing::rnd.Uniform(S2CellId::kMaxLevel));
     // Get all neighbors at some smaller level.
-    int small_level = big_cell.level() +
+    int small_level =
+        big_cell.level() +
         S2Testing::rnd.Uniform(min(16, S2CellId::kMaxLevel - big_cell.level()));
     vector<S2CellId> neighbors;
     big_cell.AppendAllNeighbors(small_level, &neighbors);
@@ -829,8 +829,8 @@ TEST(S2Polygon, InitToCellUnionBorder) {
         diagonal = false;
       }
     }
-    VLOG(3) << iter << ": big_cell " << big_cell <<
-        " small_cell " << small_cell;
+    VLOG(3) << iter << ": big_cell " << big_cell << " small_cell "
+            << small_cell;
     if (diagonal) {
       VLOG(3) << "  diagonal - bailing out!";
       continue;
@@ -897,8 +897,8 @@ TEST(S2PolygonTest, Project) {
   // The point is inside the hole in the polygon.
   point = S2Testing::MakePoint("-0.49:-0.49");
   projected = polygon->Project(point);
-  EXPECT_TRUE(S2::ApproxEquals(S2Testing::MakePoint("-0.5:-0.5"),
-                               projected, 1e-6));
+  EXPECT_TRUE(
+      S2::ApproxEquals(S2Testing::MakePoint("-0.5:-0.5"), projected, 1e-6));
 
   point = S2Testing::MakePoint("0:-3");
   projected = polygon->Project(point);
@@ -919,9 +919,9 @@ S1Angle LoopDiameter(S2Loop const& loop) {
   for (int i = 0; i < loop.num_vertices(); ++i) {
     S2Point test_point = loop.vertex(i);
     for (int j = i + 1; j < loop.num_vertices(); ++j) {
-      diameter = max(diameter,
-                     S2EdgeUtil::GetDistance(test_point, loop.vertex(j),
-                                             loop.vertex(j+1)));
+      diameter =
+          max(diameter, S2EdgeUtil::GetDistance(test_point, loop.vertex(j),
+                                                loop.vertex(j + 1)));
     }
   }
   return diameter;
@@ -945,8 +945,7 @@ double MaximumDistanceInDegrees(S2Polygon const& poly_a,
     }
     has_big_loops = true;
     for (int v = 0; v < a_loop->num_vertices(); ++v) {
-      double distance =
-          DistanceToPolygonInDegrees(a_loop->vertex(v), poly_b);
+      double distance = DistanceToPolygonInDegrees(a_loop->vertex(v), poly_b);
       if (distance < min_distance) {
         min_distance = distance;
       }
@@ -1013,8 +1012,10 @@ TEST_F(S2PolygonSimplifierTest, SimplifiedLoopSelfIntersects) {
 }
 
 TEST_F(S2PolygonSimplifierTest, NoSimplificationManyLoops) {
-  SetInput("0:0,    0:1,   1:0;   0:20, 0:21, 1:20; "
-           "20:20, 20:21, 21:20; 20:0, 20:1, 21:0", 0.01);
+  SetInput(
+      "0:0,    0:1,   1:0;   0:20, 0:21, 1:20; "
+      "20:20, 20:21, 21:20; 20:0, 20:1, 21:0",
+      0.01);
   EXPECT_EQ(0, MaximumDistanceInDegrees(*simplified, *original, 0));
   EXPECT_EQ(0, MaximumDistanceInDegrees(*original, *simplified, 0));
 }
@@ -1025,8 +1026,10 @@ TEST_F(S2PolygonSimplifierTest, TinyLoopDisappears) {
 }
 
 TEST_F(S2PolygonSimplifierTest, StraightLinesAreSimplified) {
-  SetInput("0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0,"
-           "6:1, 5:1, 4:1, 3:1, 2:1, 1:1, 0:1", 0.01);
+  SetInput(
+      "0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0,"
+      "6:1, 5:1, 4:1, 3:1, 2:1, 1:1, 0:1",
+      0.01);
   EXPECT_EQ(4, simplified->num_vertices());
 }
 
@@ -1037,8 +1040,7 @@ TEST_F(S2PolygonSimplifierTest, EdgeSplitInManyPieces) {
   const string saw =
       "1:1, 1:8, 2:2, 2:8, 3:2, 3:8, 4:2, 4:8, 5:2, 5:8,"
       "6:2, 6:8, 7:2, 7:8, 8:2, 8:8, 9:2, 9:8, 10:1";
-  const string near_square =
-      "0:0, 0:7.9, 1:8.1, 10:8.1, 11:7.9, 11:0";
+  const string near_square = "0:0, 0:7.9, 1:8.1, 10:8.1, 11:7.9, 11:0";
   SetInput(saw + ";" + near_square, 0.21);
 
   EXPECT_TRUE(simplified->IsValid());
@@ -1059,13 +1061,11 @@ TEST_F(S2PolygonSimplifierTest, EdgesOverlap) {
   EXPECT_TRUE(simplified->BoundaryApproxEquals(true_poly.get()));
 }
 
-S2Polygon* MakeRegularPolygon(const string& center,
-                              int num_points, double radius_in_degrees) {
-
+S2Polygon* MakeRegularPolygon(const string& center, int num_points,
+                              double radius_in_degrees) {
   double radius_in_radians = S1Angle::Degrees(radius_in_degrees).radians();
   S2Loop* l = S2Testing::MakeRegularLoop(S2Testing::MakePoint(center),
-                                         num_points,
-                                         radius_in_radians);
+                                         num_points, radius_in_radians);
   vector<S2Loop*> loops;
   loops.push_back(l);
   return new S2Polygon(&loops);
@@ -1225,4 +1225,3 @@ BENCHMARK(BM_DisjointPolygonUnion)
     ->Arg(4096)
     ->Arg(8192);
 #endif
-

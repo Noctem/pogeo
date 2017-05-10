@@ -11,15 +11,14 @@ using std::reverse;
 #include <vector>
 using std::vector;
 
-
+#include <gtest/gtest.h>
 #include "base/integral_types.h"
 #include "base/logging.h"
-#include <gtest/gtest.h>
-#include "s2cellid.h"
-#include "s2cell.h"
 #include "s2cap.h"
-#include "s2testing.h"
+#include "s2cell.h"
+#include "s2cellid.h"
 #include "s2regioncoverer.h"
+#include "s2testing.h"
 
 TEST(S2CellUnion, Basic) {
   S2CellUnion empty;
@@ -50,8 +49,8 @@ TEST(S2CellUnion, Basic) {
 
 static S2Testing::Random& rnd = S2Testing::rnd;
 
-static void AddCells(S2CellId const& id, bool selected,
-                     vector<S2CellId> *input, vector<S2CellId> *expected) {
+static void AddCells(S2CellId const& id, bool selected, vector<S2CellId>* input,
+                     vector<S2CellId>* expected) {
   // Decides whether to add "id" and/or some of its descendants to the
   // test case.  If "selected" is true, then the region covered by "id"
   // *must* be added to the test case (either by adding "id" itself, or
@@ -160,10 +159,10 @@ TEST(S2CellUnion, Normalize) {
         EXPECT_TRUE(cellunion.Intersects(input[j].child_begin()));
         EXPECT_TRUE(cellunion.Contains(input[j].child_end().prev()));
         EXPECT_TRUE(cellunion.Intersects(input[j].child_end().prev()));
-        EXPECT_TRUE(cellunion.Contains(
-                        input[j].child_begin(S2CellId::kMaxLevel)));
-        EXPECT_TRUE(cellunion.Intersects(
-                        input[j].child_begin(S2CellId::kMaxLevel)));
+        EXPECT_TRUE(
+            cellunion.Contains(input[j].child_begin(S2CellId::kMaxLevel)));
+        EXPECT_TRUE(
+            cellunion.Intersects(input[j].child_begin(S2CellId::kMaxLevel)));
       }
     }
     for (int j = 0; j < expected.size(); ++j) {
@@ -244,7 +243,6 @@ TEST(S2CellUnion, Normalize) {
       EXPECT_EQ(contains, cellunion.Contains(test[j]));
       EXPECT_EQ(intersects, cellunion.Intersects(test[j]));
     }
-
   }
   printf("avg in %.2f, avg out %.2f\n", in_sum / kIters, out_sum / kIters);
 }
@@ -292,8 +290,8 @@ TEST(S2CellUnion, Expand) {
     covering.Expand(S1Angle::Radians(radius), max_level_diff);
     S2Testing::CheckCovering(expanded_cap, covering, false);
 
-    int expand_level = min(min_level + max_level_diff,
-                           S2::kMinWidth.GetMaxLevel(radius));
+    int expand_level =
+        min(min_level + max_level_diff, S2::kMinWidth.GetMaxLevel(radius));
     double expanded_max_angle = GetMaxAngle(covering, cap.axis());
 
     // If the covering includes a tiny cell along the boundary, in theory the
@@ -309,8 +307,7 @@ TEST(S2CellUnion, Expand) {
   }
 }
 
-static void TestInitFromRange(S2CellId const& min_id,
-                              S2CellId const& max_id) {
+static void TestInitFromRange(S2CellId const& min_id, S2CellId const& max_id) {
   S2CellUnion cell_union;
   cell_union.InitFromRange(min_id, max_id);
   vector<S2CellId> const& cell_ids = cell_union.cell_ids();
@@ -319,7 +316,7 @@ static void TestInitFromRange(S2CellId const& min_id,
   EXPECT_EQ(min_id, cell_ids.front().range_min());
   EXPECT_EQ(max_id, cell_ids.back().range_max());
   for (int i = 1; i < cell_ids.size(); ++i) {
-    EXPECT_EQ(cell_ids[i].range_min(), cell_ids[i-1].range_max().next());
+    EXPECT_EQ(cell_ids[i].range_min(), cell_ids[i - 1].range_max().next());
   }
   EXPECT_FALSE(cell_union.Normalize());
 }
@@ -415,7 +412,6 @@ TEST(S2CellUnion, LeafCellsCovered) {
   // empty union
   EXPECT_EQ(0, cell_union.LeafCellsCovered());
 
-
   vector<S2CellId> ids;
   ids.push_back(S2CellId::FromFacePosLevel(
       0, (1ULL << ((S2CellId::kMaxLevel << 1) - 1)), S2CellId::kMaxLevel));
@@ -444,6 +440,6 @@ TEST(S2CellUnion, LeafCellsCovered) {
   ids.push_back(S2CellId::FromFacePosLevel(5, 0, 30));
   cell_union.Init(ids);
   uint64 expected = 1ULL + (1ULL << 6) + (1ULL << 30) + (1ULL << 32) +
-      (2ULL << 56) + (1ULL << 58) + (1ULL << 60);
+                    (2ULL << 56) + (1ULL << 58) + (1ULL << 60);
   EXPECT_EQ(expected, cell_union.LeafCellsCovered());
 }

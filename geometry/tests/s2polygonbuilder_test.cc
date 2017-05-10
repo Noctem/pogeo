@@ -6,14 +6,14 @@
 using std::set;
 using std::multiset;
 
+#include <gtest/gtest.h>
 #include "base/logging.h"
 #include "base/macros.h"
-#include "strings/stringprintf.h"
-#include <gtest/gtest.h>
 #include "s2cap.h"
 #include "s2polygon.h"
 #include "s2polyline.h"
 #include "s2testing.h"
+#include "strings/stringprintf.h"
 #include "util/math/matrix3x3-inl.h"
 
 namespace {
@@ -52,154 +52,203 @@ struct TestCase {
 };
 
 TestCase test_cases[] = {
-  // 0: No loops.
-  { 0, 0, true, 0.0, 10.0, 90.0,
-    { { NULL, false } },
-    { NULL }, 0 },
+    // 0: No loops.
+    {0, 0, true, 0.0, 10.0, 90.0, {{NULL, false}}, {NULL}, 0},
 
-  // 1: One loop with some extra edges.
-  { 0, 0, true, 0.0, 4.0, 15.0,
-    { { "0:0, 0:10, 10:5", true },
-      { "0:0, 5:5", false },
-      { "10:5, 20:7, 30:10, 40:15, 50:3, 60:-20", false } },
-    { "0:0, 0:10, 10:5" }, 6 },
+    // 1: One loop with some extra edges.
+    {0,
+     0,
+     true,
+     0.0,
+     4.0,
+     15.0,
+     {{"0:0, 0:10, 10:5", true},
+      {"0:0, 5:5", false},
+      {"10:5, 20:7, 30:10, 40:15, 50:3, 60:-20", false}},
+     {"0:0, 0:10, 10:5"},
+     6},
 
-  // 2: One loop that has an edge removed by XORing, plus lots of extra edges.
-  { 0, 1, true, 0.0, 1.0, 45.0,  // XOR
-    { { "0:0, 0:10, 5:15, 10:10, 10:0", true },
-      { "10:10, 12:12, 14:14, 16:16, 18:18", false },
-      { "14:14, 14:16, 14:18, 14:20", false },
-      { "14:18, 16:20, 18:22", false },
-      { "18:12, 16:12, 14:12, 12:12", false },
-      { "20:18, 18:16, 16:14, 14:12", false },
-      { "20:14, 18:14, 16:14", false },
-      { "5:15, 0:10", false } },
-    { NULL }, 21 },
+    // 2: One loop that has an edge removed by XORing, plus lots of extra edges.
+    {0,
+     1,
+     true,
+     0.0,
+     1.0,
+     45.0,  // XOR
+     {{"0:0, 0:10, 5:15, 10:10, 10:0", true},
+      {"10:10, 12:12, 14:14, 16:16, 18:18", false},
+      {"14:14, 14:16, 14:18, 14:20", false},
+      {"14:18, 16:20, 18:22", false},
+      {"18:12, 16:12, 14:12, 12:12", false},
+      {"20:18, 18:16, 16:14, 14:12", false},
+      {"20:14, 18:14, 16:14", false},
+      {"5:15, 0:10", false}},
+     {NULL},
+     21},
 
-  // 3: Three loops (two shells and one hole) that combine into one.
-  { 0, 1, true, 0.0, 4.0, 90.0,  // XOR
-    { { "0:0, 0:10, 5:10, 10:10, 10:5, 10:0", true },
-      { "0:10, 0:15, 5:15, 5:10", true },
-      { "10:10, 5:10, 5:5, 10:5", true } },
-    { "0:0, 0:10, 0:15, 5:15, 5:10, 5:5, 10:5, 10:0" }, 0 },
+    // 3: Three loops (two shells and one hole) that combine into one.
+    {0,
+     1,
+     true,
+     0.0,
+     4.0,
+     90.0,  // XOR
+     {{"0:0, 0:10, 5:10, 10:10, 10:5, 10:0", true},
+      {"0:10, 0:15, 5:15, 5:10", true},
+      {"10:10, 5:10, 5:5, 10:5", true}},
+     {"0:0, 0:10, 0:15, 5:15, 5:10, 5:5, 10:5, 10:0"},
+     0},
 
-  // 4: A big CCW triangle contained 3 CW triangular holes.  The whole thing
-  // looks like a pyramid of nine small triangles (with two extra edges).
-  { -1, 0, true, 0.0, 0.9, 30.0,  // Directed edges required for unique result.
-    { { "0:0, 0:2, 0:4, 0:6, 1:5, 2:4, 3:3, 2:2, 1:1", true },
-      { "0:2, 1:1, 1:3", true },
-      { "0:4, 1:3, 1:5", true },
-      { "1:3, 2:2, 2:4", true },
-      { "0:0, -1:1", false },
-      { "3:3, 5:5", false } },
-    { "0:0, 0:2, 1:1",
-      "0:2, 0:4, 1:3",
-      "0:4, 0:6, 1:5",
-      "1:1, 1:3, 2:2",
-      "1:3, 1:5, 2:4",
-      "2:2, 2:4, 3:3" }, 2 },
+    // 4: A big CCW triangle contained 3 CW triangular holes.  The whole thing
+    // looks like a pyramid of nine small triangles (with two extra edges).
+    {-1,
+     0,
+     true,
+     0.0,
+     0.9,
+     30.0,  // Directed edges required for unique result.
+     {{"0:0, 0:2, 0:4, 0:6, 1:5, 2:4, 3:3, 2:2, 1:1", true},
+      {"0:2, 1:1, 1:3", true},
+      {"0:4, 1:3, 1:5", true},
+      {"1:3, 2:2, 2:4", true},
+      {"0:0, -1:1", false},
+      {"3:3, 5:5", false}},
+     {"0:0, 0:2, 1:1", "0:2, 0:4, 1:3", "0:4, 0:6, 1:5", "1:1, 1:3, 2:2",
+      "1:3, 1:5, 2:4", "2:2, 2:4, 3:3"},
+     2},
 
-  // 5: A square divided into four subsquares.  In this case we want
-  // to extract the four loops rather than taking their union.
-  // There are four extra edges as well.
-  { 0, -1, true, 0.0, 4.0, 90.0,  // Don't XOR
-    { { "0:0, 0:5, 5:5, 5:0", true },
-      { "0:5, 0:10, 5:10, 5:5", true },
-      { "5:0, 5:5, 10:5, 10:0", true },
-      { "5:5, 5:10, 10:10, 10:5", true },
-      { "0:10, 0:15, 0:20", false },
-      { "20:0, 15:0, 10:0", false } },
-    { "0:0, 0:5, 5:5, 5:0",
-      "0:5, 0:10, 5:10, 5:5",
-      "5:0, 5:5, 10:5, 10:0",
-      "5:5, 5:10, 10:10, 10:5" }, 4 },
+    // 5: A square divided into four subsquares.  In this case we want
+    // to extract the four loops rather than taking their union.
+    // There are four extra edges as well.
+    {0,
+     -1,
+     true,
+     0.0,
+     4.0,
+     90.0,  // Don't XOR
+     {{"0:0, 0:5, 5:5, 5:0", true},
+      {"0:5, 0:10, 5:10, 5:5", true},
+      {"5:0, 5:5, 10:5, 10:0", true},
+      {"5:5, 5:10, 10:10, 10:5", true},
+      {"0:10, 0:15, 0:20", false},
+      {"20:0, 15:0, 10:0", false}},
+     {"0:0, 0:5, 5:5, 5:0", "0:5, 0:10, 5:10, 5:5", "5:0, 5:5, 10:5, 10:0",
+      "5:5, 5:10, 10:10, 10:5"},
+     4},
 
-  // 6: Five nested loops that touch at a point.
-  { 0, 0, true, 0.0, 0.8, 5.0,
-    { { "0:0, 0:10, 10:10, 10:0", true },
-      { "0:0, 1:9, 9:9, 9:1", true },
-      { "0:0, 2:8, 8:8, 8:2", true },
-      { "0:0, 3:7, 7:7, 7:3", true },
-      { "0:0, 4:6, 6:6, 6:4", true } },
-    { "0:0, 0:10, 10:10, 10:0",
-      "0:0, 1:9, 9:9, 9:1",
-      "0:0, 2:8, 8:8, 8:2",
-      "0:0, 3:7, 7:7, 7:3",
-      "0:0, 4:6, 6:6, 6:4" }, 0 },
+    // 6: Five nested loops that touch at a point.
+    {0,
+     0,
+     true,
+     0.0,
+     0.8,
+     5.0,
+     {{"0:0, 0:10, 10:10, 10:0", true},
+      {"0:0, 1:9, 9:9, 9:1", true},
+      {"0:0, 2:8, 8:8, 8:2", true},
+      {"0:0, 3:7, 7:7, 7:3", true},
+      {"0:0, 4:6, 6:6, 6:4", true}},
+     {"0:0, 0:10, 10:10, 10:0", "0:0, 1:9, 9:9, 9:1", "0:0, 2:8, 8:8, 8:2",
+      "0:0, 3:7, 7:7, 7:3", "0:0, 4:6, 6:6, 6:4"},
+     0},
 
-  // 7: Four diamonds nested within each other touching at two points.
-  { -1, 0, true, 0.0, 4.0, 15.0,  // Directed edges required for unique result.
-    { { "0:-20, -10:0, 0:20, 10:0", true },
-      { "0:10, -10:0, 0:-10, 10:0", true },
-      { "0:-10, -5:0, 0:10, 5:0", true },
-      { "0:5, -5:0, 0:-5, 5:0", true } },
-    { "0:-20, -10:0, 0:-10, 10:0",
-      "0:-10, -5:0, 0:-5, 5:0",
-      "0:5, -5:0, 0:10, 5:0",
-      "0:10, -10:0, 0:20, 10:0" }, 0 },
+    // 7: Four diamonds nested within each other touching at two points.
+    {-1,
+     0,
+     true,
+     0.0,
+     4.0,
+     15.0,  // Directed edges required for unique result.
+     {{"0:-20, -10:0, 0:20, 10:0", true},
+      {"0:10, -10:0, 0:-10, 10:0", true},
+      {"0:-10, -5:0, 0:10, 5:0", true},
+      {"0:5, -5:0, 0:-5, 5:0", true}},
+     {"0:-20, -10:0, 0:-10, 10:0", "0:-10, -5:0, 0:-5, 5:0",
+      "0:5, -5:0, 0:10, 5:0", "0:10, -10:0, 0:20, 10:0"},
+     0},
 
-  // 8: Seven diamonds nested within each other touching at one
-  // point between each nested pair.
-  { 0, 0, true, 0.0, 9.0, 4.0,
-    { { "0:-70, -70:0, 0:70, 70:0", true },
-      { "0:-70, -60:0, 0:60, 60:0", true },
-      { "0:-50, -60:0, 0:50, 50:0", true },
-      { "0:-40, -40:0, 0:50, 40:0", true },
-      { "0:-30, -30:0, 0:30, 40:0", true },
-      { "0:-20, -20:0, 0:30, 20:0", true },
-      { "0:-10, -20:0, 0:10, 10:0", true } },
-    { "0:-70, -70:0, 0:70, 70:0",
-      "0:-70, -60:0, 0:60, 60:0",
-      "0:-50, -60:0, 0:50, 50:0",
-      "0:-40, -40:0, 0:50, 40:0",
-      "0:-30, -30:0, 0:30, 40:0",
-      "0:-20, -20:0, 0:30, 20:0",
-      "0:-10, -20:0, 0:10, 10:0" }, 0 },
+    // 8: Seven diamonds nested within each other touching at one
+    // point between each nested pair.
+    {0,
+     0,
+     true,
+     0.0,
+     9.0,
+     4.0,
+     {{"0:-70, -70:0, 0:70, 70:0", true},
+      {"0:-70, -60:0, 0:60, 60:0", true},
+      {"0:-50, -60:0, 0:50, 50:0", true},
+      {"0:-40, -40:0, 0:50, 40:0", true},
+      {"0:-30, -30:0, 0:30, 40:0", true},
+      {"0:-20, -20:0, 0:30, 20:0", true},
+      {"0:-10, -20:0, 0:10, 10:0", true}},
+     {"0:-70, -70:0, 0:70, 70:0", "0:-70, -60:0, 0:60, 60:0",
+      "0:-50, -60:0, 0:50, 50:0", "0:-40, -40:0, 0:50, 40:0",
+      "0:-30, -30:0, 0:30, 40:0", "0:-20, -20:0, 0:30, 20:0",
+      "0:-10, -20:0, 0:10, 10:0"},
+     0},
 
-  // 9: A triangle and a self-intersecting bowtie.
-  { 0, 0, false, 0.0, 4.0, 45.0,
-    { { "0:0, 0:10, 5:5", true },
-      { "0:20, 0:30, 10:20", false },
-      { "10:20, 10:30, 0:20", false } },
-    { "0:0, 0:10, 5:5" }, 4 },
+    // 9: A triangle and a self-intersecting bowtie.
+    {0,
+     0,
+     false,
+     0.0,
+     4.0,
+     45.0,
+     {{"0:0, 0:10, 5:5", true},
+      {"0:20, 0:30, 10:20", false},
+      {"10:20, 10:30, 0:20", false}},
+     {"0:0, 0:10, 5:5"},
+     4},
 
-  // 10: Two triangles that intersect each other.
-  { 0, 0, false, 0.0, 2.0, 45.0,
-    { { "0:0, 0:12, 6:6", true },
-      { "3:6, 3:18, 9:12", true } },
-    { NULL }, 6 },
+    // 10: Two triangles that intersect each other.
+    {0,
+     0,
+     false,
+     0.0,
+     2.0,
+     45.0,
+     {{"0:0, 0:12, 6:6", true}, {"3:6, 3:18, 9:12", true}},
+     {NULL},
+     6},
 
-  // 11: Four squares that combine to make a big square.  The nominal edges of
-  // the square are at +/-8.5 degrees in latitude and longitude.  All vertices
-  // except the center vertex are perturbed by up to 0.5 degrees in latitude
-  // and/or longitude.  The various copies of the center vertex are misaligned
-  // by more than this (i.e. they are structured as a tree where adjacent
-  // vertices are separated by at most 1 degree in latitude and/or longitude)
-  // so that the clustering algorithm needs more than one iteration to find
-  // them all.  Note that the merged position of this vertex doesn't matter
-  // because it is XORed away in the output.  However, it's important that
-  // all edge pairs that need to be XORed are separated by no more than
-  // 'min_merge' below.
+    // 11: Four squares that combine to make a big square.  The nominal edges of
+    // the square are at +/-8.5 degrees in latitude and longitude.  All vertices
+    // except the center vertex are perturbed by up to 0.5 degrees in latitude
+    // and/or longitude.  The various copies of the center vertex are misaligned
+    // by more than this (i.e. they are structured as a tree where adjacent
+    // vertices are separated by at most 1 degree in latitude and/or longitude)
+    // so that the clustering algorithm needs more than one iteration to find
+    // them all.  Note that the merged position of this vertex doesn't matter
+    // because it is XORed away in the output.  However, it's important that
+    // all edge pairs that need to be XORed are separated by no more than
+    // 'min_merge' below.
 
-  { 0, 1, true, 1.7, 5.8, 70.0,  // XOR, min_merge > sqrt(2), max_merge < 6.
-    { { "-8:-8, -8:0", false },
-      { "-8:1, -8:8", false },
-      { "0:-9, 1:-1", false },
-      { "1:2, 1:9", false },
-      { "0:8, 2:2", false },
-      { "0:-2, 1:-8", false },
-      { "8:9, 9:1", false },
-      { "9:0, 8:-9", false },
-      { "9:-9, 0:-8", false },
-      { "1:-9, -9:-9", false },
-      { "8:0, 1:0", false },
-      { "-1:1, -8:0", false },
-      { "-8:1, -2:0", false },
-      { "0:1, 8:1", false },
-      { "-9:8, 1:8", false },
-      { "0:9, 8:8", false } },
-    { "8.5:8.5, 8.5:0.5, 8.5:-8.5, 0.5:-8.5, "
-      "-8.5:-8.5, -8.5:0.5, -8.5:8.5, 0.5:8.5" }, 0 },
+    {0,
+     1,
+     true,
+     1.7,
+     5.8,
+     70.0,  // XOR, min_merge > sqrt(2), max_merge < 6.
+     {{"-8:-8, -8:0", false},
+      {"-8:1, -8:8", false},
+      {"0:-9, 1:-1", false},
+      {"1:2, 1:9", false},
+      {"0:8, 2:2", false},
+      {"0:-2, 1:-8", false},
+      {"8:9, 9:1", false},
+      {"9:0, 8:-9", false},
+      {"9:-9, 0:-8", false},
+      {"1:-9, -9:-9", false},
+      {"8:0, 1:0", false},
+      {"-1:1, -8:0", false},
+      {"-8:1, -2:0", false},
+      {"0:1, 8:1", false},
+      {"-9:8, 1:8", false},
+      {"0:9, 8:8", false}},
+     {"8.5:8.5, 8.5:0.5, 8.5:-8.5, 0.5:-8.5, "
+      "-8.5:-8.5, -8.5:0.5, -8.5:8.5, 0.5:8.5"},
+     0},
 };
 
 S2Point Perturb(S2Point const& x, double max_perturb) {
@@ -207,8 +256,7 @@ S2Point Perturb(S2Point const& x, double max_perturb) {
 
   if (max_perturb == 0) return x;
   return S2Testing::SamplePoint(
-      S2Cap::FromAxisAngle(x.Normalize(),
-                           S1Angle::Radians(max_perturb)));
+      S2Cap::FromAxisAngle(x.Normalize(), S1Angle::Radians(max_perturb)));
 }
 
 void GetVertices(char const* str, Matrix3x3_d const& m,
@@ -221,9 +269,8 @@ void GetVertices(char const* str, Matrix3x3_d const& m,
   }
 }
 
-void AddEdge(S2Point const& v0, S2Point const& v1,
-             int max_splits, double max_perturb, double min_edge,
-             S2PolygonBuilder* builder) {
+void AddEdge(S2Point const& v0, S2Point const& v1, int max_splits,
+             double max_perturb, double min_edge, S2PolygonBuilder* builder) {
   // Adds an edge from "v0" to "v1", possibly splitting it recursively up to
   // "max_splits" times, and perturbing each vertex up to a distance of
   // "max_perturb".  No edge shorter than "min_edge" will be created due to
@@ -241,14 +288,12 @@ void AddEdge(S2Point const& v0, S2Point const& v1,
     AddEdge(v0, vmid, max_splits - 1, max_perturb, min_edge, builder);
     AddEdge(vmid, v1, max_splits - 1, max_perturb, min_edge, builder);
   } else {
-    builder->AddEdge(Perturb(v0, max_perturb),
-                     Perturb(v1, max_perturb));
+    builder->AddEdge(Perturb(v0, max_perturb), Perturb(v1, max_perturb));
   }
 }
 
-void AddChain(Chain const& chain, Matrix3x3_d const& m,
-              int max_splits, double max_perturb, double min_edge,
-              S2PolygonBuilder* builder) {
+void AddChain(Chain const& chain, Matrix3x3_d const& m, int max_splits,
+              double max_perturb, double min_edge, S2PolygonBuilder* builder) {
   // Transform the given edge chain to the frame (x,y,z), optionally split
   // each edge into pieces and/or perturb the vertices up to the given
   // radius, and add them to the builder.
@@ -257,7 +302,7 @@ void AddChain(Chain const& chain, Matrix3x3_d const& m,
   GetVertices(chain.str, m, &vertices);
   if (chain.closed) vertices.push_back(vertices[0]);
   for (int i = 1; i < vertices.size(); ++i) {
-    AddEdge(vertices[i-1], vertices[i], max_splits, max_perturb, min_edge,
+    AddEdge(vertices[i - 1], vertices[i], max_splits, max_perturb, min_edge,
             builder);
   }
 }
@@ -280,22 +325,19 @@ bool FindLoop(S2Loop const* loop, vector<S2Loop*> const& candidates,
 }
 
 bool FindMissingLoops(vector<S2Loop*> const& actual,
-                      vector<S2Loop*> const& expected,
-                      Matrix3x3_d const& m,
-                      int max_splits, double max_error,
-                      char const* label) {
+                      vector<S2Loop*> const& expected, Matrix3x3_d const& m,
+                      int max_splits, double max_error, char const* label) {
   // Dump any loops from "actual" that are not present in "expected".
   bool found = false;
   for (int i = 0; i < actual.size(); ++i) {
-    if (FindLoop(actual[i], expected, max_splits, max_error))
-      continue;
+    if (FindLoop(actual[i], expected, max_splits, max_error)) continue;
 
     fprintf(stderr, "%s loop %d:\n", label, i);
     S2Loop* loop = actual[i];
     for (int j = 0; j < loop->num_vertices(); ++j) {
       S2LatLng ll(m.Transpose() * loop->vertex(j));
-      fprintf(stderr, "   [%.6f, %.6f]\n",
-              ll.lat().degrees(), ll.lng().degrees());
+      fprintf(stderr, "   [%.6f, %.6f]\n", ll.lat().degrees(),
+              ll.lng().degrees());
     }
     found = true;
   }
@@ -318,7 +360,6 @@ bool UnexpectedUnusedEdgeCount(int num_actual, int num_expected,
 
 void DumpUnusedEdges(vector<pair<S2Point, S2Point> > const& unused_edges,
                      Matrix3x3_d const& m, int num_expected) {
-
   // Print the unused edges, transformed back into their original
   // latitude-longitude space in degrees.
 
@@ -329,9 +370,8 @@ void DumpUnusedEdges(vector<pair<S2Point, S2Point> > const& unused_edges,
   for (int i = 0; i < unused_edges.size(); ++i) {
     S2LatLng p0(m.Transpose() * unused_edges[i].first);
     S2LatLng p1(m.Transpose() * unused_edges[i].second);
-    fprintf(stderr, "  [%.6f, %.6f] -> [%.6f, %.5f]\n",
-            p0.lat().degrees(), p0.lng().degrees(),
-            p1.lat().degrees(), p1.lng().degrees());
+    fprintf(stderr, "  [%.6f, %.6f] -> [%.6f, %.5f]\n", p0.lat().degrees(),
+            p0.lng().degrees(), p1.lat().degrees(), p1.lng().degrees());
   }
 }
 
@@ -352,9 +392,7 @@ double SmallFraction() {
   return pow(1e-10, u);
 }
 
-extern void DeleteLoop(S2Loop* loop) {
-  delete loop;
-}
+extern void DeleteLoop(S2Loop* loop) { delete loop; }
 extern void DeleteLoopsInVector(vector<S2Loop*>* loops) {
   for_each(loops->begin(), loops->end(), DeleteLoop);
   loops->clear();
@@ -441,8 +479,8 @@ bool TestBuilder(TestCase const* test) {
       // Turn off edge splicing completely.
       edge_fraction = 0;
       vertex_merge = min_merge + SmallFraction() * (max_merge - min_merge);
-      max_perturb = 0.5 * min(vertex_merge - min_merge,
-                              max_merge - vertex_merge);
+      max_perturb =
+          0.5 * min(vertex_merge - min_merge, max_merge - vertex_merge);
     } else {
       // Splice edges.  These bounds also assume that edges may be split
       // (see detailed comments above).
@@ -514,21 +552,20 @@ bool TestBuilder(TestCase const* test) {
     if (max_splits > 0 || max_perturb > 0) max_error += 1e-15;
 
     // Note the single "|" below so that we print both sets of loops.
-    if (FindMissingLoops(loops, expected, m,
-                         max_splits, max_error, "Actual") |
-        FindMissingLoops(expected, loops, m,
-                         max_splits, max_error, "Expected") |
+    if (FindMissingLoops(loops, expected, m, max_splits, max_error, "Actual") |
+        FindMissingLoops(expected, loops, m, max_splits, max_error,
+                         "Expected") |
         UnexpectedUnusedEdgeCount(unused_edges.size(), test->num_unused_edges,
                                   max_splits)) {
-
       // We found a problem.  Print out the relevant parameters.
       DumpUnusedEdges(unused_edges, m, test->num_unused_edges);
-      fprintf(stderr, "During iteration %d:\n  undirected: %d\n  xor: %d\n"
+      fprintf(stderr,
+              "During iteration %d:\n  undirected: %d\n  xor: %d\n"
               "  max_splits: %d\n  max_perturb: %.6g\n"
               "  vertex_merge_radius: %.6g\n  edge_splice_fraction: %.6g\n"
               "  min_edge: %.6g\n  max_error: %.6g\n\n",
-              iter, options.undirected_edges(), options.xor_edges(),
-              max_splits, S1Angle::Radians(max_perturb).degrees(),
+              iter, options.undirected_edges(), options.xor_edges(), max_splits,
+              S1Angle::Radians(max_perturb).degrees(),
               options.vertex_merge_radius().degrees(),
               options.edge_splice_fraction(),
               S1Angle::Radians(min_edge).degrees(),

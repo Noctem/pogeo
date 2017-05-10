@@ -5,15 +5,15 @@
 // is done in those unit tests.
 
 #include "s2latlngrect.h"
-#include "util/coding/coder.h"
-#include "s2edgeutil.h"
+#include <gtest/gtest.h>
 #include "s2cap.h"
 #include "s2cell.h"
+#include "s2edgeutil.h"
 #include "s2testing.h"
-#include <gtest/gtest.h>
+#include "util/coding/coder.h"
 
-static S2LatLngRect RectFromDegrees(double lat_lo, double lng_lo,
-                                    double lat_hi, double lng_hi) {
+static S2LatLngRect RectFromDegrees(double lat_lo, double lng_lo, double lat_hi,
+                                    double lng_hi) {
   // Convenience method to construct a rectangle.  This method is
   // intentionally *not* in the S2LatLngRect interface because the
   // argument order is ambiguous, but hopefully it's not too confusing
@@ -54,14 +54,14 @@ TEST(S2LatLngRect, Accessors) {
 
 TEST(S2LatLngRect, FromCenterSize) {
   EXPECT_TRUE(S2LatLngRect::FromCenterSize(S2LatLng::FromDegrees(80, 170),
-                                           S2LatLng::FromDegrees(40, 60)).
-              ApproxEquals(RectFromDegrees(60, 140, 90, -160)));
+                                           S2LatLng::FromDegrees(40, 60))
+                  .ApproxEquals(RectFromDegrees(60, 140, 90, -160)));
   EXPECT_TRUE(S2LatLngRect::FromCenterSize(S2LatLng::FromDegrees(10, 40),
-                                           S2LatLng::FromDegrees(210, 400)).
-              is_full());
+                                           S2LatLng::FromDegrees(210, 400))
+                  .is_full());
   EXPECT_TRUE(S2LatLngRect::FromCenterSize(S2LatLng::FromDegrees(-90, 180),
-                                           S2LatLng::FromDegrees(20, 50)).
-              ApproxEquals(RectFromDegrees(-90, 155, -80, -155)));
+                                           S2LatLng::FromDegrees(20, 50))
+                  .ApproxEquals(RectFromDegrees(-90, 155, -80, -155)));
 }
 
 TEST(S2LatLngRect, FromPoint) {
@@ -99,7 +99,8 @@ TEST(S2LatLngRect, GetVertex) {
     double lat = M_PI_4 * (i - 2);
     double lng = M_PI_2 * (i - 2) + 0.2;
     S2LatLngRect r(R1Interval(lat, lat + M_PI_4),
-                   S1Interval(remainder(lng, 2*M_PI), remainder(lng + M_PI_2, 2*M_PI)));
+                   S1Interval(remainder(lng, 2 * M_PI),
+                              remainder(lng + M_PI_2, 2 * M_PI)));
     for (int k = 0; k < 4; ++k) {
       EXPECT_TRUE(S2::SimpleCCW(r.GetVertex((k - 1) & 3).ToPoint(),
                                 r.GetVertex(k).ToPoint(),
@@ -187,8 +188,7 @@ TEST(S2LatLngRect, IntervalOps) {
 
   TestIntervalOps(RectFromDegrees(-15, -160, -15, -150),
                   RectFromDegrees(20, 145, 25, 155), "FFFF",
-                  RectFromDegrees(-15, 145, 25, -150),
-                  S2LatLngRect::Empty());
+                  RectFromDegrees(-15, 145, 25, -150), S2LatLngRect::Empty());
   TestIntervalOps(RectFromDegrees(70, -10, 90, -140),
                   RectFromDegrees(60, 175, 80, 5), "FFTT",
                   RectFromDegrees(60, -180, 90, 180),
@@ -216,45 +216,47 @@ TEST(S2LatLngRect, AddPoint) {
 }
 
 TEST(S2LatLngRect, Expanded) {
-  EXPECT_TRUE(RectFromDegrees(70, 150, 80, 170).
-              Expanded(S2LatLng::FromDegrees(20, 30)).
-              ApproxEquals(RectFromDegrees(50, 120, 90, -160)));
-  EXPECT_TRUE(S2LatLngRect::Empty().Expanded(S2LatLng::FromDegrees(20, 30)).
-              is_empty());
-  EXPECT_TRUE(S2LatLngRect::Full().Expanded(S2LatLng::FromDegrees(20, 30)).
-              is_full());
-  EXPECT_TRUE(RectFromDegrees(-90, 170, 10, 20).
-              Expanded(S2LatLng::FromDegrees(30, 80)).
-              ApproxEquals(RectFromDegrees(-90, -180, 40, 180)));
+  EXPECT_TRUE(RectFromDegrees(70, 150, 80, 170)
+                  .Expanded(S2LatLng::FromDegrees(20, 30))
+                  .ApproxEquals(RectFromDegrees(50, 120, 90, -160)));
+  EXPECT_TRUE(
+      S2LatLngRect::Empty().Expanded(S2LatLng::FromDegrees(20, 30)).is_empty());
+  EXPECT_TRUE(
+      S2LatLngRect::Full().Expanded(S2LatLng::FromDegrees(20, 30)).is_full());
+  EXPECT_TRUE(RectFromDegrees(-90, 170, 10, 20)
+                  .Expanded(S2LatLng::FromDegrees(30, 80))
+                  .ApproxEquals(RectFromDegrees(-90, -180, 40, 180)));
 }
 
 TEST(S2LatLngRect, ConvolveWithCap) {
-  EXPECT_TRUE(RectFromDegrees(0, 170, 0, -170).
-              ConvolveWithCap(S1Angle::Degrees(15)).ApproxEquals(
-                  RectFromDegrees(-15, 155, 15, -155)));
-  EXPECT_TRUE(RectFromDegrees(60, 150, 80, 10).
-              ConvolveWithCap(S1Angle::Degrees(15)).ApproxEquals(
-                  RectFromDegrees(45, -180, 90, 180)));
+  EXPECT_TRUE(RectFromDegrees(0, 170, 0, -170)
+                  .ConvolveWithCap(S1Angle::Degrees(15))
+                  .ApproxEquals(RectFromDegrees(-15, 155, 15, -155)));
+  EXPECT_TRUE(RectFromDegrees(60, 150, 80, 10)
+                  .ConvolveWithCap(S1Angle::Degrees(15))
+                  .ApproxEquals(RectFromDegrees(45, -180, 90, 180)));
 }
 
 TEST(S2LatLngRect, GetCapBound) {
   // Bounding cap at center is smaller:
-  EXPECT_TRUE(RectFromDegrees(-45, -45, 45, 45).GetCapBound().
-              ApproxEquals(S2Cap::FromAxisHeight(S2Point(1, 0, 0), 0.5)));
+  EXPECT_TRUE(RectFromDegrees(-45, -45, 45, 45)
+                  .GetCapBound()
+                  .ApproxEquals(S2Cap::FromAxisHeight(S2Point(1, 0, 0), 0.5)));
 
   // Bounding cap at north pole is smaller:
-  EXPECT_TRUE(RectFromDegrees(88, -80, 89, 80).GetCapBound().
-              ApproxEquals(S2Cap::FromAxisAngle(S2Point(0, 0, 1),
-                                                S1Angle::Degrees(2))));
+  EXPECT_TRUE(RectFromDegrees(88, -80, 89, 80)
+                  .GetCapBound()
+                  .ApproxEquals(S2Cap::FromAxisAngle(S2Point(0, 0, 1),
+                                                     S1Angle::Degrees(2))));
 
   // Longitude span > 180 degrees:
-  EXPECT_TRUE(RectFromDegrees(-30, -150, -10, 50).GetCapBound().
-              ApproxEquals(S2Cap::FromAxisAngle(S2Point(0, 0, -1),
-                                                S1Angle::Degrees(80))));
+  EXPECT_TRUE(RectFromDegrees(-30, -150, -10, 50)
+                  .GetCapBound()
+                  .ApproxEquals(S2Cap::FromAxisAngle(S2Point(0, 0, -1),
+                                                     S1Angle::Degrees(80))));
 }
 
-static void TestCellOps(S2LatLngRect const& r, S2Cell const& cell,
-                        int level) {
+static void TestCellOps(S2LatLngRect const& r, S2Cell const& cell, int level) {
   // Test the relationship between the given rectangle and cell:
   // 0 == no intersection, 1 == MayIntersect, 2 == Intersects,
   // 3 == Vertex Containment, 4 == Contains
@@ -293,8 +295,8 @@ TEST(S2LatLngRect, CellOps) {
   TestCellOps(r5, S2Cell::FromFacePosLevel(1, 0, 1), 0);
 
   // Rectangle consisting of a single point.
-  TestCellOps(RectFromDegrees(4, 4, 4, 4),
-              S2Cell::FromFacePosLevel(0, 0, 0), 3);
+  TestCellOps(RectFromDegrees(4, 4, 4, 4), S2Cell::FromFacePosLevel(0, 0, 0),
+              3);
 
   // Rectangles that intersect the bounding rectangle of a face
   // but not the face itself.
@@ -308,11 +310,10 @@ TEST(S2LatLngRect, CellOps) {
   S2Cell cell0tr(S2Point(1 + 1e-12, 1, 1));
   S2LatLngRect bound0tr = cell0tr.GetRectBound();
   S2LatLng v0(cell0tr.GetVertexRaw(0));
-  TestCellOps(RectFromDegrees(v0.lat().degrees() - 1e-8,
-                              v0.lng().degrees() - 1e-8,
-                              v0.lat().degrees() - 2e-10,
-                              v0.lng().degrees() + 1e-10),
-              cell0tr, 1);
+  TestCellOps(
+      RectFromDegrees(v0.lat().degrees() - 1e-8, v0.lng().degrees() - 1e-8,
+                      v0.lat().degrees() - 2e-10, v0.lng().degrees() + 1e-10),
+      cell0tr, 1);
 
   // Rectangles that intersect a face but where no vertex of one region
   // is contained by the other region.  The first one passes through
@@ -348,15 +349,13 @@ TEST(S2LatLngRect, Area) {
 
 // Returns the minimum distance from X to the latitude line segment defined by
 // the given latitude and longitude interval.
-S1Angle GetDistance(const S2LatLng& x,
-                    const S1Angle& lat,
+S1Angle GetDistance(const S2LatLng& x, const S1Angle& lat,
                     const S1Interval& interval) {
   EXPECT_TRUE(x.is_valid());
   EXPECT_TRUE(interval.is_valid());
 
   // Is X inside the longitude interval?
-  if (interval.Contains(x.lng().radians()))
-    return (x.lat() - lat).abs();
+  if (interval.Contains(x.lng().radians())) return (x.lat() - lat).abs();
 
   // Return the distance to the closer endpoint.
   return min(x.GetDistance(S2LatLng(lat, S1Angle::Radians(interval.lo()))),
@@ -365,8 +364,7 @@ S1Angle GetDistance(const S2LatLng& x,
 
 static S1Angle BruteForceDistance(const S2LatLngRect& a,
                                   const S2LatLngRect& b) {
-  if (a.Intersects(b))
-    return S1Angle::Radians(0);
+  if (a.Intersects(b)) return S1Angle::Radians(0);
 
   // Compare every point in 'a' against every latitude edge and longitude edge
   // in 'b', and vice-versa, for a total of 16 point-vs-latitude-edge tests and
@@ -382,12 +380,12 @@ static S1Angle BruteForceDistance(const S2LatLngRect& a,
   pnt_b[3] = S2LatLng(b.lat_hi(), b.lng_lo());
 
   // Make arrays containing the lo/hi latitudes and the lo/hi longitude edges.
-  S1Angle lat_a[2] = { a.lat_lo(), a.lat_hi() };
-  S1Angle lat_b[2] = { b.lat_lo(), b.lat_hi() };
-  S2Point lng_edge_a[2][2] = { { pnt_a[0].ToPoint(), pnt_a[3].ToPoint() },
-                               { pnt_a[1].ToPoint(), pnt_a[2].ToPoint() } };
-  S2Point lng_edge_b[2][2] = { { pnt_b[0].ToPoint(), pnt_b[3].ToPoint() },
-                               { pnt_b[1].ToPoint(), pnt_b[2].ToPoint() } };
+  S1Angle lat_a[2] = {a.lat_lo(), a.lat_hi()};
+  S1Angle lat_b[2] = {b.lat_lo(), b.lat_hi()};
+  S2Point lng_edge_a[2][2] = {{pnt_a[0].ToPoint(), pnt_a[3].ToPoint()},
+                              {pnt_a[1].ToPoint(), pnt_a[2].ToPoint()}};
+  S2Point lng_edge_b[2][2] = {{pnt_b[0].ToPoint(), pnt_b[3].ToPoint()},
+                              {pnt_b[1].ToPoint(), pnt_b[2].ToPoint()}};
 
   S1Angle min_distance = S1Angle::Degrees(180.0);
   for (int i = 0; i < 4; ++i) {
@@ -405,7 +403,7 @@ static S1Angle BruteForceDistance(const S2LatLngRect& a,
           current_b.ToPoint(), lng_edge_a[j][0], lng_edge_a[j][1]);
 
       min_distance = min(min_distance,
-          min(a_to_lat, min(b_to_lat, min(a_to_lng, b_to_lng))));
+                         min(a_to_lat, min(b_to_lat, min(a_to_lng, b_to_lng))));
     }
   }
   return min_distance;
@@ -420,12 +418,10 @@ static S1Angle BruteForceRectPointDistance(const S2LatLngRect& a,
   S1Angle b_to_lo_lat = GetDistance(b, a.lat_lo(), a.lng());
   S1Angle b_to_hi_lat = GetDistance(b, a.lat_hi(), a.lng());
   S1Angle b_to_lo_lng = S2EdgeUtil::GetDistance(
-      b.ToPoint(),
-      S2LatLng(a.lat_lo(), a.lng_lo()).ToPoint(),
+      b.ToPoint(), S2LatLng(a.lat_lo(), a.lng_lo()).ToPoint(),
       S2LatLng(a.lat_hi(), a.lng_lo()).ToPoint());
   S1Angle b_to_hi_lng = S2EdgeUtil::GetDistance(
-      b.ToPoint(),
-      S2LatLng(a.lat_lo(), a.lng_hi()).ToPoint(),
+      b.ToPoint(), S2LatLng(a.lat_lo(), a.lng_hi()).ToPoint(),
       S2LatLng(a.lat_hi(), a.lng_hi()).ToPoint());
   return min(b_to_lo_lat, min(b_to_hi_lat, min(b_to_lo_lng, b_to_hi_lng)));
 }
@@ -441,15 +437,14 @@ static void VerifyGetDistance(const S2LatLngRect& a, const S2LatLngRect& b) {
 }
 
 static S2LatLngRect PointRectFromDegrees(double lat, double lng) {
-  return S2LatLngRect::FromPoint(
-      S2LatLng::FromDegrees(lat, lng).Normalized());
+  return S2LatLngRect::FromPoint(S2LatLng::FromDegrees(lat, lng).Normalized());
 }
 
 // This method verifies a.GetDistance(b), where b is a S2LatLng, by comparing
 // its result against a.GetDistance(c), c being the point rectangle created
 // from b.
-static void VerifyGetRectPointDistance(
-    const S2LatLngRect& a, const S2LatLng& p) {
+static void VerifyGetRectPointDistance(const S2LatLngRect& a,
+                                       const S2LatLng& p) {
   S1Angle distance1 = BruteForceRectPointDistance(a, p.Normalized());
   S1Angle distance2 = a.GetDistance(p.Normalized());
   EXPECT_NEAR(fabs(distance1.radians() - distance2.radians()), 0, 1e-10)
@@ -539,14 +534,11 @@ TEST(S2LatLngRect, GetDistanceRectVsRect) {
 TEST(S2LatLngRect, GetDistanceRandomPairs) {
   // Test random pairs.
   for (int i = 0; i < 10000; ++i) {
-    S2LatLngRect a =
-        S2LatLngRect::FromPointPair(S2LatLng(S2Testing::RandomPoint()),
-                                    S2LatLng(S2Testing::RandomPoint()));
-    S2LatLngRect b =
-        S2LatLngRect::FromPointPair(S2LatLng(S2Testing::RandomPoint()),
-                                    S2LatLng(S2Testing::RandomPoint()));
+    S2LatLngRect a = S2LatLngRect::FromPointPair(
+        S2LatLng(S2Testing::RandomPoint()), S2LatLng(S2Testing::RandomPoint()));
+    S2LatLngRect b = S2LatLngRect::FromPointPair(
+        S2LatLng(S2Testing::RandomPoint()), S2LatLng(S2Testing::RandomPoint()));
     VerifyGetDistance(a, b);
-
 
     S2LatLng c(S2Testing::RandomPoint());
     VerifyGetRectPointDistance(a, c);
@@ -596,16 +588,13 @@ static void VerifyGetDirectedHausdorffDistance(const S2LatLngRect& a,
       << a << ":" << b;
 }
 
-
 TEST(S2LatLngRect, GetDirectedHausdorffDistanceRandomPairs) {
   // Test random pairs.
   for (int i = 0; i < 5000; ++i) {
-    S2LatLngRect a =
-        S2LatLngRect::FromPointPair(S2LatLng(S2Testing::RandomPoint()),
-                                    S2LatLng(S2Testing::RandomPoint()));
-    S2LatLngRect b =
-        S2LatLngRect::FromPointPair(S2LatLng(S2Testing::RandomPoint()),
-                                    S2LatLng(S2Testing::RandomPoint()));
+    S2LatLngRect a = S2LatLngRect::FromPointPair(
+        S2LatLng(S2Testing::RandomPoint()), S2LatLng(S2Testing::RandomPoint()));
+    S2LatLngRect b = S2LatLngRect::FromPointPair(
+        S2LatLng(S2Testing::RandomPoint()), S2LatLng(S2Testing::RandomPoint()));
     // a and b are *minimum* bounding rectangles of two random points, in
     // particular, their Voronoi diagrams are always of the same topology. We
     // take the "complements" of a and b for more thorough testing.
@@ -687,10 +676,10 @@ TEST(S2LatLngRect, GetDirectedHausdorffDistanceRectToRectNearPole) {
 
 TEST(S2LatLngRect, GetDirectedHausdorffDistanceRectToRectDegenerateCases) {
   // Rectangles that contain poles.
-  VerifyGetDirectedHausdorffDistance(
-      RectFromDegrees(0, 10, 90, 20), RectFromDegrees(-4, -10, 4, 0));
-  VerifyGetDirectedHausdorffDistance(
-      RectFromDegrees(-4, -10, 4, 0), RectFromDegrees(0, 10, 90, 20));
+  VerifyGetDirectedHausdorffDistance(RectFromDegrees(0, 10, 90, 20),
+                                     RectFromDegrees(-4, -10, 4, 0));
+  VerifyGetDirectedHausdorffDistance(RectFromDegrees(-4, -10, 4, 0),
+                                     RectFromDegrees(0, 10, 90, 20));
 
   // Two rectangles share same or complement longitudinal intervals.
   S2LatLngRect a = RectFromDegrees(-50, -10, 50, 10);
@@ -700,21 +689,21 @@ TEST(S2LatLngRect, GetDirectedHausdorffDistanceRectToRectDegenerateCases) {
   VerifyGetDirectedHausdorffDistance(c, b);
 
   // rectangle a touches b_opposite_lng.
-  VerifyGetDirectedHausdorffDistance(
-      RectFromDegrees(10, 170, 30, 180), RectFromDegrees(-50, -10, 50, 10));
-  VerifyGetDirectedHausdorffDistance(
-      RectFromDegrees(10, -180, 30, -170), RectFromDegrees(-50, -10, 50, 10));
+  VerifyGetDirectedHausdorffDistance(RectFromDegrees(10, 170, 30, 180),
+                                     RectFromDegrees(-50, -10, 50, 10));
+  VerifyGetDirectedHausdorffDistance(RectFromDegrees(10, -180, 30, -170),
+                                     RectFromDegrees(-50, -10, 50, 10));
 
   // rectangle b's Voronoi diagram is degenerate (lng interval spans 180
   // degrees), and a touches the degenerate Voronoi vertex.
-  VerifyGetDirectedHausdorffDistance(
-      RectFromDegrees(-30, 170, 30, 180), RectFromDegrees(-10, -90, 10, 90));
-  VerifyGetDirectedHausdorffDistance(
-      RectFromDegrees(-30, -180, 30, -170), RectFromDegrees(-10, -90, 10, 90));
+  VerifyGetDirectedHausdorffDistance(RectFromDegrees(-30, 170, 30, 180),
+                                     RectFromDegrees(-10, -90, 10, 90));
+  VerifyGetDirectedHausdorffDistance(RectFromDegrees(-30, -180, 30, -170),
+                                     RectFromDegrees(-10, -90, 10, 90));
 
   // rectangle a touches a voronoi vertex of rectangle b.
-  VerifyGetDirectedHausdorffDistance(
-      RectFromDegrees(-20, 105, 20, 110), RectFromDegrees(-30, 5, 30, 15));
-  VerifyGetDirectedHausdorffDistance(
-      RectFromDegrees(-20, 95, 20, 105), RectFromDegrees(-30, 5, 30, 15));
+  VerifyGetDirectedHausdorffDistance(RectFromDegrees(-20, 105, 20, 110),
+                                     RectFromDegrees(-30, 5, 30, 15));
+  VerifyGetDirectedHausdorffDistance(RectFromDegrees(-20, 95, 20, 105),
+                                     RectFromDegrees(-30, 5, 30, 15));
 }

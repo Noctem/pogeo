@@ -52,8 +52,8 @@ class S2EdgeUtil {
     S2Point const a_cross_b_;
 
     // The fields below are updated for each vertex in the chain.
-    S2Point const* c_;     // Previous vertex in the vertex chain.
-    int acb_;              // The orientation of the triangle ACB.
+    S2Point const* c_;  // Previous vertex in the vertex chain.
+    int acb_;           // The orientation of the triangle ACB.
   };
 
   // This class computes a bounding rectangle that contains all edges
@@ -78,9 +78,9 @@ class S2EdgeUtil {
     S2LatLngRect GetBound() const { return bound_; }
 
    private:
-    S2Point const* a_;      // The previous vertex in the chain.
-    S2LatLng a_latlng_;     // The corresponding latitude-longitude.
-    S2LatLngRect bound_;    // The current bounding rectangle.
+    S2Point const* a_;    // The previous vertex in the chain.
+    S2LatLng a_latlng_;   // The corresponding latitude-longitude.
+    S2LatLngRect bound_;  // The current bounding rectangle.
   };
 
   // The purpose of this class is to find edges that intersect a given
@@ -99,8 +99,8 @@ class S2EdgeUtil {
     inline bool Intersects(S2Point const& v1);
 
    private:
-    S1Interval interval_;    // The interval to be tested against.
-    double lng0_;            // The longitude of the next v0.
+    S1Interval interval_;  // The interval to be tested against.
+    double lng0_;          // The longitude of the next v0.
   };
 
   // Return true if edge AB crosses CD at a point that is interior
@@ -188,8 +188,8 @@ class S2EdgeUtil {
   // Given a point X and an edge AB, return the distance ratio AX / (AX + BX).
   // If X happens to be on the line segment AB, this is the fraction "t" such
   // that X == Interpolate(A, B, t).  Requires that A and B are distinct.
-  static double GetDistanceFraction(S2Point const& x,
-                                    S2Point const& a, S2Point const& b);
+  static double GetDistanceFraction(S2Point const& x, S2Point const& a,
+                                    S2Point const& b);
 
   // Return the point X along the line segment AB whose distance from A is the
   // given fraction "t" of the distance AB.  Does NOT require that "t" be
@@ -200,43 +200,40 @@ class S2EdgeUtil {
 
   // Like Interpolate(), except that the parameter "ax" represents the desired
   // distance from A to the result X rather than a fraction between 0 and 1.
-  static S2Point InterpolateAtDistance(S1Angle const& ax,
-                                       S2Point const& a, S2Point const& b);
+  static S2Point InterpolateAtDistance(S1Angle const& ax, S2Point const& a,
+                                       S2Point const& b);
 
   // A slightly more efficient version of InterpolateAtDistance() that can be
   // used when the distance AB is already known.
-  static S2Point InterpolateAtDistance(S1Angle const& ax,
-                                       S2Point const& a, S2Point const& b,
-                                       S1Angle const& ab);
+  static S2Point InterpolateAtDistance(S1Angle const& ax, S2Point const& a,
+                                       S2Point const& b, S1Angle const& ab);
 
   // Return the minimum distance from X to any point on the edge AB.  All
   // arguments should be unit length.  The result is very accurate for small
   // distances but may have some numerical error if the distance is large
   // (approximately Pi/2 or greater).  The case A == B is handled correctly.
-  static S1Angle GetDistance(S2Point const& x,
-                             S2Point const& a, S2Point const& b);
+  static S1Angle GetDistance(S2Point const& x, S2Point const& a,
+                             S2Point const& b);
 
   // A slightly more efficient version of GetDistance() where the cross
   // product of the two endpoints has been precomputed.  The cross product
   // does not need to be normalized, but should be computed using
   // S2::RobustCrossProd() for the most accurate results.
-  static S1Angle GetDistance(S2Point const& x,
-                             S2Point const& a, S2Point const& b,
-                             S2Point const& a_cross_b);
+  static S1Angle GetDistance(S2Point const& x, S2Point const& a,
+                             S2Point const& b, S2Point const& a_cross_b);
 
   // Return the point along the edge AB that is closest to the point X.
   // The fractional distance of this point along the edge AB can be obtained
   // using GetDistanceFraction() above.
-  static S2Point GetClosestPoint(S2Point const& x,
-                                 S2Point const& a, S2Point const& b);
+  static S2Point GetClosestPoint(S2Point const& x, S2Point const& a,
+                                 S2Point const& b);
 
   // A slightly more efficient version of GetClosestPoint() where the cross
   // product of the two endpoints has been precomputed.  The cross product
   // does not need to be normalized, but should be computed using
   // S2::RobustCrossProd() for the most accurate results.
-  static S2Point GetClosestPoint(S2Point const& x,
-                                 S2Point const& a, S2Point const& b,
-                                 S2Point const& a_cross_b);
+  static S2Point GetClosestPoint(S2Point const& x, S2Point const& a,
+                                 S2Point const& b, S2Point const& a_cross_b);
 
   // Return true if every point on edge B=b0b1 is no further than "tolerance"
   // from some point on edge A=a0a1.
@@ -264,22 +261,22 @@ class S2EdgeUtil {
   // Detailed relation from wedges A to wedge B.
   enum WedgeRelation {
     WEDGE_EQUALS,
-    WEDGE_PROPERLY_CONTAINS,  // A is a strict superset of B.
+    WEDGE_PROPERLY_CONTAINS,      // A is a strict superset of B.
     WEDGE_IS_PROPERLY_CONTAINED,  // A is a strict subset of B.
     WEDGE_PROPERLY_OVERLAPS,  // All of A intsect B, A-B and B-A are non-empty.
-    WEDGE_IS_DISJOINT,  // A is disjoint from B
+    WEDGE_IS_DISJOINT,        // A is disjoint from B
   };
 
   // Return the relation from wedge A to B.
-  static WedgeRelation GetWedgeRelation(
-      S2Point const& a0, S2Point const& ab1, S2Point const& a2,
-      S2Point const& b0, S2Point const& b2);
+  static WedgeRelation GetWedgeRelation(S2Point const& a0, S2Point const& ab1,
+                                        S2Point const& a2, S2Point const& b0,
+                                        S2Point const& b2);
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(S2EdgeUtil);  // Contains only static methods.
 };
 
-inline S2EdgeUtil::EdgeCrosser::EdgeCrosser(
-    S2Point const* a, S2Point const* b, S2Point const* c)
+inline S2EdgeUtil::EdgeCrosser::EdgeCrosser(S2Point const* a, S2Point const* b,
+                                            S2Point const* c)
     : a_(a), b_(b), a_cross_b_(a_->CrossProd(*b_)) {
   RestartAt(c);
 }
@@ -304,7 +301,7 @@ inline int S2EdgeUtil::EdgeCrosser::RobustCrossing(S2Point const* d) {
     result = -1;  // Most common case -- triangles have opposite orientations.
   } else if ((bda & acb_) == 0) {
     result = 0;  // At least one value is zero -- two vertices are identical.
-  } else {  // Slow path.
+  } else {       // Slow path.
     DCHECK_EQ(acb_, bda);
     DCHECK_NE(0, bda);
     result = RobustCrossingInternal(d);

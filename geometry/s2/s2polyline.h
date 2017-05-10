@@ -9,8 +9,8 @@ using std::vector;
 #include "base/logging.h"
 #include "base/macros.h"
 #include "s2.h"
-#include "s2region.h"
 #include "s2latlngrect.h"
+#include "s2region.h"
 
 class S1Angle;
 

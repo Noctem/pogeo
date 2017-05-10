@@ -5,13 +5,13 @@
 #include <vector>
 using std::vector;
 
+#include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/stringprintf.h"
-#include <gtest/gtest.h>
-#include "util/coding/coder.h"
 #include "s2cell.h"
 #include "s2latlng.h"
 #include "s2testing.h"
+#include "util/coding/coder.h"
 
 namespace {
 
@@ -37,8 +37,8 @@ TEST(S2Polyline, Basic) {
   latlngs.push_back(S2LatLng::FromDegrees(0, 90));
   latlngs.push_back(S2LatLng::FromDegrees(0, 180));
   S2Polyline semi_equator(latlngs);
-  EXPECT_TRUE(S2::ApproxEquals(semi_equator.Interpolate(0.5),
-                               S2Point(0, 1, 0)));
+  EXPECT_TRUE(
+      S2::ApproxEquals(semi_equator.Interpolate(0.5), S2Point(0, 1, 0)));
   semi_equator.Reverse();
   EXPECT_EQ(S2Point(1, 0, 0), semi_equator.vertex(2));
 }
@@ -58,8 +58,7 @@ TEST(S2Polyline, GetLengthAndCentroid) {
     for (double theta = 0; theta < 2 * M_PI;
          theta += pow(S2Testing::rnd.RandDouble(), 10)) {
       S2Point p = cos(theta) * x + sin(theta) * y;
-      if (vertices.empty() || p != vertices.back())
-        vertices.push_back(p);
+      if (vertices.empty() || p != vertices.back()) vertices.push_back(p);
     }
     // Close the circle.
     vertices.push_back(vertices[0]);
@@ -92,15 +91,15 @@ TEST(S2Polyline, Interpolate) {
   EXPECT_EQ(vertices[0], line.Interpolate(-0.1));
   EXPECT_TRUE(S2::ApproxEquals(line.Interpolate(0.1),
                                S2Point(1, tan(0.2 * M_PI / 2), 0).Normalize()));
-  EXPECT_TRUE(S2::ApproxEquals(line.Interpolate(0.25),
-                               S2Point(1, 1, 0).Normalize()));
+  EXPECT_TRUE(
+      S2::ApproxEquals(line.Interpolate(0.25), S2Point(1, 1, 0).Normalize()));
   EXPECT_EQ(vertices[1], line.Interpolate(0.5));
   EXPECT_TRUE(S2::ApproxEquals(vertices[2], line.Interpolate(0.75)));
   int next_vertex;
   EXPECT_EQ(vertices[0], line.GetSuffix(-0.1, &next_vertex));
   EXPECT_EQ(1, next_vertex);
-  EXPECT_TRUE(S2::ApproxEquals(vertices[2],
-                               line.GetSuffix(0.75, &next_vertex)));
+  EXPECT_TRUE(
+      S2::ApproxEquals(vertices[2], line.GetSuffix(0.75, &next_vertex)));
   EXPECT_EQ(3, next_vertex);
   EXPECT_EQ(vertices[3], line.GetSuffix(1.1, &next_vertex));
   EXPECT_EQ(4, next_vertex);
@@ -120,7 +119,7 @@ TEST(S2Polyline, UnInterpolate) {
   vector<S2Point> vertices;
   vertices.push_back(S2Point(1, 0, 0));
   S2Polyline point_line(vertices);
-  EXPECT_DOUBLE_EQ(0.0, point_line.UnInterpolate(S2Point (0, 1, 0), 1));
+  EXPECT_DOUBLE_EQ(0.0, point_line.UnInterpolate(S2Point(0, 1, 0), 1));
 
   vertices.push_back(S2Point(0, 1, 0));
   vertices.push_back(S2Point(0, 1, 1).Normalize());
@@ -153,30 +152,25 @@ TEST(S2Polyline, Project) {
   S2Polyline line(latlngs);
 
   int next_vertex;
-  EXPECT_TRUE(S2::ApproxEquals(line.Project(
-                                   S2LatLng::FromDegrees(0.5, -0.5).ToPoint(),
-                                   &next_vertex),
-                               S2LatLng::FromDegrees(0, 0).ToPoint()));
+  EXPECT_TRUE(S2::ApproxEquals(
+      line.Project(S2LatLng::FromDegrees(0.5, -0.5).ToPoint(), &next_vertex),
+      S2LatLng::FromDegrees(0, 0).ToPoint()));
   EXPECT_EQ(1, next_vertex);
-  EXPECT_TRUE(S2::ApproxEquals(line.Project(
-                                   S2LatLng::FromDegrees(0.5, 0.5).ToPoint(),
-                                   &next_vertex),
-                               S2LatLng::FromDegrees(0, 0.5).ToPoint()));
+  EXPECT_TRUE(S2::ApproxEquals(
+      line.Project(S2LatLng::FromDegrees(0.5, 0.5).ToPoint(), &next_vertex),
+      S2LatLng::FromDegrees(0, 0.5).ToPoint()));
   EXPECT_EQ(1, next_vertex);
-  EXPECT_TRUE(S2::ApproxEquals(line.Project(
-                                   S2LatLng::FromDegrees(0.5, 1).ToPoint(),
-                                   &next_vertex),
-                               S2LatLng::FromDegrees(0, 1).ToPoint()));
+  EXPECT_TRUE(S2::ApproxEquals(
+      line.Project(S2LatLng::FromDegrees(0.5, 1).ToPoint(), &next_vertex),
+      S2LatLng::FromDegrees(0, 1).ToPoint()));
   EXPECT_EQ(2, next_vertex);
-  EXPECT_TRUE(S2::ApproxEquals(line.Project(
-                                   S2LatLng::FromDegrees(-0.5, 2.5).ToPoint(),
-                                   &next_vertex),
-                               S2LatLng::FromDegrees(0, 2).ToPoint()));
+  EXPECT_TRUE(S2::ApproxEquals(
+      line.Project(S2LatLng::FromDegrees(-0.5, 2.5).ToPoint(), &next_vertex),
+      S2LatLng::FromDegrees(0, 2).ToPoint()));
   EXPECT_EQ(3, next_vertex);
-  EXPECT_TRUE(S2::ApproxEquals(line.Project(
-                                   S2LatLng::FromDegrees(2, 2).ToPoint(),
-                                   &next_vertex),
-                               S2LatLng::FromDegrees(1, 2).ToPoint()));
+  EXPECT_TRUE(S2::ApproxEquals(
+      line.Project(S2LatLng::FromDegrees(2, 2).ToPoint(), &next_vertex),
+      S2LatLng::FromDegrees(1, 2).ToPoint()));
   EXPECT_EQ(4, next_vertex);
 }
 
@@ -239,7 +233,7 @@ TEST(S2Polyline, IntersectsAtVertex) {
   EXPECT_TRUE(line1->Intersects(line3.get()));
 }
 
-TEST(S2Polyline, IntersectsVertexOnEdge)  {
+TEST(S2Polyline, IntersectsVertexOnEdge) {
   unique_ptr<S2Polyline> horizontal_left_to_right(
       S2Testing::MakePolyline("0:1, 0:3"));
   unique_ptr<S2Polyline> vertical_bottom_to_top(
@@ -248,14 +242,14 @@ TEST(S2Polyline, IntersectsVertexOnEdge)  {
       S2Testing::MakePolyline("0:3, 0:1"));
   unique_ptr<S2Polyline> vertical_top_to_bottom(
       S2Testing::MakePolyline("1:2, 0:2, -1:2"));
-  EXPECT_TRUE(horizontal_left_to_right->Intersects(
-      vertical_bottom_to_top.get()));
-  EXPECT_TRUE(horizontal_left_to_right->Intersects(
-      vertical_top_to_bottom.get()));
-  EXPECT_TRUE(horizontal_right_to_left->Intersects(
-      vertical_bottom_to_top.get()));
-  EXPECT_TRUE(horizontal_right_to_left->Intersects(
-      vertical_top_to_bottom.get()));
+  EXPECT_TRUE(
+      horizontal_left_to_right->Intersects(vertical_bottom_to_top.get()));
+  EXPECT_TRUE(
+      horizontal_left_to_right->Intersects(vertical_top_to_bottom.get()));
+  EXPECT_TRUE(
+      horizontal_right_to_left->Intersects(vertical_bottom_to_top.get()));
+  EXPECT_TRUE(
+      horizontal_right_to_left->Intersects(vertical_top_to_bottom.get()));
 }
 
 static string JoinInts(const vector<int>& ints) {
@@ -272,8 +266,8 @@ static string JoinInts(const vector<int>& ints) {
 
 void CheckSubsample(char const* polyline_str, double tolerance_degrees,
                     char const* expected_str) {
-  SCOPED_TRACE(StringPrintf("\"%s\", tolerance %f",
-                            polyline_str, tolerance_degrees));
+  SCOPED_TRACE(
+      StringPrintf("\"%s\", tolerance %f", polyline_str, tolerance_degrees));
   unique_ptr<S2Polyline> polyline(MakePolyline(polyline_str));
   vector<int> indices;
   polyline->SubsampleVertices(S1Angle::Degrees(tolerance_degrees), &indices);
@@ -300,9 +294,9 @@ TEST(S2Polyline, SubsampleVerticesTrivialInputs) {
 
   // And finally, verify that we still do something reasonable if the client
   // passes in an invalid polyline with two or more adjacent vertices.
-  //FLAGS_s2debug = false;
-  //CheckSubsample("0:1, 0:1, 0:1, 0:2", 0.0, "0,3");
-  //FLAGS_s2debug = true;
+  // FLAGS_s2debug = false;
+  // CheckSubsample("0:1, 0:1, 0:1, 0:2", 0.0, "0,3");
+  // FLAGS_s2debug = true;
 }
 
 TEST(S2Polyline, SubsampleVerticesSimpleExample) {
@@ -335,10 +329,7 @@ TEST(S2Polyline, SubsampleVerticesGuarantees) {
   CheckSubsample("10:10, 12:12, 9:9, 10:20, 10:30", 5.0, "0,4");
 }
 
-
-static bool TestEquals(char const* a_str,
-                       char const* b_str,
-                       double max_error) {
+static bool TestEquals(char const* a_str, char const* b_str, double max_error) {
   unique_ptr<S2Polyline> a(MakePolyline(a_str));
   unique_ptr<S2Polyline> b(MakePolyline(b_str));
   return a->ApproxEquals(b.get(), max_error);
@@ -348,14 +339,12 @@ TEST(S2Polyline, ApproxEquals) {
   double degree = S1Angle::Degrees(1).radians();
 
   // Close lines, differences within max_error.
-  EXPECT_TRUE(TestEquals("0:0, 0:10, 5:5",
-                         "0:0.1, -0.1:9.9, 5:5.2",
-                         0.5 * degree));
+  EXPECT_TRUE(
+      TestEquals("0:0, 0:10, 5:5", "0:0.1, -0.1:9.9, 5:5.2", 0.5 * degree));
 
   // Close lines, differences outside max_error.
-  EXPECT_FALSE(TestEquals("0:0, 0:10, 5:5",
-                          "0:0.1, -0.1:9.9, 5:5.2",
-                          0.01 * degree));
+  EXPECT_FALSE(
+      TestEquals("0:0, 0:10, 5:5", "0:0.1, -0.1:9.9, 5:5.2", 0.01 * degree));
 
   // Same line, but different number of vertices.
   EXPECT_FALSE(TestEquals("0:0, 0:10, 0:20", "0:0, 0:20", 0.1 * degree));
@@ -377,8 +366,8 @@ TEST(S2Polyline, EncodeDecode) {
 void TestNearlyCovers(string const& a_str, string const& b_str,
                       double max_error_degrees, bool expect_b_covers_a,
                       bool expect_a_covers_b) {
-  SCOPED_TRACE(StringPrintf("a=\"%s\", b=\"%s\", max error=%f",
-                            a_str.c_str(), b_str.c_str(), max_error_degrees));
+  SCOPED_TRACE(StringPrintf("a=\"%s\", b=\"%s\", max error=%f", a_str.c_str(),
+                            b_str.c_str(), max_error_degrees));
   unique_ptr<S2Polyline> a(S2Testing::MakePolyline(a_str));
   unique_ptr<S2Polyline> b(S2Testing::MakePolyline(b_str));
   S1Angle max_error = S1Angle::Degrees(max_error_degrees);
@@ -404,8 +393,8 @@ TEST(S2PolylineCoveringTest, PolylineOverlapsEquivalent) {
 TEST(S2PolylineCoveringTest, ShortCoveredByLong) {
   // The second polyline is always within 0.001 degrees of the first polyline,
   // but the first polyline is too long to be covered by the second.
-  TestNearlyCovers(
-      "-5:1, 10:1, 10:5, 5:10", "9:1, 9.9995:1, 10.0005:5", 1e-3, false, true);
+  TestNearlyCovers("-5:1, 10:1, 10:5, 5:10", "9:1, 9.9995:1, 10.0005:5", 1e-3,
+                   false, true);
 }
 
 TEST(S2PolylineCoveringTest, PartialOverlapOnly) {

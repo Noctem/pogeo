@@ -6,14 +6,13 @@ using std::max;
 using std::swap;
 using std::reverse;
 
-
 #include "s2latlngrect.h"
 
 #include "base/logging.h"
-#include "util/coding/coder.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2edgeutil.h"
+#include "util/coding/coder.h"
 #include "util/math/mathutil.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
@@ -32,19 +31,17 @@ S2LatLngRect S2LatLngRect::FromPointPair(S2LatLng const& p1,
                                          S2LatLng const& p2) {
   DCHECK(p1.is_valid()) << p1;
   DCHECK(p2.is_valid()) << p2;
-  return S2LatLngRect(R1Interval::FromPointPair(p1.lat().radians(),
-                                                p2.lat().radians()),
-                      S1Interval::FromPointPair(p1.lng().radians(),
-                                                p2.lng().radians()));
+  return S2LatLngRect(
+      R1Interval::FromPointPair(p1.lat().radians(), p2.lat().radians()),
+      S1Interval::FromPointPair(p1.lng().radians(), p2.lng().radians()));
 }
 
-S2LatLngRect* S2LatLngRect::Clone() const {
-  return new S2LatLngRect(*this);
-}
+S2LatLngRect* S2LatLngRect::Clone() const { return new S2LatLngRect(*this); }
 
 S2LatLng S2LatLngRect::GetVertex(int k) const {
   // Twiddle bits to return the points in CCW order (SW, SE, NE, NW).
-  return S2LatLng::FromRadians(lat_.bound(k>>1), lng_.bound((k>>1) ^ (k&1)));
+  return S2LatLng::FromRadians(lat_.bound(k >> 1),
+                               lng_.bound((k >> 1) ^ (k & 1)));
 }
 
 S2LatLng S2LatLngRect::GetCenter() const {
@@ -59,8 +56,8 @@ double S2LatLngRect::Area() const {
   if (is_empty()) return 0.0;
   // This is the size difference of the two spherical caps, multiplied by
   // the longitude ratio.
-  return lng().GetLength()* fabs(sin(lat_hi().radians()) -
-                                 sin(lat_lo().radians()));
+  return lng().GetLength() *
+         fabs(sin(lat_hi().radians()) - sin(lat_lo().radians()));
 }
 
 bool S2LatLngRect::Contains(S2LatLng const& ll) const {
@@ -97,9 +94,7 @@ bool S2LatLngRect::InteriorIntersects(S2LatLngRect const& other) const {
           lng_.InteriorIntersects(other.lng_));
 }
 
-void S2LatLngRect::AddPoint(S2Point const& p) {
-  AddPoint(S2LatLng(p));
-}
+void S2LatLngRect::AddPoint(S2Point const& p) { AddPoint(S2LatLng(p)); }
 
 void S2LatLngRect::AddPoint(S2LatLng const& ll) {
   DCHECK(ll.is_valid());
@@ -116,8 +111,7 @@ S2LatLngRect S2LatLngRect::Expanded(S2LatLng const& margin) const {
 }
 
 S2LatLngRect S2LatLngRect::Union(S2LatLngRect const& other) const {
-  return S2LatLngRect(lat_.Union(other.lat_),
-                      lng_.Union(other.lng_));
+  return S2LatLngRect(lat_.Union(other.lat_), lng_.Union(other.lng_));
 }
 
 S2LatLngRect S2LatLngRect::Intersection(S2LatLngRect const& other) const {
@@ -140,8 +134,8 @@ S2LatLngRect S2LatLngRect::ConvolveWithCap(S1Angle const& angle) const {
 
   S2LatLngRect r = *this;
   for (int k = 0; k < 4; ++k) {
-    S2Cap vertex_cap = S2Cap::FromAxisHeight(GetVertex(k).ToPoint(),
-                                             cap.height());
+    S2Cap vertex_cap =
+        S2Cap::FromAxisHeight(GetVertex(k).ToPoint(), cap.height());
     r = r.Union(vertex_cap.GetRectBound());
   }
   return r;
@@ -163,8 +157,8 @@ S2Cap S2LatLngRect::GetCapBound() const {
     pole_z = 1;
     pole_angle = M_PI_2 - lat_.lo();
   }
-  S2Cap pole_cap = S2Cap::FromAxisAngle(S2Point(0, 0, pole_z),
-                                        S1Angle::Radians(pole_angle));
+  S2Cap pole_cap =
+      S2Cap::FromAxisAngle(S2Point(0, 0, pole_z), S1Angle::Radians(pole_angle));
 
   // For bounding rectangles that span 180 degrees or less in longitude, the
   // maximum cap size is achieved at one of the rectangle vertices.  For
@@ -173,21 +167,18 @@ S2Cap S2LatLngRect::GetCapBound() const {
   double lng_span = lng_.hi() - lng_.lo();
   if (remainder(lng_span, 2 * M_PI) >= 0) {
     if (lng_span < 2 * M_PI) {
-      S2Cap mid_cap = S2Cap::FromAxisAngle(GetCenter().ToPoint(),
-                                           S1Angle::Radians(0));
+      S2Cap mid_cap =
+          S2Cap::FromAxisAngle(GetCenter().ToPoint(), S1Angle::Radians(0));
       for (int k = 0; k < 4; ++k) {
         mid_cap.AddPoint(GetVertex(k).ToPoint());
       }
-      if (mid_cap.height() < pole_cap.height())
-        return mid_cap;
+      if (mid_cap.height() < pole_cap.height()) return mid_cap;
     }
   }
   return pole_cap;
 }
 
-S2LatLngRect S2LatLngRect::GetRectBound() const {
-  return *this;
-}
+S2LatLngRect S2LatLngRect::GetRectBound() const { return *this; }
 
 bool S2LatLngRect::Contains(S2Cell const& cell) const {
   // A latitude-longitude rectangle contains a cell if and only if it contains
@@ -283,8 +274,7 @@ bool S2LatLngRect::IntersectsLatEdge(S2Point const& a, S2Point const& b,
 
   // Compute the range of theta values spanned by the edge AB.
   S1Interval ab_theta = S1Interval::FromPointPair(
-      atan2(a.DotProd(y), a.DotProd(x)),
-      atan2(b.DotProd(y), b.DotProd(x)));
+      atan2(a.DotProd(y), a.DotProd(x)), atan2(b.DotProd(y), b.DotProd(x)));
 
   if (ab_theta.Contains(theta)) {
     // Check if the intersection point is also in the given "lng" interval.
@@ -330,11 +320,11 @@ bool S2LatLngRect::Intersects(S2Cell const& cell) const {
 
   for (int i = 0; i < 4; ++i) {
     S1Interval edge_lng = S1Interval::FromPointPair(
-        cell_ll[i].lng().radians(), cell_ll[(i+1)&3].lng().radians());
+        cell_ll[i].lng().radians(), cell_ll[(i + 1) & 3].lng().radians());
     if (!lng_.Intersects(edge_lng)) continue;
 
     S2Point const& a = cell_v[i];
-    S2Point const& b = cell_v[(i+1)&3];
+    S2Point const& b = cell_v[(i + 1) & 3];
     if (edge_lng.Contains(lng_.lo())) {
       if (IntersectsLngEdge(a, b, lat_, lng_.lo())) return true;
     }
@@ -358,20 +348,17 @@ S2LatLng S2LatLngRect::Project(S2LatLng const& ll) const {
   int min_vertex_index = 0;
   S2Point point = ll.ToPoint();
   for (int v = 0; v < 4; ++v) {
-    S1Angle distance_to_segment =
-        S2EdgeUtil::GetDistance(point,
-                                GetVertex(v).ToPoint(),
-                                GetVertex(v + 1).ToPoint());
+    S1Angle distance_to_segment = S2EdgeUtil::GetDistance(
+        point, GetVertex(v).ToPoint(), GetVertex(v + 1).ToPoint());
     if (distance_to_segment < min_distance) {
       min_distance = distance_to_segment;
       min_vertex_index = v;
     }
   }
 
-  S2Point closest_point = S2EdgeUtil::GetClosestPoint(
-      point,
-      GetVertex(min_vertex_index).ToPoint(),
-      GetVertex(min_vertex_index + 1).ToPoint());
+  S2Point closest_point =
+      S2EdgeUtil::GetClosestPoint(point, GetVertex(min_vertex_index).ToPoint(),
+                                  GetVertex(min_vertex_index + 1).ToPoint());
 
   return S2LatLng(closest_point);
 }
@@ -429,10 +416,11 @@ S1Angle S2LatLngRect::GetDistance(S2LatLngRect const& other) const {
   S2Point b_hi = S2LatLng(b.lat_hi(), b_lng).ToPoint();
   S2Point b_lo_cross_hi =
       S2LatLng::FromRadians(0, b_lng.radians() - M_PI_2).Normalized().ToPoint();
-  return min(S2EdgeUtil::GetDistance(a_lo, b_lo, b_hi, b_lo_cross_hi),
-         min(S2EdgeUtil::GetDistance(a_hi, b_lo, b_hi, b_lo_cross_hi),
-         min(S2EdgeUtil::GetDistance(b_lo, a_lo, a_hi, a_lo_cross_hi),
-             S2EdgeUtil::GetDistance(b_hi, a_lo, a_hi, a_lo_cross_hi))));
+  return min(
+      S2EdgeUtil::GetDistance(a_lo, b_lo, b_hi, b_lo_cross_hi),
+      min(S2EdgeUtil::GetDistance(a_hi, b_lo, b_hi, b_lo_cross_hi),
+          min(S2EdgeUtil::GetDistance(b_lo, a_lo, a_hi, a_lo_cross_hi),
+              S2EdgeUtil::GetDistance(b_hi, a_lo, a_hi, a_lo_cross_hi))));
 }
 
 S1Angle S2LatLngRect::GetDistance(S2LatLng const& p) const {
@@ -483,8 +471,9 @@ S1Angle S2LatLngRect::GetDirectedHausdorffDistance(
 // Return the directed Hausdorff distance from one longitudinal edge spanning
 // latitude range 'a_lat' to the other longitudinal edge spanning latitude
 // range 'b_lat', with their longitudinal difference given by 'lng_diff'.
-S1Angle S2LatLngRect::GetDirectedHausdorffDistance(
-    double lng_diff, R1Interval const& a, R1Interval const& b) {
+S1Angle S2LatLngRect::GetDirectedHausdorffDistance(double lng_diff,
+                                                   R1Interval const& a,
+                                                   R1Interval const& b) {
   // By symmetry, we can assume a's longtitude is 0 and b's longtitude is
   // lng_diff. Call b's two endpoints b_lo and b_hi. Let H be the hemisphere
   // containing a and delimited by the longitude line of b. The Voronoi diagram
@@ -554,12 +543,14 @@ S1Angle S2LatLngRect::GetDirectedHausdorffDistance(
 
     // Case B3.
     if (p_lat > a.lo()) {
-      max_distance = max(max_distance, GetInteriorMaxDistance(
-          R1Interval(a.lo(), min(p_lat, a.hi())), b_lo));
+      max_distance = max(
+          max_distance,
+          GetInteriorMaxDistance(R1Interval(a.lo(), min(p_lat, a.hi())), b_lo));
     }
     if (p_lat < a.hi()) {
-      max_distance = max(max_distance, GetInteriorMaxDistance(
-          R1Interval(max(p_lat, a.lo()), a.hi()), b_hi));
+      max_distance = max(
+          max_distance,
+          GetInteriorMaxDistance(R1Interval(max(p_lat, a.lo()), a.hi()), b_hi));
     }
   }
 
@@ -598,7 +589,7 @@ S1Angle S2LatLngRect::GetInteriorMaxDistance(R1Interval const& a_lat,
   // in a_lat.
   S2Point intersection_point = S2Point(-b.x(), 0, -b.z()).Normalize();
   if (a_lat.InteriorContains(
-      S2LatLng::Latitude(intersection_point).radians())) {
+          S2LatLng::Latitude(intersection_point).radians())) {
     return S1Angle::Radians(b.Angle(intersection_point));
   } else {
     return S1Angle::Radians(-1);

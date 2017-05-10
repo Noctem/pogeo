@@ -4,7 +4,6 @@
 
 #include "strutil.h"
 
-
 #include <algorithm>
 using std::min;
 using std::max;
@@ -24,7 +23,6 @@ using std::string;
 
 #include <vector>
 using std::vector;
-
 
 #include "base/logging.h"
 //#include "strutil-inl.h"
@@ -71,8 +69,8 @@ string UInt64ToString(uint64 ui64, const char* format) {
 }
 
 // Default arguments
-string FloatToString(float f)   { return FloatToString(f, "%7f"); }
-string IntToString(int i)       { return IntToString(i, "%7d"); }
+string FloatToString(float f) { return FloatToString(f, "%7f"); }
+string IntToString(int i) { return IntToString(i, "%7d"); }
 string Int64ToString(int64 i64) {
   return Int64ToString(i64, "%7" GG_LL_FORMAT "d");
 }
@@ -105,35 +103,35 @@ string UInt64ToString(uint64 ui64) {
 //    for FastTimeToBuffer(), we guarantee that it is.)
 // ----------------------------------------------------------------------
 
-char *FastInt64ToBuffer(int64 i, char* buffer) {
+char* FastInt64ToBuffer(int64 i, char* buffer) {
   FastInt64ToBufferLeft(i, buffer);
   return buffer;
 }
 
 // Offset into buffer where FastInt32ToBuffer places the end of string
 // null character.  Also used by FastInt32ToBufferLeft
-//static const int kFastInt32ToBufferOffset = 11;
+// static const int kFastInt32ToBufferOffset = 11;
 
-char *FastInt32ToBuffer(int32 i, char* buffer) {
+char* FastInt32ToBuffer(int32 i, char* buffer) {
   FastInt32ToBufferLeft(i, buffer);
   return buffer;
 }
 
-char *FastHexToBuffer(int i, char* buffer) {
+char* FastHexToBuffer(int i, char* buffer) {
   CHECK(i >= 0) << "FastHexToBuffer() wants non-negative integers, not " << i;
 
-  static const char *hexdigits = "0123456789abcdef";
-  char *p = buffer + 21;
+  static const char* hexdigits = "0123456789abcdef";
+  char* p = buffer + 21;
   *p-- = '\0';
   do {
-    *p-- = hexdigits[i & 15];   // mod by 16
-    i >>= 4;                    // divide by 16
+    *p-- = hexdigits[i & 15];  // mod by 16
+    i >>= 4;                   // divide by 16
   } while (i > 0);
   return p + 1;
 }
 
-char *InternalFastHexToBuffer(uint64 value, char* buffer, int num_byte) {
-  static const char *hexdigits = "0123456789abcdef";
+char* InternalFastHexToBuffer(uint64 value, char* buffer, int num_byte) {
+  static const char* hexdigits = "0123456789abcdef";
   buffer[num_byte] = '\0';
   for (int i = num_byte - 1; i >= 0; i--) {
     buffer[i] = hexdigits[uint32(value) & 0xf];
@@ -142,38 +140,34 @@ char *InternalFastHexToBuffer(uint64 value, char* buffer, int num_byte) {
   return buffer;
 }
 
-char *FastHex64ToBuffer(uint64 value, char* buffer) {
+char* FastHex64ToBuffer(uint64 value, char* buffer) {
   return InternalFastHexToBuffer(value, buffer, 16);
 }
 
-char *FastHex32ToBuffer(uint32 value, char* buffer) {
+char* FastHex32ToBuffer(uint32 value, char* buffer) {
   return InternalFastHexToBuffer(value, buffer, 8);
 }
 
 // Several converters use this table to reduce
 // division and modulo operations.
 static const char two_ASCII_digits[100][2] = {
-  {'0','0'}, {'0','1'}, {'0','2'}, {'0','3'}, {'0','4'},
-  {'0','5'}, {'0','6'}, {'0','7'}, {'0','8'}, {'0','9'},
-  {'1','0'}, {'1','1'}, {'1','2'}, {'1','3'}, {'1','4'},
-  {'1','5'}, {'1','6'}, {'1','7'}, {'1','8'}, {'1','9'},
-  {'2','0'}, {'2','1'}, {'2','2'}, {'2','3'}, {'2','4'},
-  {'2','5'}, {'2','6'}, {'2','7'}, {'2','8'}, {'2','9'},
-  {'3','0'}, {'3','1'}, {'3','2'}, {'3','3'}, {'3','4'},
-  {'3','5'}, {'3','6'}, {'3','7'}, {'3','8'}, {'3','9'},
-  {'4','0'}, {'4','1'}, {'4','2'}, {'4','3'}, {'4','4'},
-  {'4','5'}, {'4','6'}, {'4','7'}, {'4','8'}, {'4','9'},
-  {'5','0'}, {'5','1'}, {'5','2'}, {'5','3'}, {'5','4'},
-  {'5','5'}, {'5','6'}, {'5','7'}, {'5','8'}, {'5','9'},
-  {'6','0'}, {'6','1'}, {'6','2'}, {'6','3'}, {'6','4'},
-  {'6','5'}, {'6','6'}, {'6','7'}, {'6','8'}, {'6','9'},
-  {'7','0'}, {'7','1'}, {'7','2'}, {'7','3'}, {'7','4'},
-  {'7','5'}, {'7','6'}, {'7','7'}, {'7','8'}, {'7','9'},
-  {'8','0'}, {'8','1'}, {'8','2'}, {'8','3'}, {'8','4'},
-  {'8','5'}, {'8','6'}, {'8','7'}, {'8','8'}, {'8','9'},
-  {'9','0'}, {'9','1'}, {'9','2'}, {'9','3'}, {'9','4'},
-  {'9','5'}, {'9','6'}, {'9','7'}, {'9','8'}, {'9','9'}
-};
+    {'0', '0'}, {'0', '1'}, {'0', '2'}, {'0', '3'}, {'0', '4'}, {'0', '5'},
+    {'0', '6'}, {'0', '7'}, {'0', '8'}, {'0', '9'}, {'1', '0'}, {'1', '1'},
+    {'1', '2'}, {'1', '3'}, {'1', '4'}, {'1', '5'}, {'1', '6'}, {'1', '7'},
+    {'1', '8'}, {'1', '9'}, {'2', '0'}, {'2', '1'}, {'2', '2'}, {'2', '3'},
+    {'2', '4'}, {'2', '5'}, {'2', '6'}, {'2', '7'}, {'2', '8'}, {'2', '9'},
+    {'3', '0'}, {'3', '1'}, {'3', '2'}, {'3', '3'}, {'3', '4'}, {'3', '5'},
+    {'3', '6'}, {'3', '7'}, {'3', '8'}, {'3', '9'}, {'4', '0'}, {'4', '1'},
+    {'4', '2'}, {'4', '3'}, {'4', '4'}, {'4', '5'}, {'4', '6'}, {'4', '7'},
+    {'4', '8'}, {'4', '9'}, {'5', '0'}, {'5', '1'}, {'5', '2'}, {'5', '3'},
+    {'5', '4'}, {'5', '5'}, {'5', '6'}, {'5', '7'}, {'5', '8'}, {'5', '9'},
+    {'6', '0'}, {'6', '1'}, {'6', '2'}, {'6', '3'}, {'6', '4'}, {'6', '5'},
+    {'6', '6'}, {'6', '7'}, {'6', '8'}, {'6', '9'}, {'7', '0'}, {'7', '1'},
+    {'7', '2'}, {'7', '3'}, {'7', '4'}, {'7', '5'}, {'7', '6'}, {'7', '7'},
+    {'7', '8'}, {'7', '9'}, {'8', '0'}, {'8', '1'}, {'8', '2'}, {'8', '3'},
+    {'8', '4'}, {'8', '5'}, {'8', '6'}, {'8', '7'}, {'8', '8'}, {'8', '9'},
+    {'9', '0'}, {'9', '1'}, {'9', '2'}, {'9', '3'}, {'9', '4'}, {'9', '5'},
+    {'9', '6'}, {'9', '7'}, {'9', '8'}, {'9', '9'}};
 
 // ----------------------------------------------------------------------
 // FastInt32ToBufferLeft()
@@ -193,52 +187,52 @@ static const char two_ASCII_digits[100][2] = {
 
 char* FastUInt32ToBufferLeft(uint32 u, char* buffer) {
   int digits;
-  const char *ASCII_digits = NULL;
+  const char* ASCII_digits = NULL;
   // The idea of this implementation is to trim the number of divides to as few
   // as possible by using multiplication and subtraction rather than mod (%),
   // and by outputting two digits at a time rather than one.
   // The huge-number case is first, in the hopes that the compiler will output
   // that case in one branch-free block of code, and only output conditional
   // branches into it from below.
-  if (u >= 1000000000) {  // >= 1,000,000,000
+  if (u >= 1000000000) {     // >= 1,000,000,000
     digits = u / 100000000;  // 100,000,000
     ASCII_digits = two_ASCII_digits[digits];
     buffer[0] = ASCII_digits[0];
     buffer[1] = ASCII_digits[1];
     buffer += 2;
- sublt100_000_000:
+  sublt100_000_000:
     u -= digits * 100000000;  // 100,000,000
- lt100_000_000:
+  lt100_000_000:
     digits = u / 1000000;  // 1,000,000
     ASCII_digits = two_ASCII_digits[digits];
     buffer[0] = ASCII_digits[0];
     buffer[1] = ASCII_digits[1];
     buffer += 2;
- sublt1_000_000:
+  sublt1_000_000:
     u -= digits * 1000000;  // 1,000,000
- lt1_000_000:
+  lt1_000_000:
     digits = u / 10000;  // 10,000
     ASCII_digits = two_ASCII_digits[digits];
     buffer[0] = ASCII_digits[0];
     buffer[1] = ASCII_digits[1];
     buffer += 2;
- sublt10_000:
+  sublt10_000:
     u -= digits * 10000;  // 10,000
- lt10_000:
+  lt10_000:
     digits = u / 100;
     ASCII_digits = two_ASCII_digits[digits];
     buffer[0] = ASCII_digits[0];
     buffer[1] = ASCII_digits[1];
     buffer += 2;
- sublt100:
+  sublt100:
     u -= digits * 100;
- lt100:
+  lt100:
     digits = u;
     ASCII_digits = two_ASCII_digits[digits];
     buffer[0] = ASCII_digits[0];
     buffer[1] = ASCII_digits[1];
     buffer += 2;
- done:
+  done:
     *buffer = 0;
     return buffer;
   }
@@ -249,26 +243,26 @@ char* FastUInt32ToBufferLeft(uint32 u, char* buffer) {
     *buffer++ = '0' + digits;
     goto done;
   }
-  if (u  <  10000) {   // 10,000
+  if (u < 10000) {  // 10,000
     if (u >= 1000) goto lt10_000;
     digits = u / 100;
     *buffer++ = '0' + digits;
     goto sublt100;
   }
-  if (u  <  1000000) {   // 1,000,000
+  if (u < 1000000) {  // 1,000,000
     if (u >= 100000) goto lt1_000_000;
     digits = u / 10000;  //    10,000
     *buffer++ = '0' + digits;
     goto sublt10_000;
   }
-  if (u  <  100000000) {   // 100,000,000
+  if (u < 100000000) {  // 100,000,000
     if (u >= 10000000) goto lt100_000_000;
     digits = u / 1000000;  //   1,000,000
     *buffer++ = '0' + digits;
     goto sublt1_000_000;
   }
   // we already know that u < 1,000,000,000
-  digits = u / 100000000;   // 100,000,000
+  digits = u / 100000000;  // 100,000,000
   *buffer++ = '0' + digits;
   goto sublt100_000_000;
 }
@@ -287,7 +281,7 @@ char* FastInt32ToBufferLeft(int32 i, char* buffer) {
 
 char* FastUInt64ToBufferLeft(uint64 u64, char* buffer) {
   int digits;
-  const char *ASCII_digits = NULL;
+  const char* ASCII_digits = NULL;
 
   uint32 u = static_cast<uint32>(u64);
   if (u == u64) return FastUInt32ToBufferLeft(u, buffer);
@@ -303,13 +297,13 @@ char* FastUInt64ToBufferLeft(uint64 u64, char* buffer) {
   buffer[1] = ASCII_digits[1];
   buffer += 2;
   u -= digits * 10000000;  // 10,000,000
-  digits = u / 100000;  // 100,000
+  digits = u / 100000;     // 100,000
   ASCII_digits = two_ASCII_digits[digits];
   buffer[0] = ASCII_digits[0];
   buffer[1] = ASCII_digits[1];
   buffer += 2;
   u -= digits * 100000;  // 100,000
-  digits = u / 1000;  // 1,000
+  digits = u / 1000;     // 1,000
   ASCII_digits = two_ASCII_digits[digits];
   buffer[0] = ASCII_digits[0];
   buffer[1] = ASCII_digits[1];
@@ -355,7 +349,7 @@ char* FastTimeToBuffer(time_t s, char* buffer) {
   if (gmtime_r(&s, &tm) == NULL) {
     // Error message must fit in 30-char buffer.
     memcpy(buffer, "Invalid:", sizeof("Invalid:"));
-    FastInt64ToBufferLeft(s, buffer+strlen(buffer));
+    FastInt64ToBufferLeft(s, buffer + strlen(buffer));
     return buffer;
   }
 #endif
@@ -365,66 +359,103 @@ char* FastTimeToBuffer(time_t s, char* buffer) {
   // plus strftime takes > 10x the time of hard code
 
   const char* weekday_name = "Xxx";
- #ifndef _WIN32
+#ifndef _WIN32
   switch (tm.tm_wday) {
     default: { DCHECK(false); } break;
-    case 0:  weekday_name = "Sun"; break;
-    case 1:  weekday_name = "Mon"; break;
-    case 2:  weekday_name = "Tue"; break;
-    case 3:  weekday_name = "Wed"; break;
-    case 4:  weekday_name = "Thu"; break;
-    case 5:  weekday_name = "Fri"; break;
-    case 6:  weekday_name = "Sat"; break;
+    case 0:
+      weekday_name = "Sun";
+      break;
+    case 1:
+      weekday_name = "Mon";
+      break;
+    case 2:
+      weekday_name = "Tue";
+      break;
+    case 3:
+      weekday_name = "Wed";
+      break;
+    case 4:
+      weekday_name = "Thu";
+      break;
+    case 5:
+      weekday_name = "Fri";
+      break;
+    case 6:
+      weekday_name = "Sat";
+      break;
   }
 #endif
-
 
   const char* month_name = "Xxx";
 #ifndef _WIN32
   switch (tm.tm_mon) {
-    default:  { DCHECK(false); } break;
-    case 0:   month_name = "Jan"; break;
-    case 1:   month_name = "Feb"; break;
-    case 2:   month_name = "Mar"; break;
-    case 3:   month_name = "Apr"; break;
-    case 4:   month_name = "May"; break;
-    case 5:   month_name = "Jun"; break;
-    case 6:   month_name = "Jul"; break;
-    case 7:   month_name = "Aug"; break;
-    case 8:   month_name = "Sep"; break;
-    case 9:   month_name = "Oct"; break;
-    case 10:  month_name = "Nov"; break;
-    case 11:  month_name = "Dec"; break;
+    default: { DCHECK(false); } break;
+    case 0:
+      month_name = "Jan";
+      break;
+    case 1:
+      month_name = "Feb";
+      break;
+    case 2:
+      month_name = "Mar";
+      break;
+    case 3:
+      month_name = "Apr";
+      break;
+    case 4:
+      month_name = "May";
+      break;
+    case 5:
+      month_name = "Jun";
+      break;
+    case 6:
+      month_name = "Jul";
+      break;
+    case 7:
+      month_name = "Aug";
+      break;
+    case 8:
+      month_name = "Sep";
+      break;
+    case 9:
+      month_name = "Oct";
+      break;
+    case 10:
+      month_name = "Nov";
+      break;
+    case 11:
+      month_name = "Dec";
+      break;
   }
 #endif
 
   // Write out the buffer.
 
-  memcpy(buffer+0, weekday_name, 3);
+  memcpy(buffer + 0, weekday_name, 3);
   buffer[3] = ',';
   buffer[4] = ' ';
 
-  PutTwoDigits(tm.tm_mday, buffer+5);
+  PutTwoDigits(tm.tm_mday, buffer + 5);
   buffer[7] = ' ';
 
-  memcpy(buffer+8, month_name, 3);
+  memcpy(buffer + 8, month_name, 3);
   buffer[11] = ' ';
 
   int32 year = tm.tm_year + 1900;
-  PutTwoDigits(year/100, buffer+12);
-  PutTwoDigits(year%100, buffer+14);
+  PutTwoDigits(year / 100, buffer + 12);
+  PutTwoDigits(year % 100, buffer + 14);
   buffer[16] = ' ';
 
-  PutTwoDigits(tm.tm_hour, buffer+17);
+  PutTwoDigits(tm.tm_hour, buffer + 17);
   buffer[19] = ':';
 
-  PutTwoDigits(tm.tm_min, buffer+20);
+  PutTwoDigits(tm.tm_min, buffer + 20);
   buffer[22] = ':';
 
-  PutTwoDigits(tm.tm_sec, buffer+23);
+  PutTwoDigits(tm.tm_sec, buffer + 23);
 
   // includes ending NUL
-  memcpy(buffer+25, " GMT", 5);
+  memcpy(buffer + 25, " GMT", 5);
 
   return buffer;
 }
@@ -437,20 +468,20 @@ char* FastTimeToBuffer(time_t s, char* buffer) {
 //    valid integer is found; else returns deflt
 //    UInt64 and Int64 cannot handle decimal numbers with leading 0s.
 // --------------------------------------------------------------------
-uint64 ParseLeadingUInt64Value(const char *str, uint64 deflt) {
-  char *error = NULL;
+uint64 ParseLeadingUInt64Value(const char* str, uint64 deflt) {
+  char* error = NULL;
   const uint64 value = strtoull(str, &error, 0);
   return (error == str) ? deflt : value;
 }
 
-int64 ParseLeadingInt64Value(const char *str, int64 deflt) {
-  char *error = NULL;
+int64 ParseLeadingInt64Value(const char* str, int64 deflt) {
+  char* error = NULL;
   const int64 value = strtoll(str, &error, 0);
   return (error == str) ? deflt : value;
 }
 
-uint64 ParseLeadingHex64Value(const char *str, uint64 deflt) {
-  char *error = NULL;
+uint64 ParseLeadingHex64Value(const char* str, uint64 deflt) {
+  char* error = NULL;
   const uint64 value = strtoull(str, &error, 16);
   return (error == str) ? deflt : value;
 }
@@ -464,26 +495,26 @@ uint64 ParseLeadingHex64Value(const char *str, uint64 deflt) {
 //    This can handle strings with leading 0s.
 // --------------------------------------------------------------------
 
-int64 ParseLeadingDec64Value(const char *str, int64 deflt) {
-  char *error = NULL;
+int64 ParseLeadingDec64Value(const char* str, int64 deflt) {
+  char* error = NULL;
   const int64 value = strtoll(str, &error, 10);
   return (error == str) ? deflt : value;
 }
 
-uint64 ParseLeadingUDec64Value(const char *str, uint64 deflt) {
-  char *error = NULL;
+uint64 ParseLeadingUDec64Value(const char* str, uint64 deflt) {
+  char* error = NULL;
   const uint64 value = strtoull(str, &error, 10);
   return (error == str) ? deflt : value;
 }
 
 bool DictionaryParse(const string& encoded_str,
-                      vector<pair<string, string> >* items) {
+                     vector<pair<string, string> >* items) {
   vector<string> entries;
   SplitStringUsing(encoded_str, ",", &entries);
   for (size_t i = 0; i < entries.size(); ++i) {
     vector<string> fields;
     SplitStringAllowEmpty(entries[i], ":", &fields);
-    if (fields.size() != 2) // parsing error
+    if (fields.size() != 2)  // parsing error
       return false;
     items->push_back(make_pair(fields[0], fields[1]));
   }

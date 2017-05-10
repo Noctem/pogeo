@@ -1,12 +1,12 @@
 // Copyright 2002 and onwards Google Inc.
 
-#include <stdarg.h> // For va_list and related operations
-#include <stdio.h> // MSVC requires this for _vsnprintf
+#include <stdarg.h>  // For va_list and related operations
+#include <stdio.h>   // MSVC requires this for _vsnprintf
 #include <vector>
 using std::vector;
 
-#include "base/stringprintf.h"
 #include "base/logging.h"
+#include "base/stringprintf.h"
 
 void StringAppendV(string* dst, const char* format, va_list ap) {
   // First try with a small fixed size buffer
@@ -34,7 +34,7 @@ void StringAppendV(string* dst, const char* format, va_list ap) {
       length *= 2;
     } else {
       // We need exactly "result+1" characters
-      length = result+1;
+      length = result + 1;
     }
     char* buf = new char[length];
 

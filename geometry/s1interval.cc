@@ -25,7 +25,7 @@ double S1Interval::GetLength() const {
 }
 
 S1Interval S1Interval::Complement() const {
-  if (lo() == hi()) return Full();   // Singleton.
+  if (lo() == hi()) return Full();              // Singleton.
   return S1Interval(hi(), lo(), ARGS_CHECKED);  // Handles empty and full.
 }
 
@@ -122,7 +122,7 @@ inline static double PositiveDistance(double a, double b) {
 
 double S1Interval::GetDirectedHausdorffDistance(S1Interval const& y) const {
   if (y.Contains(*this)) return 0.0;  // this includes the case *this is empty
-  if (y.is_empty()) return M_PI;  // maximum possible distance on S1
+  if (y.is_empty()) return M_PI;      // maximum possible distance on S1
 
   double y_complement_center = y.GetComplementCenter();
   if (Contains(y_complement_center)) {
@@ -130,10 +130,12 @@ double S1Interval::GetDirectedHausdorffDistance(S1Interval const& y) const {
   } else {
     // The Hausdorff distance is realized by either two hi() endpoints or two
     // lo() endpoints, whichever is farther apart.
-    double hi_hi = S1Interval(y.hi(), y_complement_center).Contains(hi()) ?
-        PositiveDistance(y.hi(), hi()) : 0;
-    double lo_lo = S1Interval(y_complement_center, y.lo()).Contains(lo()) ?
-        PositiveDistance(lo(), y.lo()) : 0;
+    double hi_hi = S1Interval(y.hi(), y_complement_center).Contains(hi())
+                       ? PositiveDistance(y.hi(), hi())
+                       : 0;
+    double lo_lo = S1Interval(y_complement_center, y.lo()).Contains(lo())
+                       ? PositiveDistance(lo(), y.lo())
+                       : 0;
     DCHECK(hi_hi > 0 || lo_lo > 0);
     return max(hi_hi, lo_lo);
   }
@@ -180,7 +182,8 @@ S1Interval S1Interval::Expanded(double radius) const {
   // for a 1-bit rounding error when computing each endpoint.
   if (GetLength() + 2 * radius >= 2 * M_PI - 1e-15) return Full();
 
-  S1Interval result(remainder(lo() - radius, 2*M_PI), remainder(hi() + radius, 2*M_PI));
+  S1Interval result(remainder(lo() - radius, 2 * M_PI),
+                    remainder(hi() + radius, 2 * M_PI));
   if (result.lo() <= -M_PI) result.set_lo(M_PI);
   return result;
 }

@@ -9,13 +9,10 @@ using std::endl;
 #include "s1angle.h"
 #include "s2latlng.h"
 
-S1Angle::S1Angle(S2Point const& x, S2Point const& y)
-    : radians_(x.Angle(y)) {
-}
+S1Angle::S1Angle(S2Point const& x, S2Point const& y) : radians_(x.Angle(y)) {}
 
 S1Angle::S1Angle(S2LatLng const& x, S2LatLng const& y)
-    : radians_(x.GetDistance(y).radians()) {
-}
+    : radians_(x.GetDistance(y).radians()) {}
 
 S1Angle S1Angle::Normalized() const {
   S1Angle a(radians_);

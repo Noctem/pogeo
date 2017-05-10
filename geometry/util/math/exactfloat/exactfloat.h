@@ -102,8 +102,8 @@ using std::endl;
 #include <string>
 using std::string;
 
-#include "base/logging.h"
 #include "base/integral_types.h"
+#include "base/logging.h"
 #include "openssl/bn.h"
 
 class ExactFloat {
@@ -112,11 +112,11 @@ class ExactFloat {
 
   // The maximum exponent supported.  If a value has an exponent larger than
   // this, it is replaced by infinity (with the appropriate sign).
-  static const int kMaxExp = 200*1000*1000;  // About 10**(60 million)
+  static const int kMaxExp = 200 * 1000 * 1000;  // About 10**(60 million)
 
   // The minimum exponent supported.  If a value has an exponent less than
   // this, it is replaced by zero (with the appropriate sign).
-  static const int kMinExp = -kMaxExp;   // About 10**(-60 million)
+  static const int kMinExp = -kMaxExp;  // About 10**(-60 million)
 
   // The maximum number of mantissa bits supported.  If a value has more
   // mantissa bits than this, it is replaced with NaN.  (It is expected that
@@ -514,8 +514,8 @@ class ExactFloat {
 
   // Return a_sign * fabs(a) + b_sign * fabs(b).  Used to implement addition
   // and subtraction.
-  static ExactFloat SignedSum(int a_sign, const ExactFloat* a,
-                              int b_sign, const ExactFloat* b);
+  static ExactFloat SignedSum(int a_sign, const ExactFloat* a, int b_sign,
+                              const ExactFloat* b);
 
   // Convert an ExactFloat to its canonical form.  Underflow results in signed
   // zero, overflow results in signed infinity, and precision overflow results
@@ -543,7 +543,8 @@ class ExactFloat {
   // mode.  The type "T" must be signed.  Returns the largest possible integer
   // for NaN, and clamps out of range values to the largest or smallest
   // possible values.
-  template <class T> T ToInteger(RoundingMode mode) const;
+  template <class T>
+  T ToInteger(RoundingMode mode) const;
 
   // Log a fatal error message (used for unimplemented methods).
   static ExactFloat Unimplemented();
@@ -552,13 +553,9 @@ class ExactFloat {
 /////////////////////////////////////////////////////////////////////////
 // Implementation details follow:
 
-inline ExactFloat::ExactFloat() : sign_(1), bn_exp_(kExpZero) {
-  BN_init(&bn_);
-}
+inline ExactFloat::ExactFloat() : sign_(1), bn_exp_(kExpZero) { BN_init(&bn_); }
 
-inline ExactFloat::~ExactFloat() {
-  BN_free(&bn_);
-}
+inline ExactFloat::~ExactFloat() { BN_free(&bn_); }
 
 inline bool ExactFloat::is_zero() const { return bn_exp_ == kExpZero; }
 inline bool ExactFloat::is_inf() const { return bn_exp_ == kExpInfinity; }

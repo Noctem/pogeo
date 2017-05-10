@@ -4,7 +4,7 @@
 // This file contains the core of Bob Jenkins lookup2 algorithm.
 //
 // This file contains the basic hash "mix" code which is widely referenced.
-// 
+//
 // This file also contains routines used to load an unaligned little-endian
 // word from memory.  This relatively generic functionality probably
 // shouldn't live in this file.
@@ -24,33 +24,74 @@
 //    if you're lucky.
 // ----------------------------------------------------------------------
 
-static inline void mix(uint32& a, uint32& b, uint32& c) {     // 32bit version
-  a -= b; a -= c; a ^= (c>>13);
-  b -= c; b -= a; b ^= (a<<8);
-  c -= a; c -= b; c ^= (b>>13);
-  a -= b; a -= c; a ^= (c>>12);
-  b -= c; b -= a; b ^= (a<<16);
-  c -= a; c -= b; c ^= (b>>5);
-  a -= b; a -= c; a ^= (c>>3);
-  b -= c; b -= a; b ^= (a<<10);
-  c -= a; c -= b; c ^= (b>>15);
+static inline void mix(uint32& a, uint32& b, uint32& c) {  // 32bit version
+  a -= b;
+  a -= c;
+  a ^= (c >> 13);
+  b -= c;
+  b -= a;
+  b ^= (a << 8);
+  c -= a;
+  c -= b;
+  c ^= (b >> 13);
+  a -= b;
+  a -= c;
+  a ^= (c >> 12);
+  b -= c;
+  b -= a;
+  b ^= (a << 16);
+  c -= a;
+  c -= b;
+  c ^= (b >> 5);
+  a -= b;
+  a -= c;
+  a ^= (c >> 3);
+  b -= c;
+  b -= a;
+  b ^= (a << 10);
+  c -= a;
+  c -= b;
+  c ^= (b >> 15);
 }
 
-static inline void mix(uint64& a, uint64& b, uint64& c) {     // 64bit version
-  a -= b; a -= c; a ^= (c>>43);
-  b -= c; b -= a; b ^= (a<<9);
-  c -= a; c -= b; c ^= (b>>8);
-  a -= b; a -= c; a ^= (c>>38);
-  b -= c; b -= a; b ^= (a<<23);
-  c -= a; c -= b; c ^= (b>>5);
-  a -= b; a -= c; a ^= (c>>35);
-  b -= c; b -= a; b ^= (a<<49);
-  c -= a; c -= b; c ^= (b>>11);
-  a -= b; a -= c; a ^= (c>>12);
-  b -= c; b -= a; b ^= (a<<18);
-  c -= a; c -= b; c ^= (b>>22);
+static inline void mix(uint64& a, uint64& b, uint64& c) {  // 64bit version
+  a -= b;
+  a -= c;
+  a ^= (c >> 43);
+  b -= c;
+  b -= a;
+  b ^= (a << 9);
+  c -= a;
+  c -= b;
+  c ^= (b >> 8);
+  a -= b;
+  a -= c;
+  a ^= (c >> 38);
+  b -= c;
+  b -= a;
+  b ^= (a << 23);
+  c -= a;
+  c -= b;
+  c ^= (b >> 5);
+  a -= b;
+  a -= c;
+  a ^= (c >> 35);
+  b -= c;
+  b -= a;
+  b ^= (a << 49);
+  c -= a;
+  c -= b;
+  c ^= (b >> 11);
+  a -= b;
+  a -= c;
+  a ^= (c >> 12);
+  b -= c;
+  b -= a;
+  b ^= (a << 18);
+  c -= a;
+  c -= b;
+  c ^= (b >> 22);
 }
-
 
 // Load an unaligned little endian word from memory.
 //
@@ -70,13 +111,9 @@ static inline void mix(uint64& a, uint64& b, uint64& c) {     // 64bit version
 // but that seems overly verbose.]
 
 #if !defined(NEED_ALIGNED_LOADS) && defined(IS_LITTLE_ENDIAN)
-static inline uint64 Word64At(const char *ptr) {
-  return UNALIGNED_LOAD64(ptr);
-}
+static inline uint64 Word64At(const char* ptr) { return UNALIGNED_LOAD64(ptr); }
 
-static inline uint32 Word32At(const char *ptr) {
-  return UNALIGNED_LOAD32(ptr);
-}
+static inline uint32 Word32At(const char* ptr) { return UNALIGNED_LOAD32(ptr); }
 
 // This produces the same results as the byte-by-byte version below.
 // Here, we mask off the sign bits and subtract off two copies.  To
@@ -84,7 +121,7 @@ static inline uint32 Word32At(const char *ptr) {
 // start by considering the low-order byte.  If we loaded an unsigned
 // word and wanted to sign extend it, we isolate the sign bit and subtract
 // that from zero which gives us a sequence of bits matching the sign bit
-// at and above the sign bit.  If we remove (subtract) the sign bit and 
+// at and above the sign bit.  If we remove (subtract) the sign bit and
 // add in the low order byte, we now have a sign-extended byte as desired.
 // We can then operate on all four bytes in parallel because addition
 // is associative and commutative.
@@ -104,7 +141,7 @@ static inline uint32 Word32At(const char *ptr) {
 //   == 0x8281 - 0x8080 - 0x8000 - 0x80
 //   == 0x8281 - 0x8080 - 0x8080
 
-static inline uint32 Google1At(const char *ptr) {
+static inline uint32 Google1At(const char* ptr) {
   uint32 t = UNALIGNED_LOAD32(ptr);
   uint32 masked = t & 0x80808080;
   return t - masked - masked;
@@ -114,30 +151,27 @@ static inline uint32 Google1At(const char *ptr) {
 
 // NOTE:  This code is not normally used or tested.
 
-static inline uint64 Word64At(const char *ptr) {
-    return (static_cast<uint64>(ptr[0]) +
-            (static_cast<uint64>(ptr[1]) << 8) +
-            (static_cast<uint64>(ptr[2]) << 16) +
-            (static_cast<uint64>(ptr[3]) << 24) +
-            (static_cast<uint64>(ptr[4]) << 32) +
-            (static_cast<uint64>(ptr[5]) << 40) +
-            (static_cast<uint64>(ptr[6]) << 48) +
-            (static_cast<uint64>(ptr[7]) << 56));
+static inline uint64 Word64At(const char* ptr) {
+  return (static_cast<uint64>(ptr[0]) + (static_cast<uint64>(ptr[1]) << 8) +
+          (static_cast<uint64>(ptr[2]) << 16) +
+          (static_cast<uint64>(ptr[3]) << 24) +
+          (static_cast<uint64>(ptr[4]) << 32) +
+          (static_cast<uint64>(ptr[5]) << 40) +
+          (static_cast<uint64>(ptr[6]) << 48) +
+          (static_cast<uint64>(ptr[7]) << 56));
 }
 
-static inline uint32 Word32At(const char *ptr) {
-    return (static_cast<uint32>(ptr[0]) +
-            (static_cast<uint32>(ptr[1]) << 8) +
-            (static_cast<uint32>(ptr[2]) << 16) +
-            (static_cast<uint32>(ptr[3]) << 24));
+static inline uint32 Word32At(const char* ptr) {
+  return (static_cast<uint32>(ptr[0]) + (static_cast<uint32>(ptr[1]) << 8) +
+          (static_cast<uint32>(ptr[2]) << 16) +
+          (static_cast<uint32>(ptr[3]) << 24));
 }
 
-static inline uint32 Google1At(const char *ptr2) {
-  const schar * ptr = reinterpret_cast<const schar *>(ptr2);
-  return (static_cast<schar>(ptr[0]) +
-	  (static_cast<uint32>(ptr[1]) << 8) +
-	  (static_cast<uint32>(ptr[2]) << 16) +
-	  (static_cast<uint32>(ptr[3]) << 24));
+static inline uint32 Google1At(const char* ptr2) {
+  const schar* ptr = reinterpret_cast<const schar*>(ptr2);
+  return (static_cast<schar>(ptr[0]) + (static_cast<uint32>(ptr[1]) << 8) +
+          (static_cast<uint32>(ptr[2]) << 16) +
+          (static_cast<uint32>(ptr[3]) << 24));
 }
 
 #endif /* !NEED_ALIGNED_LOADS && IS_LITTLE_ENDIAN */
@@ -147,7 +181,6 @@ static inline uint32 Google1At(const char *ptr2) {
 //
 // TODO(user): find occurences of WORD_HASH and adjust the code to
 // use more meaningful concepts.
-# define WORD_HASH
+#define WORD_HASH
 
 #endif  // UTIL_HASH_JENKINS_LOOKUP2_H__
-

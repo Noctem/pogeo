@@ -1,32 +1,29 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
-#include <stdlib.h>
-#include <sys/resource.h>   // for rusage, RUSAGE_SELF
 #include <limits.h>
+#include <stdlib.h>
+#include <sys/resource.h>  // for rusage, RUSAGE_SELF
 
 #include <vector>
 using std::vector;
 
-
 #include "base/integral_types.h"
 #include "base/logging.h"
 #include "base/stringprintf.h"
-#include "util/math/matrix3x3-inl.h"
-#include "s2testing.h"
-#include "s2loop.h"
+#include "s2cap.h"
+#include "s2cell.h"
+#include "s2cellunion.h"
 #include "s2latlng.h"
 #include "s2latlngrect.h"
+#include "s2loop.h"
 #include "s2polygon.h"
 #include "s2polyline.h"
-#include "s2cellunion.h"
-#include "s2cell.h"
-#include "s2cap.h"
+#include "s2testing.h"
 #include "strings/split.h"
 #include "strings/strutil.h"
+#include "util/math/matrix3x3-inl.h"
 
-S2Testing::Random::Random() {
-  srandom(4);
-}
+S2Testing::Random::Random() { srandom(4); }
 
 uint64 S2Testing::Random::Rand64() {
   int bits_of_rand = log2(1ULL + RAND_MAX);
@@ -39,22 +36,18 @@ uint64 S2Testing::Random::Rand64() {
   return result;
 }
 
-uint32 S2Testing::Random::Rand32() {
-  return Rand64() & ((1ULL << 32) - 1);
-}
+uint32 S2Testing::Random::Rand32() { return Rand64() & ((1ULL << 32) - 1); }
 
 double S2Testing::Random::RandDouble() {
   const int NUMBITS = 53;
-  return ldexp(Rand64()  & ((1ULL << NUMBITS) - 1ULL), -NUMBITS);
+  return ldexp(Rand64() & ((1ULL << NUMBITS) - 1ULL), -NUMBITS);
 }
 
 int S2Testing::Random::Uniform(int upper_bound) {
   return static_cast<uint32>(RandDouble() * upper_bound);
 }
 
-bool S2Testing::Random::OneIn(int x) {
-  return Uniform(x) == 0;
-}
+bool S2Testing::Random::OneIn(int x) { return Uniform(x) == 0; }
 
 int32 S2Testing::Random::Skewed(int max_log) {
   const int32 base = Rand32() % (max_log + 1);
@@ -137,10 +130,8 @@ S2Polygon* S2Testing::MakePolygon(string const& str) {
   return new S2Polygon(&loops);  // Takes ownership.
 }
 
-
-S2Loop* S2Testing::MakeRegularLoop(S2Point const& center,
-                                          int num_vertices,
-                                          double angle_radius) {
+S2Loop* S2Testing::MakeRegularLoop(S2Point const& center, int num_vertices,
+                                   double angle_radius) {
   Matrix3x3_d m;
   S2::GetFrame(center, &m);
   vector<S2Point> vertices;
@@ -272,12 +263,11 @@ S2Point S2Testing::SamplePoint(S2Cap const& cap) {
   // The result should already be very close to unit-length, but we might as
   // well make it accurate as possible.
   return S2::FromFrame(m, S2Point(cos(theta) * r, sin(theta) * r, 1 - h))
-         .Normalize();
+      .Normalize();
 }
 
 void S2Testing::CheckCovering(S2Region const& region,
-                              S2CellUnion const& covering,
-                              bool check_tight,
+                              S2CellUnion const& covering, bool check_tight,
                               S2CellId const& id) {
   if (!id.is_valid()) {
     for (int face = 0; face < 6; ++face) {
@@ -290,7 +280,7 @@ void S2Testing::CheckCovering(S2Region const& region,
   if (!region.MayIntersect(S2Cell(id))) {
     // If region does not intersect id, then neither should the covering.
     if (check_tight) {
-        CHECK(!covering.Intersects(id));
+      CHECK(!covering.Intersects(id));
     }
 
   } else if (!covering.Contains(id)) {

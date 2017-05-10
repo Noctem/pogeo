@@ -1,8 +1,8 @@
 // Copyright 2009 Google Inc. All Rights Reserved.
 
 #include "util/math/exactfloat/exactfloat.h"
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 #include <algorithm>
 
@@ -32,10 +32,9 @@ const int ExactFloat::kDoubleMantissaBits;
 // precision range so that (2 * bn_exp_) does not overflow an "int".  We take
 // advantage of this, for example, by only checking for overflow/underflow
 // *after* multiplying two numbers.
-static_assert(
-    ExactFloat::kMaxExp <= INT_MAX / 2 &&
-    ExactFloat::kMinExp - ExactFloat::kMaxPrec >= INT_MIN / 2,
-    "exactfloat_exponent_might_overflow");
+static_assert(ExactFloat::kMaxExp <= INT_MAX / 2 &&
+                  ExactFloat::kMinExp - ExactFloat::kMaxPrec >= INT_MIN / 2,
+              "exactfloat_exponent_might_overflow");
 
 // We define a few simple extensions to the BIGNUM interface.  In some cases
 // these depend on BIGNUM internal fields, so they might require tweaking if
@@ -120,8 +119,7 @@ ExactFloat::ExactFloat(int v) {
 }
 
 ExactFloat::ExactFloat(const ExactFloat& b)
-    : sign_(b.sign_),
-      bn_exp_(b.bn_exp_) {
+    : sign_(b.sign_), bn_exp_(b.bn_exp_) {
   BN_init(&bn_);
   BN_copy(&bn_, &b.bn_);
 }
@@ -144,9 +142,7 @@ ExactFloat ExactFloat::NaN() {
   return r;
 }
 
-int ExactFloat::prec() const {
-  return BN_num_bits(&bn_);
-}
+int ExactFloat::prec() const { return BN_num_bits(&bn_); }
 
 int ExactFloat::exp() const {
   DCHECK(is_normal());
@@ -239,12 +235,10 @@ ExactFloat ExactFloat::RoundToPowerOf2(int bit_exp, RoundingMode mode) const {
     // Never increment.
   } else if (mode == kRoundTiesAwayFromZero) {
     // Increment if the highest discarded bit is 1.
-    if (BN_is_bit_set(&bn_, shift - 1))
-      increment = true;
+    if (BN_is_bit_set(&bn_, shift - 1)) increment = true;
   } else if (mode == kRoundAwayFromZero) {
     // Increment unless all discarded bits are zero.
-    if (BN_ext_count_low_zero_bits(&bn_) < shift)
-      increment = true;
+    if (BN_ext_count_low_zero_bits(&bn_) < shift) increment = true;
   } else {
     DCHECK_EQ(mode, kRoundTiesToEven);
     // Let "w/xyz" denote a mantissa where "w" is the lowest kept bit and
@@ -292,8 +286,8 @@ int ExactFloat::NumSignificantDigitsForPrec(int prec) {
 static const int kMinSignificantDigits = 10;
 
 string ExactFloat::ToString() const {
-  int max_digits = max(kMinSignificantDigits,
-                       NumSignificantDigitsForPrec(prec()));
+  int max_digits =
+      max(kMinSignificantDigits, NumSignificantDigitsForPrec(prec()));
   return ToStringWithMaxDigits(max_digits);
 }
 
@@ -355,7 +349,10 @@ string ExactFloat::ToStringWithMaxDigits(int max_digits) const {
 static void IncrementDecimalDigits(string* digits) {
   string::iterator pos = digits->end();
   while (--pos >= digits->begin()) {
-    if (*pos < '9') { ++*pos; return; }
+    if (*pos < '9') {
+      ++*pos;
+      return;
+    }
     *pos = '0';
   }
   digits->insert(0, "1");
@@ -399,7 +396,7 @@ int ExactFloat::GetDecimalDigits(int max_digits, string* digits) const {
     // more, unless all other discarded digits are zero in which case we round
     // up only if the lowest kept digit is odd.
     if (all_digits[max_digits] >= '5' &&
-        ((all_digits[max_digits-1] & 1) == 1 ||
+        ((all_digits[max_digits - 1] & 1) == 1 ||
          strpbrk(all_digits + max_digits + 1, "123456789") != NULL)) {
       // This can increase the number of digits by 1, but in that case at
       // least one trailing zero will be stripped off below.
@@ -440,9 +437,7 @@ ExactFloat& ExactFloat::operator=(const ExactFloat& b) {
   return *this;
 }
 
-ExactFloat ExactFloat::operator-() const {
-  return CopyWithSign(-sign_);
-}
+ExactFloat ExactFloat::operator-() const { return CopyWithSign(-sign_); }
 
 ExactFloat operator+(const ExactFloat& a, const ExactFloat& b) {
   return ExactFloat::SignedSum(a.sign_, &a, b.sign_, &b);
@@ -452,8 +447,8 @@ ExactFloat operator-(const ExactFloat& a, const ExactFloat& b) {
   return ExactFloat::SignedSum(a.sign_, &a, -b.sign_, &b);
 }
 
-ExactFloat ExactFloat::SignedSum(int a_sign, const ExactFloat* a,
-                                 int b_sign, const ExactFloat* b) {
+ExactFloat ExactFloat::SignedSum(int a_sign, const ExactFloat* a, int b_sign,
+                                 const ExactFloat* b) {
   if (!a->is_normal() || !b->is_normal()) {
     // Handle zero, infinity, and NaN according to IEEE 754-2008.
     if (a->is_nan()) return *a;
@@ -595,8 +590,8 @@ bool ExactFloat::UnsignedLess(const ExactFloat& b) const {
   if (cmp != 0) return cmp < 0;
   // Otherwise shift one of the two values so that they both have the same
   // bn_exp_ and then compare the mantissas.
-  return (bn_exp_ >= b.bn_exp_ ?
-          ScaleAndCompare(b) < 0 : b.ScaleAndCompare(*this) > 0);
+  return (bn_exp_ >= b.bn_exp_ ? ScaleAndCompare(b) < 0
+                               : b.ScaleAndCompare(*this) > 0);
 }
 
 bool operator<(const ExactFloat& a, const ExactFloat& b) {
@@ -610,9 +605,7 @@ bool operator<(const ExactFloat& a, const ExactFloat& b) {
   return (a.sign_ > 0) ? a.UnsignedLess(b) : b.UnsignedLess(a);
 }
 
-ExactFloat fabs(const ExactFloat& a) {
-  return a.CopyWithSign(+1);
-}
+ExactFloat fabs(const ExactFloat& a) { return a.CopyWithSign(+1); }
 
 ExactFloat fmax(const ExactFloat& a, const ExactFloat& b) {
   // If one argument is NaN, return the other argument.

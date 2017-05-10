@@ -23,13 +23,16 @@ using std::endl;
 #include "base/macros.h"
 
 // Always-on checking
-#define CHECK(x)	if(x){}else LogMessageFatal(__FILE__, __LINE__).stream() << "Check failed: " #x
-#define CHECK_LT(x, y)	CHECK((x) < (y))
-#define CHECK_GT(x, y)	CHECK((x) > (y))
-#define CHECK_LE(x, y)	CHECK((x) <= (y))
-#define CHECK_GE(x, y)	CHECK((x) >= (y))
-#define CHECK_EQ(x, y)	CHECK((x) == (y))
-#define CHECK_NE(x, y)	CHECK((x) != (y))
+#define CHECK(x) \
+  if (x) {       \
+  } else         \
+    LogMessageFatal(__FILE__, __LINE__).stream() << "Check failed: " #x
+#define CHECK_LT(x, y) CHECK((x) < (y))
+#define CHECK_GT(x, y) CHECK((x) > (y))
+#define CHECK_LE(x, y) CHECK((x) <= (y))
+#define CHECK_GE(x, y) CHECK((x) >= (y))
+#define CHECK_EQ(x, y) CHECK((x) == (y))
+#define CHECK_NE(x, y) CHECK((x) != (y))
 #define CHECK_NOTNULL(x) CHECK((x) != NULL)
 
 #ifndef NDEBUG
@@ -57,7 +60,10 @@ using std::endl;
 #define LOG_FATAL LogMessageFatal(__FILE__, __LINE__)
 #define LOG_QFATAL LOG_FATAL
 
-#define VLOG(x) if((x)>0){} else LOG_INFO.stream()
+#define VLOG(x)  \
+  if ((x) > 0) { \
+  } else         \
+    LOG_INFO.stream()
 
 #ifdef NDEBUG
 #define DEBUG_MODE false
@@ -67,7 +73,7 @@ using std::endl;
 #define LOG_DFATAL LOG_FATAL
 #endif
 
-#define LOG(severity) LOG_ ## severity.stream()
+#define LOG(severity) LOG_##severity.stream()
 #define LG LOG_INFO.stream()
 
 namespace google_base {
@@ -75,6 +81,7 @@ class DateLogger {
  public:
   DateLogger();
   char* const HumanDate();
+
  private:
   char buffer_[9];
 };
@@ -83,8 +90,8 @@ class DateLogger {
 class LogMessage {
  public:
   LogMessage(const char* file, int line) {
-    std::cerr << "[" << pretty_date_.HumanDate() << "] "
-              << file << ":" << line << ": ";
+    std::cerr << "[" << pretty_date_.HumanDate() << "] " << file << ":" << line
+              << ": ";
   }
   ~LogMessage() { std::cerr << "\n"; }
   std::ostream& stream() { return std::cerr; }
@@ -96,12 +103,12 @@ class LogMessage {
 
 class LogMessageFatal : public LogMessage {
  public:
-  LogMessageFatal(const char* file, int line)
-    : LogMessage(file, line) { }
+  LogMessageFatal(const char* file, int line) : LogMessage(file, line) {}
   ~LogMessageFatal() {
     std::cerr << "\n";
     abort();
   }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(LogMessageFatal);
 };

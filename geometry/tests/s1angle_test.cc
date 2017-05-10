@@ -4,10 +4,10 @@
 
 #include <sstream>
 
+#include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/integral_types.h"
 #include "base/logging.h"
-#include <gtest/gtest.h>
 #include "s2latlng.h"
 #include "s2testing.h"
 
@@ -98,10 +98,11 @@ TEST(S1Angle, ConstructorsThatMeasureAngles) {
   EXPECT_DOUBLE_EQ(M_PI_2,
                    S1Angle(S2Point(1, 0, 0), S2Point(0, 0, 2)).radians());
   EXPECT_DOUBLE_EQ(0.0, S1Angle(S2Point(1, 0, 0), S2Point(1, 0, 0)).radians());
-  EXPECT_NEAR(50.0,
-              S1Angle(S2LatLng::FromDegrees(20, 20),
-                      S2LatLng::FromDegrees(70, 20)).degrees(),
-              1e-13);
+  EXPECT_NEAR(
+      50.0,
+      S1Angle(S2LatLng::FromDegrees(20, 20), S2LatLng::FromDegrees(70, 20))
+          .degrees(),
+      1e-13);
 }
 
 TEST(S1Angle, TestFormatting) {
@@ -126,20 +127,19 @@ TEST(S1Angle, TestPerformance) {
     // We structure both loops so that all the conversions can be done in
     // parallel.  Otherwise on some platforms the optimizer happens to do a
     // much better job of parallelizing one loop than the other.
-    double r0 = S1Angle::E6(i-0).radians();
-    double r1 = S1Angle::E6(i-1).radians();
-    double r2 = S1Angle::E6(i-2).radians();
-    double r3 = S1Angle::E6(i-3).radians();
-    double r4 = S1Angle::E6(i-4).radians();
-    double r5 = S1Angle::E6(i-5).radians();
-    double r6 = S1Angle::E6(i-6).radians();
-    double r7 = S1Angle::E6(i-7).radians();
+    double r0 = S1Angle::E6(i - 0).radians();
+    double r1 = S1Angle::E6(i - 1).radians();
+    double r2 = S1Angle::E6(i - 2).radians();
+    double r3 = S1Angle::E6(i - 3).radians();
+    double r4 = S1Angle::E6(i - 4).radians();
+    double r5 = S1Angle::E6(i - 5).radians();
+    double r6 = S1Angle::E6(i - 6).radians();
+    double r7 = S1Angle::E6(i - 7).radians();
     rad_sum += ((r0 + r1) + (r2 + r3)) + ((r4 + r5) + (r6 + r7));
   }
   const double from_e6_time = S2Testing::GetCpuTime() - from_e6_start;
   EXPECT_NE(rad_sum, 0);  // Don't let the sum get optimized away.
-  LOG(INFO) << "From E6: "
-            << (FLAGS_iters / from_e6_time)
+  LOG(INFO) << "From E6: " << (FLAGS_iters / from_e6_time)
             << " values per second";
 
   // Time conversion from radians to E6.
@@ -148,20 +148,27 @@ TEST(S1Angle, TestPerformance) {
   long e6_sum = 0;
   const double to_e6_start = S2Testing::GetCpuTime();
   for (int i = FLAGS_iters; i > 0; i -= kOpsPerLoop) {
-    long r0 = S1Angle::Radians(angle).e6(); angle += delta;
-    long r1 = S1Angle::Radians(angle).e6(); angle += delta;
-    long r2 = S1Angle::Radians(angle).e6(); angle += delta;
-    long r3 = S1Angle::Radians(angle).e6(); angle += delta;
-    long r4 = S1Angle::Radians(angle).e6(); angle += delta;
-    long r5 = S1Angle::Radians(angle).e6(); angle += delta;
-    long r6 = S1Angle::Radians(angle).e6(); angle += delta;
-    long r7 = S1Angle::Radians(angle).e6(); angle += delta;
+    long r0 = S1Angle::Radians(angle).e6();
+    angle += delta;
+    long r1 = S1Angle::Radians(angle).e6();
+    angle += delta;
+    long r2 = S1Angle::Radians(angle).e6();
+    angle += delta;
+    long r3 = S1Angle::Radians(angle).e6();
+    angle += delta;
+    long r4 = S1Angle::Radians(angle).e6();
+    angle += delta;
+    long r5 = S1Angle::Radians(angle).e6();
+    angle += delta;
+    long r6 = S1Angle::Radians(angle).e6();
+    angle += delta;
+    long r7 = S1Angle::Radians(angle).e6();
+    angle += delta;
     e6_sum += ((r0 + r1) + (r2 + r3)) + ((r4 + r5) + (r6 + r7));
   }
   const double to_e6_time = S2Testing::GetCpuTime() - to_e6_start;
   EXPECT_NE(e6_sum + angle, 0);  // Don't let them get optimized away.
-  LOG(INFO) << "  To E6: "
-            << (FLAGS_iters / to_e6_time)
+  LOG(INFO) << "  To E6: " << (FLAGS_iters / to_e6_time)
             << " values per second";
 
   // Make sure that the To/From E6 times are not much different.

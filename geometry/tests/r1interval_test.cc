@@ -62,14 +62,38 @@ TEST(R1Interval, TestBasic) {
 
   // Contains(R1Interval), InteriorContains(R1Interval)
   // Intersects(R1Interval), InteriorIntersects(R1Interval)
-  { SCOPED_TRACE(""); TestIntervalOps(empty, empty, "TTFF"); }
-  { SCOPED_TRACE(""); TestIntervalOps(empty, unit, "FFFF"); }
-  { SCOPED_TRACE(""); TestIntervalOps(unit, half, "TTTT"); }
-  { SCOPED_TRACE(""); TestIntervalOps(unit, unit, "TFTT"); }
-  { SCOPED_TRACE(""); TestIntervalOps(unit, empty, "TTFF"); }
-  { SCOPED_TRACE(""); TestIntervalOps(unit, negunit, "FFTF"); }
-  { SCOPED_TRACE(""); TestIntervalOps(unit, R1Interval(0, 0.5), "TFTT"); }
-  { SCOPED_TRACE(""); TestIntervalOps(half, R1Interval(0, 0.5), "FFTF"); }
+  {
+    SCOPED_TRACE("");
+    TestIntervalOps(empty, empty, "TTFF");
+  }
+  {
+    SCOPED_TRACE("");
+    TestIntervalOps(empty, unit, "FFFF");
+  }
+  {
+    SCOPED_TRACE("");
+    TestIntervalOps(unit, half, "TTTT");
+  }
+  {
+    SCOPED_TRACE("");
+    TestIntervalOps(unit, unit, "TFTT");
+  }
+  {
+    SCOPED_TRACE("");
+    TestIntervalOps(unit, empty, "TTFF");
+  }
+  {
+    SCOPED_TRACE("");
+    TestIntervalOps(unit, negunit, "FFTF");
+  }
+  {
+    SCOPED_TRACE("");
+    TestIntervalOps(unit, R1Interval(0, 0.5), "TFTT");
+  }
+  {
+    SCOPED_TRACE("");
+    TestIntervalOps(half, R1Interval(0, 0.5), "FFTF");
+  }
 
   // AddPoint()
   R1Interval r = empty;
@@ -93,10 +117,10 @@ TEST(R1Interval, TestBasic) {
   EXPECT_EQ(R1Interval(-0.5, 1.5), unit.Expanded(0.5));
 
   // Union(), Intersection()
-  EXPECT_EQ(R1Interval(99, 100), R1Interval(99,100).Union(empty));
-  EXPECT_EQ(R1Interval(99, 100), empty.Union(R1Interval(99,100)));
-  EXPECT_TRUE(R1Interval(5,3).Union(R1Interval(0,-2)).is_empty());
-  EXPECT_TRUE(R1Interval(0,-2).Union(R1Interval(5,3)).is_empty());
+  EXPECT_EQ(R1Interval(99, 100), R1Interval(99, 100).Union(empty));
+  EXPECT_EQ(R1Interval(99, 100), empty.Union(R1Interval(99, 100)));
+  EXPECT_TRUE(R1Interval(5, 3).Union(R1Interval(0, -2)).is_empty());
+  EXPECT_TRUE(R1Interval(0, -2).Union(R1Interval(5, 3)).is_empty());
   EXPECT_EQ(unit, unit.Union(unit));
   EXPECT_EQ(R1Interval(-1, 1), unit.Union(negunit));
   EXPECT_EQ(R1Interval(-1, 1), negunit.Union(unit));

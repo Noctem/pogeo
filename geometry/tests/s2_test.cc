@@ -13,20 +13,16 @@ using std::unordered_set;
 using std::binary_function;
 using std::hash;
 
-#include "s2.h"
+#include <gtest/gtest.h>
 #include "base/logging.h"
+#include "s2.h"
 #include "s2latlng.h"
 #include "s2testing.h"
 #include "util/math/matrix3x3-inl.h"
-#include <gtest/gtest.h>
 
-static inline int SwapAxes(int ij) {
-  return ((ij >> 1) & 1) + ((ij & 1) << 1);
-}
+static inline int SwapAxes(int ij) { return ((ij >> 1) & 1) + ((ij & 1) << 1); }
 
-static inline int InvertBits(int ij) {
-  return ij ^ 3;
-}
+static inline int InvertBits(int ij) { return ij ^ 3; }
 
 TEST(S2, TraversalOrder) {
   for (int r = 0; r < 4; ++r) {
@@ -63,7 +59,7 @@ TEST(S2, ST_UV_Conversions) {
   // Check that UVtoST and STtoUV are inverses.
   for (double x = 0; x <= 1; x += 0.0001) {
     EXPECT_NEAR(S2::UVtoST(S2::STtoUV(x)), x, 1e-15);
-    EXPECT_NEAR(S2::STtoUV(S2::UVtoST(2*x-1)), 2*x-1, 1e-15);
+    EXPECT_NEAR(S2::STtoUV(S2::UVtoST(2 * x - 1)), 2 * x - 1, 1e-15);
   }
 }
 
@@ -80,8 +76,10 @@ TEST(S2, FaceUVtoXYZ) {
 
   // Check that each face has a right-handed coordinate system.
   for (int face = 0; face < 6; ++face) {
-    EXPECT_EQ(S2::GetUAxis(face).CrossProd(S2::GetVAxis(face))
-              .DotProd(S2::FaceUVtoXYZ(face, 0, 0)), 1);
+    EXPECT_EQ(S2::GetUAxis(face)
+                  .CrossProd(S2::GetVAxis(face))
+                  .DotProd(S2::FaceUVtoXYZ(face, 0, 0)),
+              1);
   }
 
   // Check that the Hilbert curves on each face combine to form a
@@ -99,13 +97,15 @@ TEST(S2, UVNorms) {
   // Check that GetUNorm and GetVNorm compute right-handed normals for
   // an edge in the increasing U or V direction.
   for (int face = 0; face < 6; ++face) {
-    for (double x = -1; x <= 1; x += 1/1024.) {
+    for (double x = -1; x <= 1; x += 1 / 1024.) {
       EXPECT_DOUBLE_EQ(S2::FaceUVtoXYZ(face, x, -1)
-                       .CrossProd(S2::FaceUVtoXYZ(face, x, 1))
-                       .Angle(S2::GetUNorm(face, x)), 0);
+                           .CrossProd(S2::FaceUVtoXYZ(face, x, 1))
+                           .Angle(S2::GetUNorm(face, x)),
+                       0);
       EXPECT_DOUBLE_EQ(S2::FaceUVtoXYZ(face, -1, x)
-                       .CrossProd(S2::FaceUVtoXYZ(face, 1, x))
-                       .Angle(S2::GetVNorm(face, x)), 0);
+                           .CrossProd(S2::FaceUVtoXYZ(face, 1, x))
+                           .Angle(S2::GetVNorm(face, x)),
+                       0);
     }
   }
 }
@@ -183,19 +183,17 @@ TEST(S2, AnglesAreas) {
 
   // Triangles with near-180 degree edges that sum to a quarter-sphere.
   static double const eps2 = 1e-14;
-  S2Point p000eps2 = S2Point(1, 0.1*eps2, eps2).Normalize();
-  double quarter_area1 = S2::Area(p000eps2, p000, p045) +
-                         S2::Area(p000eps2, p045, p180) +
-                         S2::Area(p000eps2, p180, pz) +
-                         S2::Area(p000eps2, pz, p000);
+  S2Point p000eps2 = S2Point(1, 0.1 * eps2, eps2).Normalize();
+  double quarter_area1 =
+      S2::Area(p000eps2, p000, p045) + S2::Area(p000eps2, p045, p180) +
+      S2::Area(p000eps2, p180, pz) + S2::Area(p000eps2, pz, p000);
   EXPECT_DOUBLE_EQ(quarter_area1, M_PI);
 
   // Four other triangles that sum to a quarter-sphere.
   S2Point p045eps2 = S2Point(1, 1, eps2).Normalize();
-  double quarter_area2 = S2::Area(p045eps2, p000, p045) +
-                         S2::Area(p045eps2, p045, p180) +
-                         S2::Area(p045eps2, p180, pz) +
-                         S2::Area(p045eps2, pz, p000);
+  double quarter_area2 =
+      S2::Area(p045eps2, p000, p045) + S2::Area(p045eps2, p045, p180) +
+      S2::Area(p045eps2, p180, pz) + S2::Area(p045eps2, pz, p000);
   EXPECT_DOUBLE_EQ(quarter_area2, M_PI);
 
   // Compute the area of a hemisphere using four triangles with one near-180
@@ -290,8 +288,8 @@ TEST(RobustCCW, ColinearPoints) {
 //
 // This method is intended specifically for checking the cases where
 // symbolic perturbations are needed to break ties.
-static void CheckSymbolicCCW(int expected, S2Point const& a,
-                             S2Point const& b, S2Point const& c) {
+static void CheckSymbolicCCW(int expected, S2Point const& a, S2Point const& b,
+                             S2Point const& c) {
   CHECK_LT(a, b);
   CHECK_LT(b, c);
   CHECK_EQ(0, a.DotProd(b.CrossProd(c)));
@@ -378,12 +376,12 @@ class RobustCCWTest : public testing::Test {
   class LessCCW : public binary_function<S2Point const&, S2Point const&, bool> {
    public:
     LessCCW(S2Point const& origin, S2Point const& start)
-        : origin_(origin), start_(start) {
-    }
+        : origin_(origin), start_(start) {}
     bool operator()(S2Point const& a, S2Point const& b) {
       // OrderedCCW() acts like "<=", so we need to invert the comparison.
       return !S2::OrderedCCW(start_, b, a, origin_);
     }
+
    private:
     S2Point const origin_;
     S2Point const start_;
@@ -442,7 +440,7 @@ class RobustCCWTest : public testing::Test {
     }
     // We have tested all triangles of the form OAB.  Exactly half of these
     // should be CCW.
-    EXPECT_EQ(n * (n-1) / 2, total_num_ccw);
+    EXPECT_EQ(n * (n - 1) / 2, total_num_ccw);
   }
 
   static void AddNormalized(S2Point const& a, vector<S2Point>* points) {
@@ -478,8 +476,9 @@ class RobustCCWTest : public testing::Test {
       case 0:
         // Add a random point (not uniformly distributed) along the great
         // circle AB.
-        AddNormalized((2 * rnd->RandDouble() - 1) * a +
-                      (2 * rnd->RandDouble() - 1) * b, points);
+        AddNormalized(
+            (2 * rnd->RandDouble() - 1) * a + (2 * rnd->RandDouble() - 1) * b,
+            points);
         break;
       case 1:
         // Perturb one coordinate by the minimum amount possible.
@@ -594,24 +593,24 @@ TEST_F(RobustCCWTest, StressTest) {
 // reason that we need to analyze the minimum, maximum, and average values of
 // every metric; it would be perfectly reasonable to just define one of these.
 
-template<int dim>
+template <int dim>
 class MetricBundle {
  public:
   typedef S2::Metric<dim> Metric;
-  MetricBundle(Metric const& min, Metric const& max, Metric const& avg) :
-    min_(min), max_(max), avg_(avg) {}
+  MetricBundle(Metric const& min, Metric const& max, Metric const& avg)
+      : min_(min), max_(max), avg_(avg) {}
   Metric const& min_;
   Metric const& max_;
   Metric const& avg_;
 };
 
-template<int dim>
+template <int dim>
 static void CheckMinMaxAvg(MetricBundle<dim> const& bundle) {
   EXPECT_LE(bundle.min_.deriv(), bundle.avg_.deriv());
   EXPECT_LE(bundle.avg_.deriv(), bundle.max_.deriv());
 }
 
-template<int dim>
+template <int dim>
 static void CheckLessOrEqual(MetricBundle<dim> const& a,
                              MetricBundle<dim> const& b) {
   EXPECT_LE(a.min_.deriv(), b.min_.deriv());

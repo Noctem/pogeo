@@ -3,32 +3,27 @@
 //
 //
 
-#include "base/logging.h"
 #include "util/coding/coder.h"
+#include "base/logging.h"
 
-// An initialization value used when we are allowed to 
+// An initialization value used when we are allowed to
 unsigned char Encoder::kEmptyBuffer = 0;
 
 Encoder::Encoder()
-  : orig_(NULL),
-    buf_(NULL),
-    limit_(NULL),
-    underlying_buffer_(&kEmptyBuffer) {
-}
-  
+    : orig_(NULL),
+      buf_(NULL),
+      limit_(NULL),
+      underlying_buffer_(&kEmptyBuffer) {}
+
 Encoder::~Encoder() {
   if (underlying_buffer_ != &kEmptyBuffer) {
     delete[] underlying_buffer_;
   }
 }
 
-int Encoder::varint32_length(uint32 v) {
-  return Varint::Length32(v);
-}
+int Encoder::varint32_length(uint32 v) { return Varint::Length32(v); }
 
-int Encoder::varint64_length(uint64 v) {
-  return Varint::Length64(v);
-}
+int Encoder::varint64_length(uint64 v) { return Varint::Length64(v); }
 
 void Encoder::EnsureSlowPath(int N) {
   CHECK(ensure_allowed());
@@ -65,10 +60,12 @@ void Encoder::Resize(int N) {
 
 // Special optimized version: does not use Varint
 bool Decoder::get_varint32(uint32* v) {
-  const char* r = Varint::Parse32WithLimit(
-                                   reinterpret_cast<const char*>(buf_),
-                                   reinterpret_cast<const char*>(limit_), v);
-  if (r == NULL) { return false; }
+  const char* r =
+      Varint::Parse32WithLimit(reinterpret_cast<const char*>(buf_),
+                               reinterpret_cast<const char*>(limit_), v);
+  if (r == NULL) {
+    return false;
+  }
   buf_ = reinterpret_cast<const unsigned char*>(r);
   return true;
 }
@@ -86,14 +83,14 @@ bool Decoder::get_varint64(uint64* v) {
       return true;
     }
   } else {
-    int shift = 0;        // How much to shift next set of bits
+    int shift = 0;  // How much to shift next set of bits
     unsigned char byte;
     do {
       if ((shift >= 64) || (buf_ >= limit_)) {
         // Out of range
         return false;
       }
-      
+
       // Get 7 bits from next byte
       byte = *(buf_++);
       result |= static_cast<uint64>(byte & 127) << shift;

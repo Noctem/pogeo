@@ -21,16 +21,34 @@ namespace std {
 
 // The hash function due to Bob Jenkins (see
 // http://burtleburtle.net/bob/hash/index.html).
-static inline void mix(uint32& a, uint32& b, uint32& c) {     // 32bit version
-  a -= b; a -= c; a ^= (c>>13);
-  b -= c; b -= a; b ^= (a<<8);
-  c -= a; c -= b; c ^= (b>>13);
-  a -= b; a -= c; a ^= (c>>12);
-  b -= c; b -= a; b ^= (a<<16);
-  c -= a; c -= b; c ^= (b>>5);
-  a -= b; a -= c; a ^= (c>>3);
-  b -= c; b -= a; b ^= (a<<10);
-  c -= a; c -= b; c ^= (b>>15);
+static inline void mix(uint32& a, uint32& b, uint32& c) {  // 32bit version
+  a -= b;
+  a -= c;
+  a ^= (c >> 13);
+  b -= c;
+  b -= a;
+  b ^= (a << 8);
+  c -= a;
+  c -= b;
+  c ^= (b >> 13);
+  a -= b;
+  a -= c;
+  a ^= (c >> 12);
+  b -= c;
+  b -= a;
+  b ^= (a << 16);
+  c -= a;
+  c -= b;
+  c ^= (b >> 5);
+  a -= b;
+  a -= c;
+  a ^= (c >> 3);
+  b -= c;
+  b -= a;
+  b ^= (a << 10);
+  c -= a;
+  c -= b;
+  c ^= (b >> 15);
 }
 
 inline uint32 CollapseZero(uint32 bits) {
@@ -76,14 +94,9 @@ size_t hash<S2Point>::operator()(S2Point const& p) const {
   return c;
 }
 
-
 }  // namespace std
 
-
-bool S2::IsUnitLength(S2Point const& p) {
-
-  return fabs(p.Norm2() - 1) <= 1e-15;
-}
+bool S2::IsUnitLength(S2Point const& p) { return fabs(p.Norm2() - 1) <= 1e-15; }
 
 S2Point S2::Ortho(S2Point const& a) {
 #ifdef S2_TEST_DEGENERACIES
@@ -111,9 +124,7 @@ S2Point S2::ToFrame(Matrix3x3_d const& m, S2Point const& p) {
   return m.Transpose() * p;
 }
 
-S2Point S2::FromFrame(Matrix3x3_d const& m, S2Point const& q) {
-  return m * q;
-}
+S2Point S2::FromFrame(Matrix3x3_d const& m, S2Point const& q) { return m * q; }
 
 bool S2::ApproxEquals(S2Point const& a, S2Point const& b, double max_error) {
   return a.Angle(b) <= max_error;
@@ -250,9 +261,9 @@ typedef Vector3<ExactFloat> Vector3_xf;
 //   "Simulation of Simplicity" (Edelsbrunner and Muecke, ACM Transactions on
 //   Graphics, 1990).
 //
-static int SymbolicallyPerturbedCCW(
-    Vector3_xf const& a, Vector3_xf const& b,
-    Vector3_xf const& c, Vector3_xf const& b_cross_c) {
+static int SymbolicallyPerturbedCCW(Vector3_xf const& a, Vector3_xf const& b,
+                                    Vector3_xf const& c,
+                                    Vector3_xf const& b_cross_c) {
   // This method requires that the points are sorted in lexicographically
   // increasing order.  This is because every possible S2Point has its own
   // symbolic perturbation such that if A < B then the symbolic perturbation
@@ -311,36 +322,36 @@ static int SymbolicallyPerturbedCCW(
   // some of the signs are different because the opposite cross product is
   // used (e.g., B x C rather than C x B).
 
-  int det_sign = b_cross_c[2].sgn();           // da[2]
+  int det_sign = b_cross_c[2].sgn();  // da[2]
   if (det_sign != 0) return det_sign;
-  det_sign = b_cross_c[1].sgn();               // da[1]
+  det_sign = b_cross_c[1].sgn();  // da[1]
   if (det_sign != 0) return det_sign;
-  det_sign = b_cross_c[0].sgn();               // da[0]
+  det_sign = b_cross_c[0].sgn();  // da[0]
   if (det_sign != 0) return det_sign;
 
-  det_sign = (c[0]*a[1] - c[1]*a[0]).sgn();    // db[2]
+  det_sign = (c[0] * a[1] - c[1] * a[0]).sgn();  // db[2]
   if (det_sign != 0) return det_sign;
-  det_sign = c[0].sgn();                       // db[2] * da[1]
+  det_sign = c[0].sgn();  // db[2] * da[1]
   if (det_sign != 0) return det_sign;
-  det_sign = -(c[1].sgn());                    // db[2] * da[0]
+  det_sign = -(c[1].sgn());  // db[2] * da[0]
   if (det_sign != 0) return det_sign;
-  det_sign = (c[2]*a[0] - c[0]*a[2]).sgn();    // db[1]
+  det_sign = (c[2] * a[0] - c[0] * a[2]).sgn();  // db[1]
   if (det_sign != 0) return det_sign;
-  det_sign = c[2].sgn();                       // db[1] * da[0]
+  det_sign = c[2].sgn();  // db[1] * da[0]
   if (det_sign != 0) return det_sign;
   // The following test is listed in the paper, but it is redundant because
   // the previous tests guarantee that C == (0, 0, 0).
-  DCHECK_EQ(0, (c[1]*a[2] - c[2]*a[1]).sgn()); // db[0]
+  DCHECK_EQ(0, (c[1] * a[2] - c[2] * a[1]).sgn());  // db[0]
 
-  det_sign = (a[0]*b[1] - a[1]*b[0]).sgn();    // dc[2]
+  det_sign = (a[0] * b[1] - a[1] * b[0]).sgn();  // dc[2]
   if (det_sign != 0) return det_sign;
-  det_sign = -(b[0].sgn());                    // dc[2] * da[1]
+  det_sign = -(b[0].sgn());  // dc[2] * da[1]
   if (det_sign != 0) return det_sign;
-  det_sign = b[1].sgn();                       // dc[2] * da[0]
+  det_sign = b[1].sgn();  // dc[2] * da[0]
   if (det_sign != 0) return det_sign;
-  det_sign = a[0].sgn();                       // dc[2] * db[1]
+  det_sign = a[0].sgn();  // dc[2] * db[1]
   if (det_sign != 0) return det_sign;
-  return 1;                                    // dc[2] * db[1] * da[0]
+  return 1;  // dc[2] * db[1] * da[0]
 }
 
 int S2::ExpensiveCCW(S2Point const& a, S2Point const& b, S2Point const& c) {
@@ -351,9 +362,18 @@ int S2::ExpensiveCCW(S2Point const& a, S2Point const& b, S2Point const& c) {
   // of the permutation.  (Each exchange inverts the sign of the determinant.)
   int perm_sign = 1;
   S2Point pa = a, pb = b, pc = c;
-  if (pa > pb) { swap(pa, pb); perm_sign = -perm_sign; }
-  if (pb > pc) { swap(pb, pc); perm_sign = -perm_sign; }
-  if (pa > pb) { swap(pa, pb); perm_sign = -perm_sign; }
+  if (pa > pb) {
+    swap(pa, pb);
+    perm_sign = -perm_sign;
+  }
+  if (pb > pc) {
+    swap(pb, pc);
+    perm_sign = -perm_sign;
+  }
+  if (pa > pb) {
+    swap(pa, pb);
+    perm_sign = -perm_sign;
+  }
   DCHECK(pa < pb && pb < pc);
 
   // Construct multiple-precision versions of the sorted points and compute
@@ -566,8 +586,9 @@ double S2::Area(S2Point const& a, S2Point const& b, S2Point const& c) {
     }
   }
   // Use l'Huilier's formula.
-  return 4 * atan(sqrt(max(0.0, tan(0.5 * s) * tan(0.5 * (s - sa)) *
-                           tan(0.5 * (s - sb)) * tan(0.5 * (s - sc)))));
+  return 4 *
+         atan(sqrt(max(0.0, tan(0.5 * s) * tan(0.5 * (s - sa)) *
+                                tan(0.5 * (s - sb)) * tan(0.5 * (s - sc)))));
 }
 
 double S2::GirardArea(S2Point const& a, S2Point const& b, S2Point const& c) {
@@ -588,11 +609,10 @@ double S2::SignedArea(S2Point const& a, S2Point const& b, S2Point const& c) {
 
 S2Point S2::PlanarCentroid(S2Point const& a, S2Point const& b,
                            S2Point const& c) {
-  return (1./3) * (a + b + c);
+  return (1. / 3) * (a + b + c);
 }
 
-S2Point S2::TrueCentroid(S2Point const& a, S2Point const& b,
-                         S2Point const& c) {
+S2Point S2::TrueCentroid(S2Point const& a, S2Point const& b, S2Point const& c) {
   DCHECK(IsUnitLength(a));
   DCHECK(IsUnitLength(b));
   DCHECK(IsUnitLength(c));
@@ -626,8 +646,7 @@ S2Point S2::TrueCentroid(S2Point const& a, S2Point const& b,
   S2Point y(a.y(), b.y() - a.y(), c.y() - a.y());
   S2Point z(a.z(), b.z() - a.z(), c.z() - a.z());
   S2Point r(ra, rb - ra, rc - ra);
-  return 0.5 * S2Point(y.CrossProd(z).DotProd(r),
-                       z.CrossProd(x).DotProd(r),
+  return 0.5 * S2Point(y.CrossProd(z).DotProd(r), z.CrossProd(x).DotProd(r),
                        x.CrossProd(y).DotProd(r));
 }
 
@@ -646,28 +665,25 @@ bool S2::OrderedCCW(S2Point const& a, S2Point const& b, S2Point const& c,
 
 // kIJtoPos[orientation][ij] -> pos
 int const S2::kIJtoPos[4][4] = {
-  // (0,0) (0,1) (1,0) (1,1)
-  {     0,    1,    3,    2  },  // canonical order
-  {     0,    3,    1,    2  },  // axes swapped
-  {     2,    3,    1,    0  },  // bits inverted
-  {     2,    1,    3,    0  },  // swapped & inverted
+    // (0,0) (0,1) (1,0) (1,1)
+    {0, 1, 3, 2},  // canonical order
+    {0, 3, 1, 2},  // axes swapped
+    {2, 3, 1, 0},  // bits inverted
+    {2, 1, 3, 0},  // swapped & inverted
 };
 
 // kPosToIJ[orientation][pos] -> ij
 int const S2::kPosToIJ[4][4] = {
-  // 0  1  2  3
-  {  0, 1, 3, 2 },    // canonical order:    (0,0), (0,1), (1,1), (1,0)
-  {  0, 2, 3, 1 },    // axes swapped:       (0,0), (1,0), (1,1), (0,1)
-  {  3, 2, 0, 1 },    // bits inverted:      (1,1), (1,0), (0,0), (0,1)
-  {  3, 1, 0, 2 },    // swapped & inverted: (1,1), (0,1), (0,0), (1,0)
+    // 0  1  2  3
+    {0, 1, 3, 2},  // canonical order:    (0,0), (0,1), (1,1), (1,0)
+    {0, 2, 3, 1},  // axes swapped:       (0,0), (1,0), (1,1), (0,1)
+    {3, 2, 0, 1},  // bits inverted:      (1,1), (1,0), (0,0), (0,1)
+    {3, 1, 0, 2},  // swapped & inverted: (1,1), (0,1), (0,0), (1,0)
 };
 
 // kPosToOrientation[pos] -> orientation_modifier
 int const S2::kPosToOrientation[4] = {
-  kSwapMask,
-  0,
-  0,
-  kInvertMask + kSwapMask,
+    kSwapMask, 0, 0, kInvertMask + kSwapMask,
 };
 
 // All of the values below were obtained by a combination of hand analysis and
@@ -677,112 +693,118 @@ int const S2::kPosToOrientation[4] = {
 // the tangent projection than the linear one).
 
 S2::LengthMetric const S2::kMinAngleSpan(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.0 :                      // 1.000
-    S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / 2 :                    // 1.571
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 4. / 3 :                // 1.333
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.0 :                // 1.000
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / 2 :          // 1.571
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 4. / 3 :  // 1.333
+                0);
 
 S2::LengthMetric const S2::kMaxAngleSpan(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 :                        // 2.000
-    S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / 2 :                    // 1.571
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.704897179199218452 :  // 1.705
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 :          // 2.000
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / 2 :  // 1.571
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.704897179199218452
+                                                     :  // 1.705
+                0);
 
-S2::LengthMetric const S2::kAvgAngleSpan(M_PI / 2);                    // 1.571
+S2::LengthMetric const S2::kAvgAngleSpan(M_PI / 2);  // 1.571
 // This is true for all projections.
 
 S2::LengthMetric const S2::kMinWidth(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? sqrt(2. / 3) :             // 0.816
-    S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / (2 * sqrt(2)) :        // 1.111
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2 * sqrt(2) / 3 :       // 0.943
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? sqrt(2. / 3) :           // 0.816
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / (2 * sqrt(2)) :  // 1.111
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2 * sqrt(2) / 3
+                                                     :  // 0.943
+                0);
 
 S2::LengthMetric const S2::kMaxWidth(S2::kMaxAngleSpan.deriv());
 // This is true for all projections.
 
 S2::LengthMetric const S2::kAvgWidth(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.411459345844456965 :     // 1.411
-    S2_PROJECTION == S2_TAN_PROJECTION ? 1.437318638925160885 :        // 1.437
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.434523672886099389 :  // 1.435
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.411459345844456965 :   // 1.411
+        S2_PROJECTION == S2_TAN_PROJECTION ? 1.437318638925160885 :  // 1.437
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.434523672886099389
+                                                     :  // 1.435
+                0);
 
 S2::LengthMetric const S2::kMinEdge(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) / 3 :          // 0.943
-    S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / (2 * sqrt(2)) :        // 1.111
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2 * sqrt(2) / 3 :       // 0.943
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) / 3 :        // 0.943
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI / (2 * sqrt(2)) :  // 1.111
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2 * sqrt(2) / 3
+                                                     :  // 0.943
+                0);
 
 S2::LengthMetric const S2::kMaxEdge(S2::kMaxAngleSpan.deriv());
 // This is true for all projections.
 
 S2::LengthMetric const S2::kAvgEdge(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.440034192955603643 :     // 1.440
-    S2_PROJECTION == S2_TAN_PROJECTION ? 1.461667032546739266 :        // 1.462
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.459213746386106062 :  // 1.459
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 1.440034192955603643 :   // 1.440
+        S2_PROJECTION == S2_TAN_PROJECTION ? 1.461667032546739266 :  // 1.462
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.459213746386106062
+                                                     :  // 1.459
+                0);
 
 S2::LengthMetric const S2::kMinDiag(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) / 3 :          // 0.943
-    S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * sqrt(2) / 3 :          // 1.481
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 8 * sqrt(2) / 9 :       // 1.257
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) / 3 :      // 0.943
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * sqrt(2) / 3 :  // 1.481
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 8 * sqrt(2) / 9
+                                                     :  // 1.257
+                0);
 
 S2::LengthMetric const S2::kMaxDiag(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) :              // 2.828
-    S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * sqrt(2. / 3) :         // 2.565
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2.438654594434021032 :  // 2.439
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2 * sqrt(2) :           // 2.828
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * sqrt(2. / 3) :  // 2.565
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2.438654594434021032
+                                                     :  // 2.439
+                0);
 
 S2::LengthMetric const S2::kAvgDiag(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2.031817866418812674 :     // 2.032
-    S2_PROJECTION == S2_TAN_PROJECTION ? 2.063623197195635753 :        // 2.064
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2.060422738998471683 :  // 2.060
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 2.031817866418812674 :   // 2.032
+        S2_PROJECTION == S2_TAN_PROJECTION ? 2.063623197195635753 :  // 2.064
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2.060422738998471683
+                                                     :  // 2.060
+                0);
 
 S2::AreaMetric const S2::kMinArea(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 4 / (3 * sqrt(3)) :        // 0.770
-    S2_PROJECTION == S2_TAN_PROJECTION ? (M_PI*M_PI) / (4*sqrt(2)) :   // 1.745
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 8 * sqrt(2) / 9 :       // 1.257
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 4 / (3 * sqrt(3)) :  // 0.770
+        S2_PROJECTION == S2_TAN_PROJECTION ? (M_PI * M_PI) / (4 * sqrt(2))
+                                           :  // 1.745
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 8 * sqrt(2) / 9
+                                                     :  // 1.257
+                0);
 
 S2::AreaMetric const S2::kMaxArea(
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? 4 :                        // 4.000
-    S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * M_PI / 4 :             // 2.467
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2.635799256963161491 :  // 2.636
-    0);
+    S2_PROJECTION == S2_LINEAR_PROJECTION ? 4 :                 // 4.000
+        S2_PROJECTION == S2_TAN_PROJECTION ? M_PI * M_PI / 4 :  // 2.467
+            S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 2.635799256963161491
+                                                     :  // 2.636
+                0);
 
-S2::AreaMetric const S2::kAvgArea(4 * M_PI / 6);                       // 2.094
+S2::AreaMetric const S2::kAvgArea(4 * M_PI / 6);  // 2.094
 // This is true for all projections.
 
-double const S2::kMaxEdgeAspect = (
-    S2_PROJECTION == S2_LINEAR_PROJECTION ? sqrt(2) :                  // 1.414
-    S2_PROJECTION == S2_TAN_PROJECTION ?  sqrt(2) :                    // 1.414
-    S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.442615274452682920 :  // 1.443
-    0);
+double const S2::kMaxEdgeAspect =
+    (S2_PROJECTION == S2_LINEAR_PROJECTION ? sqrt(2) :   // 1.414
+         S2_PROJECTION == S2_TAN_PROJECTION ? sqrt(2) :  // 1.414
+             S2_PROJECTION == S2_QUADRATIC_PROJECTION ? 1.442615274452682920
+                                                      :  // 1.443
+                 0);
 
-double const S2::kMaxDiagAspect = sqrt(3);                             // 1.732
+double const S2::kMaxDiagAspect = sqrt(3);  // 1.732
 // This is true for all projections.
 
 int S2::ClosestLevelWidth(double value) {
-    return kAvgWidth.GetClosestLevel(value);
+  return kAvgWidth.GetClosestLevel(value);
 }
 
 int S2::ClosestLevelEdge(double value) {
-    return kAvgEdge.GetClosestLevel(value);
+  return kAvgEdge.GetClosestLevel(value);
 }
 
 int S2::ClosestLevelArea(double value) {
-    return kAvgArea.GetClosestLevel(value);
+  return kAvgArea.GetClosestLevel(value);
 }
 
-double S2::LevelWidth(int level) {
-    return kAvgWidth.GetValue(level);
-}
+double S2::LevelWidth(int level) { return kAvgWidth.GetValue(level); }
 
-double S2::LevelEdge(int level) {
-    return kAvgEdge.GetValue(level);
-}
+double S2::LevelEdge(int level) { return kAvgEdge.GetValue(level); }
 
-double S2::LevelArea(int level) {
-    return kAvgArea.GetValue(level);
-}
+double S2::LevelArea(int level) { return kAvgArea.GetValue(level); }

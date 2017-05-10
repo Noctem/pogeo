@@ -6,11 +6,9 @@
 #include "s2cell.h"
 #include "s2latlngrect.h"
 
-S2RegionUnion::S2RegionUnion() { }
+S2RegionUnion::S2RegionUnion() {}
 
-S2RegionUnion::S2RegionUnion(vector<S2Region*>* regions) {
-  Init(regions);
-}
+S2RegionUnion::S2RegionUnion(vector<S2Region*>* regions) { Init(regions); }
 
 S2RegionUnion::~S2RegionUnion() {
   for (size_t i = 0; i < regions_.size(); ++i) {
@@ -27,7 +25,7 @@ void S2RegionUnion::Init(vector<S2Region*>* regions) {
 }
 
 S2RegionUnion::S2RegionUnion(S2RegionUnion const* src)
-  : regions_(src->num_regions()) {
+    : regions_(src->num_regions()) {
   for (int i = 0; i < num_regions(); ++i) {
     regions_[i] = src->region(i)->Clone();
   }
@@ -40,13 +38,9 @@ void S2RegionUnion::Release(vector<S2Region*>* regions) {
   regions_.clear();
 }
 
-void S2RegionUnion::Add(S2Region* region) {
-  regions_.push_back(region);
-}
+void S2RegionUnion::Add(S2Region* region) { regions_.push_back(region); }
 
-S2RegionUnion* S2RegionUnion::Clone() const {
-  return new S2RegionUnion(this);
-}
+S2RegionUnion* S2RegionUnion::Clone() const { return new S2RegionUnion(this); }
 
 S2Cap S2RegionUnion::GetCapBound() const {
   // TODO: This could be optimized to return a tighter bound, but doesn't

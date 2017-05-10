@@ -10,7 +10,7 @@
 #ifndef BASE_MACROS_H_
 #define BASE_MACROS_H_
 
-#include <stddef.h>         // For size_t
+#include <stddef.h>  // For size_t
 
 // We use our own  local  version of type traits while we're waiting
 // for TR1 type traits to be standardized. Define some macros so that
@@ -116,15 +116,14 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 //
 // Starting with Visual C++ 2005, WinNT.h includes ARRAYSIZE.
 #if !defined(COMPILER_MSVC) || (defined(_MSC_VER) && _MSC_VER < 1400)
-#define ARRAYSIZE(a) \
+#define ARRAYSIZE(a)            \
   ((sizeof(a) / sizeof(*(a))) / \
    static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
 #endif
 
 // A macro to turn a symbol into a string
-#define AS_STRING(x)   AS_STRING_INTERNAL(x)
-#define AS_STRING_INTERNAL(x)   #x
-
+#define AS_STRING(x) AS_STRING_INTERNAL(x)
+#define AS_STRING_INTERNAL(x) #x
 
 // One of the type traits, is_pod, makes it possible to query whether
 // a type is a POD type. It is impossible for type_traits.h to get
@@ -152,11 +151,12 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 // protected members, or virtual functions, and all of its member
 // variables must themselves be PODs.
 
-#define DECLARE_POD(TypeName)                       \
-namespace base {                                    \
-template<> struct is_pod<TypeName> : true_type { }; \
-}                                                   \
-typedef int Dummy_Type_For_DECLARE_POD              \
+#define DECLARE_POD(TypeName)             \
+  namespace base {                        \
+  template <>                             \
+  struct is_pod<TypeName> : true_type {}; \
+  }                                       \
+  typedef int Dummy_Type_For_DECLARE_POD
 
 // We once needed a different technique to assert that a nested class
 // is a POD. This is no longer necessary, and DECLARE_NESTED_POD is
@@ -168,11 +168,12 @@ typedef int Dummy_Type_For_DECLARE_POD              \
 #define DECLARE_NESTED_POD(TypeName) DECLARE_POD(TypeName)
 
 // Declare that TemplateName<T> is a POD whenever T is
-#define PROPAGATE_POD_FROM_TEMPLATE_ARGUMENT(TemplateName)             \
-namespace base {                                                       \
-template <typename T> struct is_pod<TemplateName<T> > : is_pod<T> { }; \
-}                                                                      \
-typedef int Dummy_Type_For_PROPAGATE_POD_FROM_TEMPLATE_ARGUMENT
+#define PROPAGATE_POD_FROM_TEMPLATE_ARGUMENT(TemplateName) \
+  namespace base {                                         \
+  template <typename T>                                    \
+  struct is_pod<TemplateName<T> > : is_pod<T> {};          \
+  }                                                        \
+  typedef int Dummy_Type_For_PROPAGATE_POD_FROM_TEMPLATE_ARGUMENT
 
 // Macro that does nothing if TypeName is a POD, and gives a compiler
 // error if TypeName is a non-POD.  You should put a descriptive
@@ -182,11 +183,14 @@ typedef int Dummy_Type_For_PROPAGATE_POD_FROM_TEMPLATE_ARGUMENT
 // Implementation note: this works by taking the size of a type that's
 // complete when TypeName is a POD and incomplete otherwise.
 
-template <bool IsPod> struct ERROR_TYPE_MUST_BE_POD;
-template <> struct ERROR_TYPE_MUST_BE_POD<true> { };
-#define ENFORCE_POD(TypeName)                                             \
-  enum { dummy_##TypeName                                                 \
-           = sizeof(ERROR_TYPE_MUST_BE_POD<                               \
-                      base::is_pod<TypeName>::value>) }
+template <bool IsPod>
+struct ERROR_TYPE_MUST_BE_POD;
+template <>
+struct ERROR_TYPE_MUST_BE_POD<true> {};
+#define ENFORCE_POD(TypeName)                                         \
+  enum {                                                              \
+    dummy_##TypeName =                                                \
+        sizeof(ERROR_TYPE_MUST_BE_POD<base::is_pod<TypeName>::value>) \
+  }
 
 #endif  // BASE_MACROS_H_

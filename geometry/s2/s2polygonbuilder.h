@@ -24,8 +24,8 @@ using std::make_pair;
 using std::vector;
 
 #include "base/basictypes.h"
-#include "s2.h"
 #include "s1angle.h"
+#include "s2.h"
 #include "util/math/matrix3x3.h"
 
 class S2Loop;
@@ -56,10 +56,12 @@ class S2Polygon;
 //    collection of directed edges and then assembling them into loops.
 class S2PolygonBuilderOptions {
  public:
-  S2PolygonBuilderOptions() :
-    undirected_edges_(false), xor_edges_(true), validate_(false),
-    vertex_merge_radius_(S1Angle::Radians(0)),
-    edge_splice_fraction_(0.866) {}
+  S2PolygonBuilderOptions()
+      : undirected_edges_(false),
+        xor_edges_(true),
+        validate_(false),
+        vertex_merge_radius_(S1Angle::Radians(0)),
+        edge_splice_fraction_(0.866) {}
 
   // These are the options that should be used for assembling well-behaved
   // input data into polygons.  All edges should be directed such that
@@ -246,7 +248,6 @@ class S2PolygonBuilder {
   void Dump() const;
 
  private:
-
   // Return true if the given edge exists.
   bool HasEdge(S2Point const& v0, S2Point const& v1);
 
