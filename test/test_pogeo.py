@@ -51,7 +51,7 @@ class TestGeocoder(TestCase):
     @skip('relies on network connection and external service')
     def test_geocode(self):
         place = geocode('Salt Lake Temple')
-        self.assertEqual(place['place_id'], '73589485')
+        self.assertTrue(place['display_name'].startswith('Salt Lake Temple'))
 
 
 class TestLocation(TestCase):
