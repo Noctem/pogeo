@@ -14,7 +14,7 @@
 #ifndef leadingZeros
 #ifdef _MSC_VER
 #include <intrin.h>
-#ifdef __LZCNT__
+#ifdef __LZCNT__ && !defined(DEPLOYMENT)
 #define leadingZeros(x) __lzcnt64(x)
 #else
 inline unsigned long leadingZeros(unsigned __int64 x) {
