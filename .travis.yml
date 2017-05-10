@@ -1,3 +1,5 @@
+git:
+  depth: 3
 matrix:
   include:
   - services: docker
@@ -42,6 +44,24 @@ matrix:
         - g++-6
     cache:
       directories: "$HOME/.cache/pip"
+  - os: linux
+    dist: trusty
+    python: 3.7-dev
+    language: python
+    cache:
+      directories: "$HOME/.cache/pip"
+    compiler: gcc-6
+    env:
+    - CC='gcc-6'
+    - CFLAGS='-fpermissive'
+    addons:
+      apt:
+        sources: ubuntu-toolchain-r-test
+        packages:
+        - gcc-6
+        - g++-6
+    cache:
+      directories: "$HOME/.cache/pip"
   - os: osx
     osx_image: xcode6.4
     language: generic
@@ -64,6 +84,8 @@ matrix:
       directories:
         - "$HOME/.cache/pip"
         - "$HOME/Library/Caches/Homebrew"
+  allow_failures:
+  - python: 3.7-dev
 before_install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew install python3 || brew
   upgrade python3; fi
