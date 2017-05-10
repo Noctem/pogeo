@@ -8,14 +8,14 @@
 #ifndef BASE_PORT_H_
 #define BASE_PORT_H_
 
-#include <limits.h>         // So we can set the bounds of our types
-#include <string.h>         // for memcpy()
-#include <stdlib.h>         // for free()
+#include <limits.h>  // So we can set the bounds of our types
+#include <stdlib.h>  // for free()
+#include <string.h>  // for memcpy()
 
 #if defined(__APPLE__)
-#include <unistd.h>         // for getpagesize() on mac
+#include <unistd.h>  // for getpagesize() on mac
 #elif defined(OS_CYGWIN)
-#include <malloc.h>         // for memalign()
+#include <malloc.h>  // for memalign()
 #endif
 
 #include "base/integral_types.h"
@@ -27,12 +27,12 @@
  *  __STDC_FORMAT_MACROS is defined before <inttypes.h> is included." */
 #ifndef __STDC_FORMAT_MACROS
 #define __STDC_FORMAT_MACROS
-#endif  /* __STDC_FORMAT_MACROS */
-#endif  /* __APPLE__ */
+#endif /* __STDC_FORMAT_MACROS */
+#endif /* __APPLE__ */
 
 /* Default for most OSes */
 /* We use SIGPWR since that seems unlikely to be used for other reasons. */
-#define GOOGLE_OBSCURE_SIGNAL  SIGPWR
+#define GOOGLE_OBSCURE_SIGNAL SIGPWR
 
 #if defined OS_LINUX || defined OS_CYGWIN
 
@@ -61,7 +61,7 @@ typedef unsigned long ulong;
 #endif
 
 #if defined(__cplusplus)
-#include <cstddef>              // For _GLIBCXX macros
+#include <cstddef>  // For _GLIBCXX macros
 #endif
 
 #if !defined(HAVE_TLS) && defined(_GLIBCXX_HAVE_TLS)
@@ -82,7 +82,7 @@ typedef unsigned long ulong;
 typedef void (*sig_t)(int);
 
 // Solaris only defines strtoll, not strtoq
-#define strtoq  strtoll
+#define strtoq strtoll
 #define strtouq strtoull
 
 // It doesn't define the posix-standard(?) u_int_16
@@ -94,7 +94,7 @@ typedef uint16_t u_int16_t;
 // BIG_ENDIAN
 #include <machine/endian.h>
 /* Let's try and follow the Linux convention */
-#define __BYTE_ORDER  BYTE_ORDER
+#define __BYTE_ORDER BYTE_ORDER
 #define __LITTLE_ENDIAN LITTLE_ENDIAN
 #define __BIG_ENDIAN BIG_ENDIAN
 
@@ -132,7 +132,6 @@ typedef uint16_t u_int16_t;
 #else
 #include <byteswap.h>
 #endif
-
 
 // define the macros IS_LITTLE_ENDIAN or IS_BIG_ENDIAN
 // using the above endian defintions from endian.h if
@@ -185,9 +184,7 @@ const char PATH_SEPARATOR = '/';
 // a compiler error here.
 //
 #include <stdarg.h>
-inline void va_copy(va_list& a, va_list& b) {
-  a = b;
-}
+inline void va_copy(va_list& a, va_list& b) { a = b; }
 
 // Nor does it have uid_t
 typedef int uid_t;
@@ -205,10 +202,10 @@ typedef int uid_t;
 #endif
 
 // Linux has this in <sys/cdefs.h>
-#define __ptr_t void *
+#define __ptr_t void*
 
 // Linux has this in <linux/errno.h>
-#define EXFULL      ENOMEM  // not really that great a translation...
+#define EXFULL ENOMEM  // not really that great a translation...
 
 // Mach-O supports sections (albeit with small names), but doesn't have
 // vars at the beginning and end.  Instead you should call the function
@@ -218,12 +215,12 @@ typedef int uid_t;
 // Any function with ATTRIBUTE_SECTION must not be inlined, or it will
 // be placed into whatever section its caller is placed into.
 #define ATTRIBUTE_SECTION(name) \
-  __attribute__ ((section ("__DATA, " #name))) __attribute__ ((noinline))
+  __attribute__((section("__DATA, " #name))) __attribute__((noinline))
 
 #define ENUM_DYLD_BOOL  // so that we don't pollute the global namespace
 extern "C" {
-  #include <mach-o/getsect.h>
-  #include <mach-o/dyld.h>
+#include <mach-o/dyld.h>
+#include <mach-o/getsect.h>
 }
 class AssignAttributeStartEnd {
  public:
@@ -233,14 +230,14 @@ class AssignAttributeStartEnd {
       const mach_header* hdr = _dyld_get_image_header(i);
       uint32_t len;
       *pstart = getsectdatafromheader(hdr, "__DATA", name, &len);
-      if (*pstart) {   // NULL if not defined in this dynamic library
-        *pstart += _dyld_get_image_vmaddr_slide(i);   // correct for reloc
+      if (*pstart) {  // NULL if not defined in this dynamic library
+        *pstart += _dyld_get_image_vmaddr_slide(i);  // correct for reloc
         *pend = *pstart + len;
         return;
       }
     }
     // If we get here, not defined in a dll at all.  See if defined statically.
-    unsigned long len;    // don't ask me why this type isn't uint32_t too...
+    unsigned long len;  // don't ask me why this type isn't uint32_t too...
     *pstart = getsectdata("__DATA", name, &len);
     *pend = *pstart + len;
   }
@@ -258,23 +255,22 @@ class AssignAttributeStartEnd {
 //    ATTRIBUTE_SECTION_START or ATTRIBUTE_SECTION_STOP on a name.
 //    Put this call at the global level.
 #define DECLARE_ATTRIBUTE_SECTION_VARS(name) \
-  extern char* __start_##name; \
+  extern char* __start_##name;               \
   extern char* __stop_##name;
 
-#define INIT_ATTRIBUTE_SECTION_VARS(name)               \
-  DECLARE_ATTRIBUTE_SECTION_VARS(name);                 \
-  static const AssignAttributeStartEnd __assign_##name( \
-    #name, &__start_##name, &__stop_##name)
+#define INIT_ATTRIBUTE_SECTION_VARS(name)                                      \
+  DECLARE_ATTRIBUTE_SECTION_VARS(name);                                        \
+  static const AssignAttributeStartEnd __assign_##name(#name, &__start_##name, \
+                                                       &__stop_##name)
 
-#define DEFINE_ATTRIBUTE_SECTION_VARS(name)             \
-  char* __start_##name, *__stop_##name;                 \
+#define DEFINE_ATTRIBUTE_SECTION_VARS(name) \
+  char *__start_##name, *__stop_##name;     \
   INIT_ATTRIBUTE_SECTION_VARS(name)
 
 // Darwin doesn't have strnlen. No comment.
-inline size_t strnlen(const char *s, size_t maxlen) {
-  const char* end = (const char *)memchr(s, '\0', maxlen);
-  if (end)
-    return end - s;
+inline size_t strnlen(const char* s, size_t maxlen) {
+  const char* end = (const char*)memchr(s, '\0', maxlen);
+  if (end) return end - s;
   return maxlen;
 }
 
@@ -283,7 +279,7 @@ inline size_t strnlen(const char *s, size_t maxlen) {
 
 // No SIGPWR on MacOSX.  SIGINFO seems suitably obscure.
 #undef GOOGLE_OBSCURE_SIGNAL
-#define GOOGLE_OBSCURE_SIGNAL  SIGINFO
+#define GOOGLE_OBSCURE_SIGNAL SIGINFO
 
 #elif defined(OS_CYGWIN)  // Cygwin-specific behavior.
 
@@ -326,7 +322,7 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 // Klocwork static analysis tool's C/C++ complier kwcc
 #if defined(__KLOCWORK__)
 #define STATIC_ANALYSIS
-#endif // __KLOCWORK__
+#endif  // __KLOCWORK__
 
 // GCC-specific features
 
@@ -342,14 +338,14 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 // should be counted from two, not one."
 //
 #define PRINTF_ATTRIBUTE(string_index, first_to_check) \
-    __attribute__((__format__ (__printf__, string_index, first_to_check)))
+  __attribute__((__format__(__printf__, string_index, first_to_check)))
 #define SCANF_ATTRIBUTE(string_index, first_to_check) \
-    __attribute__((__format__ (__scanf__, string_index, first_to_check)))
+  __attribute__((__format__(__scanf__, string_index, first_to_check)))
 
 //
 // Prevent the compiler from padding a structure to natural alignment
 //
-#define PACKED __attribute__ ((packed))
+#define PACKED __attribute__((packed))
 
 // Cache line alignment
 #if defined(__i386__) || defined(__x86_64__)
@@ -367,24 +363,24 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 // that appear unused
 // (careful, others e.g. third_party/libxml/xmlversion.h also define this)
 #undef ATTRIBUTE_UNUSED
-#define ATTRIBUTE_UNUSED __attribute__ ((unused))
+#define ATTRIBUTE_UNUSED __attribute__((unused))
 
 //
 // For functions we want to force inline or not inline.
 // Introduced in gcc 3.1.
-#define ATTRIBUTE_ALWAYS_INLINE  __attribute__ ((always_inline))
+#define ATTRIBUTE_ALWAYS_INLINE __attribute__((always_inline))
 #define HAVE_ATTRIBUTE_ALWAYS_INLINE 1
-#define ATTRIBUTE_NOINLINE __attribute__ ((noinline))
+#define ATTRIBUTE_NOINLINE __attribute__((noinline))
 #define HAVE_ATTRIBUTE_NOINLINE 1
 
 // For weak functions
 #undef ATTRIBUTE_WEAK
-#define ATTRIBUTE_WEAK __attribute__ ((weak))
+#define ATTRIBUTE_WEAK __attribute__((weak))
 #define HAVE_ATTRIBUTE_WEAK 1
 
 // Tell the compiler to use "initial-exec" mode for a thread-local variable.
 // See http://people.redhat.com/drepper/tls.pdf for the gory details.
-#define ATTRIBUTE_INITIAL_EXEC __attribute__ ((tls_model ("initial-exec")))
+#define ATTRIBUTE_INITIAL_EXEC __attribute__((tls_model("initial-exec")))
 
 //
 // Tell the compiler that a given function never returns
@@ -427,7 +423,7 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 //
 #ifndef ATTRIBUTE_SECTION
 #define ATTRIBUTE_SECTION(name) \
-  __attribute__ ((section (#name))) __attribute__ ((noinline))
+  __attribute__((section(#name))) __attribute__((noinline))
 #endif
 
 //
@@ -438,7 +434,7 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 // a no-op on ELF but not on Mach-O.
 //
 #ifndef DECLARE_ATTRIBUTE_SECTION_VARS
-#define DECLARE_ATTRIBUTE_SECTION_VARS(name) \
+#define DECLARE_ATTRIBUTE_SECTION_VARS(name)   \
   extern char __start_##name[] ATTRIBUTE_WEAK; \
   extern char __stop_##name[] ATTRIBUTE_WEAK
 #endif
@@ -472,8 +468,10 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 //
 // For an example of using this see util/hash/adler32*
 
-#if defined(__i386__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
-#define ATTRIBUTE_STACK_ALIGN_FOR_OLD_LIBC __attribute__((force_align_arg_pointer))
+#if defined(__i386__) && \
+    (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
+#define ATTRIBUTE_STACK_ALIGN_FOR_OLD_LIBC \
+  __attribute__((force_align_arg_pointer))
 #define REQUIRE_STACK_ALIGN_TRAMPOLINE (0)
 #elif defined(__i386__) || defined(__x86_64__)
 #define REQUIRE_STACK_ALIGN_TRAMPOLINE (1)
@@ -483,7 +481,6 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 #define ATTRIBUTE_STACK_ALIGN_FOR_OLD_LIBC
 #endif
 
-
 //
 // Tell the compiler to warn about unused return values for functions declared
 // with this macro.  The macro should be used on function declarations
@@ -492,13 +489,12 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 //   Sprocket* AllocateSprocket() MUST_USE_RESULT;
 //
 #undef MUST_USE_RESULT
-#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)) \
-  && !defined(COMPILER_ICC)
-#define MUST_USE_RESULT __attribute__ ((warn_unused_result))
+#if (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)) && \
+    !defined(COMPILER_ICC)
+#define MUST_USE_RESULT __attribute__((warn_unused_result))
 #else
 #define MUST_USE_RESULT
 #endif
-
 
 #if (defined(COMPILER_ICC) || defined(COMPILER_GCC3) || defined(__llvm__))
 // Defined behavior on some of the uarchs:
@@ -518,7 +514,7 @@ enum PrefetchHint {
 // prefetch is a no-op for this target. Feel free to add more sections above.
 #endif
 
-extern inline void prefetch(const char *x, int hint) {
+extern inline void prefetch(const char* x, int hint) {
 #if defined(COMPILER_ICC) || defined(__llvm__)
   // In the gcc version of prefetch(), hint is only a constant _after_ inlining
   // (assumed to have been successful).  icc views things differently, and
@@ -555,7 +551,7 @@ extern inline void prefetch(const char *x, int hint) {
       break;
   }
 #elif defined(COMPILER_GCC3)
- #if !defined(ARCH_PIII) || defined(__SSE__)
+#if !defined(ARCH_PIII) || defined(__SSE__)
   if (__builtin_constant_p(hint)) {
     __builtin_prefetch(x, 0, hint);
   } else {
@@ -570,17 +566,15 @@ extern inline void prefetch(const char *x, int hint) {
   // -- mec 2006-06-06
   if (hint == PREFETCH_HINT_NTA)
     __asm__ __volatile__("prefetchnta (%0)" : : "r"(x));
- #endif
+#endif
 #else
-  // You get no effect.  Feel free to add more sections above.
+// You get no effect.  Feel free to add more sections above.
 #endif
 }
 
 #ifdef __cplusplus
 // prefetch intrinsic (bring data to L1 without polluting L2 cache)
-extern inline void prefetch(const char *x) {
-  return prefetch(x, 0);
-}
+extern inline void prefetch(const char* x) { return prefetch(x, 0); }
 #endif  // ifdef __cplusplus
 
 //
@@ -603,19 +597,17 @@ extern inline void prefetch(const char *x) {
 #if !defined(__cplusplus) && !defined(__APPLE__) && !defined(OS_CYGWIN)
 // stdlib.h only declares this in C++, not in C, so we declare it here.
 // Also make sure to avoid declaring it on platforms which don't support it.
-extern int posix_memalign(void **memptr, size_t alignment, size_t size);
+extern int posix_memalign(void** memptr, size_t alignment, size_t size);
 #endif
 
-inline void *aligned_malloc(size_t size, int minimum_alignment) {
+inline void* aligned_malloc(size_t size, int minimum_alignment) {
 #if defined(__APPLE__)
   // mac lacks memalign(), posix_memalign(), however, according to
   // http://stackoverflow.com/questions/196329/osx-lacks-memalign
   // mac allocs are already 16-byte aligned.
-  if (minimum_alignment <= 16)
-    return malloc(size);
+  if (minimum_alignment <= 16) return malloc(size);
   // next, try to return page-aligned memory. perhaps overkill
-  if (minimum_alignment <= getpagesize())
-    return valloc(size);
+  if (minimum_alignment <= getpagesize()) return valloc(size);
   // give up
   return NULL;
 #elif defined(OS_CYGWIN)
@@ -629,11 +621,9 @@ inline void *aligned_malloc(size_t size, int minimum_alignment) {
 #endif
 }
 
-inline void aligned_free(void *aligned_memory) {
-  free(aligned_memory);
-}
+inline void aligned_free(void* aligned_memory) { free(aligned_memory); }
 
-#else   // not GCC
+#else  // not GCC
 
 #define PRINTF_ATTRIBUTE(string_index, first_to_check)
 #define SCANF_ATTRIBUTE(string_index, first_to_check)
@@ -651,7 +641,7 @@ inline void aligned_free(void *aligned_memory) {
 #define ATTRIBUTE_STACK_ALIGN_FOR_OLD_LIBC
 #define REQUIRE_STACK_ALIGN_TRAMPOLINE (0)
 #define MUST_USE_RESULT
-extern inline void prefetch(const char *x) {}
+extern inline void prefetch(const char* x) {}
 #define PREDICT_FALSE(x) x
 #define PREDICT_TRUE(x) x
 
@@ -673,8 +663,7 @@ extern inline void prefetch(const char *x) {}
 
 #endif  // !HAVE_ATTRIBUTE_SECTION
 
-
-#ifdef COMPILER_MSVC     /* if Visual C++ */
+#ifdef COMPILER_MSVC /* if Visual C++ */
 
 // This compiler flag can be easily overlooked on MSVC.
 // _CHAR_UNSIGNED gets set with the /J flag.
@@ -684,28 +673,28 @@ extern inline void prefetch(const char *x) {}
 
 // MSVC is a little hyper-active in it's warnings
 // Signed vs. unsigned comparison is ok.
-#pragma warning(disable : 4018 )
+#pragma warning(disable : 4018)
 // We know casting from a long to a char may lose data
-#pragma warning(disable : 4244 )
+#pragma warning(disable : 4244)
 // Don't need performance warnings about converting ints to bools
-#pragma warning(disable : 4800 )
+#pragma warning(disable : 4800)
 // Integral constant overflow is apparently ok too
 // for example:
 //  short k;  int n;
 //  k = k + n;
-#pragma warning(disable : 4307 )
+#pragma warning(disable : 4307)
 // It's ok to use this* in constructor
 // Example:
 //  class C {
 //   Container cont_;
 //   C() : cont_(this) { ...
-#pragma warning(disable : 4355 )
+#pragma warning(disable : 4355)
 // Truncating from double to float is ok
-#pragma warning(disable : 4305 )
+#pragma warning(disable : 4305)
 
-#include <winsock2.h>
 #include <assert.h>
 #include <windows.h>
+#include <winsock2.h>
 #undef ERROR
 
 #ifndef HUGE_VALF
@@ -718,19 +707,18 @@ extern inline void prefetch(const char *x) {}
 typedef unsigned int uint;
 #endif
 
-#define strtoq   _strtoi64
-#define strtouq  _strtoui64
-#define strtoll  _strtoi64
+#define strtoq _strtoi64
+#define strtouq _strtoui64
+#define strtoll _strtoi64
 #define strtoull _strtoui64
-#define atoll    _atoi64
-
+#define atoll _atoi64
 
 // VC++ 6 and before ship without an ostream << operator for 64-bit ints
 #if (_MSC_VER <= 1200)
 #include <iosfwd>
 using std::ostream;
 
-inline ostream& operator<< (ostream& os, const unsigned __int64& num ) {
+inline ostream& operator<<(ostream& os, const unsigned __int64& num) {
   // Fake operator; doesn't actually do anything.
   LOG(FATAL) << "64-bit ostream operator << not supported in VC++ 6";
   return os;
@@ -753,10 +741,9 @@ inline ostream& operator<< (ostream& os, const unsigned __int64& num ) {
 
 #define strdup _strdup
 #define tempnam _tempnam
-#define chdir  _chdir
+#define chdir _chdir
 #define getcwd _getcwd
-#define putenv  _putenv
-
+#define putenv _putenv
 
 // You say tomato, I say toma
 #define random() rand()
@@ -765,11 +752,11 @@ inline ostream& operator<< (ostream& os, const unsigned __int64& num ) {
 // You say juxtapose, I say transpose
 #define bcopy(s, d, n) memcpy(d, s, n)
 
-inline void *aligned_malloc(size_t size, int minimum_alignment) {
+inline void* aligned_malloc(size_t size, int minimum_alignment) {
   return _aligned_malloc(size, minimum_alignment);
 }
 
-inline void aligned_free(void *aligned_memory) {
+inline void aligned_free(void* aligned_memory) {
   _aligned_free(aligned_memory);
 }
 
@@ -779,43 +766,43 @@ inline void aligned_free(void *aligned_memory) {
 // floating point format.
 
 enum {
-  FP_NAN,  //  is "Not a Number"
+  FP_NAN,       //  is "Not a Number"
   FP_INFINITE,  //  is either plus or minus infinity.
   FP_ZERO,
   FP_SUBNORMAL,  // is too small to be represented in normalized format.
-  FP_NORMAL  // if nothing of the above is correct that it must be a
+  FP_NORMAL      // if nothing of the above is correct that it must be a
   // normal floating-point number.
 };
 
 inline int fpclassify_double(double x) {
-  const int float_point_class =_fpclass(x);
+  const int float_point_class = _fpclass(x);
   int c99_class;
-  switch  (float_point_class) {
-  case _FPCLASS_SNAN:  // Signaling NaN
-  case _FPCLASS_QNAN:  // Quiet NaN
-    c99_class = FP_NAN;
-    break;
-  case _FPCLASS_NZ:  // Negative zero ( -0)
-  case _FPCLASS_PZ:  // Positive 0 (+0)
-    c99_class = FP_ZERO;
-    break;
-  case _FPCLASS_NINF:  // Negative infinity ( -INF)
-  case _FPCLASS_PINF:  // Positive infinity (+INF)
-    c99_class = FP_INFINITE;
-    break;
-  case _FPCLASS_ND:  // Negative denormalized
-  case _FPCLASS_PD:  // Positive denormalized
-    c99_class = FP_SUBNORMAL;
-    break;
-  case _FPCLASS_NN:  // Negative normalized non-zero
-  case _FPCLASS_PN:  // Positive normalized non-zero
-    c99_class = FP_NORMAL;
-    break;
-  default:
-    c99_class = FP_NAN;  // Should never happen
-    break;
+  switch (float_point_class) {
+    case _FPCLASS_SNAN:  // Signaling NaN
+    case _FPCLASS_QNAN:  // Quiet NaN
+      c99_class = FP_NAN;
+      break;
+    case _FPCLASS_NZ:  // Negative zero ( -0)
+    case _FPCLASS_PZ:  // Positive 0 (+0)
+      c99_class = FP_ZERO;
+      break;
+    case _FPCLASS_NINF:  // Negative infinity ( -INF)
+    case _FPCLASS_PINF:  // Positive infinity (+INF)
+      c99_class = FP_INFINITE;
+      break;
+    case _FPCLASS_ND:  // Negative denormalized
+    case _FPCLASS_PD:  // Positive denormalized
+      c99_class = FP_SUBNORMAL;
+      break;
+    case _FPCLASS_NN:  // Negative normalized non-zero
+    case _FPCLASS_PN:  // Positive normalized non-zero
+      c99_class = FP_NORMAL;
+      break;
+    default:
+      c99_class = FP_NAN;  // Should never happen
+      break;
   }
-  return  c99_class;
+  return c99_class;
 }
 
 // This function handle the special subnormal case for float; it will
@@ -833,12 +820,13 @@ inline int fpclassify_float(float x) {
 //
 // This define takes care of the denormalized float; the casting to
 // double make it a normal number
-#define fpclassify(x) ((sizeof(x) == sizeof(float)) ? fpclassify_float(x) : fpclassify_double(x))
+#define fpclassify(x) \
+  ((sizeof(x) == sizeof(float)) ? fpclassify_float(x) : fpclassify_double(x))
 
 #define isnan _isnan
 
 inline int isinf(double x) {
-  const int float_point_class =_fpclass(x);
+  const int float_point_class = _fpclass(x);
   if (float_point_class == _FPCLASS_PINF) return 1;
   if (float_point_class == _FPCLASS_NINF) return -1;
   return 0;
@@ -850,15 +838,14 @@ typedef void (*sig_t)(int);
 // These actually belong in errno.h but there's a name confilict in errno
 // on WinNT. They (and a ton more) are also found in Winsock2.h, but
 // if'd out under NT. We need this subset at minimum.
-#define EXFULL      ENOMEM  // not really that great a translation...
+#define EXFULL ENOMEM  // not really that great a translation...
 #define EWOULDBLOCK WSAEWOULDBLOCK
 #ifndef PTHREADS_REDHAT_WIN32
-#define ETIMEDOUT   WSAETIMEDOUT
+#define ETIMEDOUT WSAETIMEDOUT
 #endif
-#define ENOTSOCK    WSAENOTSOCK
+#define ENOTSOCK WSAENOTSOCK
 #define EINPROGRESS WSAEINPROGRESS
-#define ECONNRESET  WSAECONNRESET
-
+#define ECONNRESET WSAECONNRESET
 
 #include <utility>
 using std::pair;
@@ -867,19 +854,16 @@ using std::make_pair;
 #include <vector>
 using std::vector;
 
-
 typedef vector<pair<const char*, const char*> > KeyValVec;
 
 //
 // Really from <string.h>
 //
 
-inline void bzero(void *s, int n) {
-  memset(s, 0, n);
-}
+inline void bzero(void* s, int n) { memset(s, 0, n); }
 
 // From glob.h
-#define __ptr_t   void *
+#define __ptr_t void*
 
 // Defined all over the place.
 typedef int pid_t;
@@ -898,13 +882,11 @@ typedef short int16_t;
 #ifdef STL_MSVC  // not always the same as COMPILER_MSVC
 #include "base/port_hash.h"
 #else
-struct PortableHashBase { };
+struct PortableHashBase {};
 #endif
-
 
 // This location is deprecated, the new preferred location is in base/macros.h.
 #define ABSTRACT = 0
-
 
 #if defined(OS_WINDOWS) || defined(__APPLE__)
 // gethostbyname() *is* thread-safe for Windows native threads. It is also
@@ -917,9 +899,9 @@ struct PortableHashBase { };
 #define gethostbyname gethostbyname_is_not_thread_safe_DO_NOT_USE
 #endif
 
-
 // Our STL-like classes use __STD.
-#if defined(COMPILER_GCC3) || defined(COMPILER_ICC) || defined(__APPLE__) || defined(COMPILER_MSVC)
+#if defined(COMPILER_GCC3) || defined(COMPILER_ICC) || defined(__APPLE__) || \
+    defined(COMPILER_MSVC)
 #define __STD std
 #endif
 
@@ -931,19 +913,17 @@ struct PortableHashBase { };
 #define STREAM_SETF(s, flag) (s).setf(ios::flag)
 #endif
 
-
 // x86 and x86-64 can perform unaligned loads/stores directly;
 // modern PowerPC hardware can also do unaligned integer loads and stores;
 // but note: the FPU still sends unaligned loads and stores to a trap handler!
 
-#define UNALIGNED_LOAD16(_p) (*reinterpret_cast<const uint16 *>(_p))
-#define UNALIGNED_LOAD32(_p) (*reinterpret_cast<const uint32 *>(_p))
-#define UNALIGNED_LOAD64(_p) (*reinterpret_cast<const uint64 *>(_p))
+#define UNALIGNED_LOAD16(_p) (*reinterpret_cast<const uint16*>(_p))
+#define UNALIGNED_LOAD32(_p) (*reinterpret_cast<const uint32*>(_p))
+#define UNALIGNED_LOAD64(_p) (*reinterpret_cast<const uint64*>(_p))
 
-#define UNALIGNED_STORE16(_p, _val) (*reinterpret_cast<uint16 *>(_p) = (_val))
-#define UNALIGNED_STORE32(_p, _val) (*reinterpret_cast<uint32 *>(_p) = (_val))
-#define UNALIGNED_STORE64(_p, _val) (*reinterpret_cast<uint64 *>(_p) = (_val))
-
+#define UNALIGNED_STORE16(_p, _val) (*reinterpret_cast<uint16*>(_p) = (_val))
+#define UNALIGNED_STORE32(_p, _val) (*reinterpret_cast<uint32*>(_p) = (_val))
+#define UNALIGNED_STORE64(_p, _val) (*reinterpret_cast<uint64*>(_p) = (_val))
 
 #ifdef _LP64
 #define UNALIGNED_LOADW(_p) UNALIGNED_LOAD64(_p)
@@ -979,11 +959,10 @@ struct PortableHashBase { };
 #define PRINTABLE_PTHREAD(pthreadt) pthreadt
 #endif
 
-#define SIZEOF_MEMBER(t, f)   sizeof(((t*) 4096)->f)
+#define SIZEOF_MEMBER(t, f) sizeof(((t*)4096)->f)
 
-#define OFFSETOF_MEMBER(t, f)         \
-  (reinterpret_cast<char*>(           \
-     &reinterpret_cast<t*>(16)->f) -  \
+#define OFFSETOF_MEMBER(t, f)                              \
+  (reinterpret_cast<char*>(&reinterpret_cast<t*>(16)->f) - \
    reinterpret_cast<char*>(16))
 
 #ifdef PTHREADS_REDHAT_WIN32
@@ -992,7 +971,7 @@ using std::ostream;
 
 #include <pthread.h>
 // pthread_t is not a simple integer or pointer on Win32
-std::ostream& operator << (std::ostream& out, const pthread_t& thread_id);
+std::ostream& operator<<(std::ostream& out, const pthread_t& thread_id);
 #endif
 
 #endif  // BASE_PORT_H_

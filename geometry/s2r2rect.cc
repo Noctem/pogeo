@@ -21,28 +21,23 @@ S2R2Rect S2R2Rect::FromCellId(S2CellId const& id) {
 }
 
 S2R2Rect S2R2Rect::FromCenterSize(R2Point const& center, R2Point const& size) {
-  return S2R2Rect(R1Interval(center.x() - 0.5 * size.x(),
-                             center.x() + 0.5 * size.x()),
-                  R1Interval(center.y() - 0.5 * size.y(),
-                             center.y() + 0.5 * size.y()));
+  return S2R2Rect(
+      R1Interval(center.x() - 0.5 * size.x(), center.x() + 0.5 * size.x()),
+      R1Interval(center.y() - 0.5 * size.y(), center.y() + 0.5 * size.y()));
 }
 
-S2R2Rect S2R2Rect::FromPoint(R2Point const& p) {
-  return S2R2Rect(p, p);
-}
+S2R2Rect S2R2Rect::FromPoint(R2Point const& p) { return S2R2Rect(p, p); }
 
 S2R2Rect S2R2Rect::FromPointPair(R2Point const& p1, R2Point const& p2) {
   return S2R2Rect(R1Interval::FromPointPair(p1.x(), p2.x()),
                   R1Interval::FromPointPair(p1.y(), p2.y()));
 }
 
-S2R2Rect* S2R2Rect::Clone() const {
-  return new S2R2Rect(*this);
-}
+S2R2Rect* S2R2Rect::Clone() const { return new S2R2Rect(*this); }
 
 R2Point S2R2Rect::GetVertex(int k) const {
   // Twiddle bits to return the points in CCW order (SW, SE, NE, NW).
-  return R2Point(x_.bound((k>>1) ^ (k&1)), y_.bound(k>>1));
+  return R2Point(x_.bound((k >> 1) ^ (k & 1)), y_.bound(k >> 1));
 }
 
 R2Point S2R2Rect::GetCenter() const {

@@ -2,9 +2,9 @@
 
 #include "s2cap.h"
 
+#include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include <gtest/gtest.h>
 #include "s2.h"
 #include "s2cell.h"
 #include "s2latlng.h"
@@ -85,17 +85,17 @@ TEST(S2Cap, Basic) {
   EXPECT_EQ(1, hemi.Complement().height());
   EXPECT_TRUE(hemi.Contains(S2Point(1, 0, 0)));
   EXPECT_FALSE(hemi.Complement().Contains(S2Point(1, 0, 0)));
-  EXPECT_TRUE(hemi.Contains(S2Point(1, 0, -(1-kEps)).Normalize()));
-  EXPECT_FALSE(hemi.InteriorContains(S2Point(1, 0, -(1+kEps)).Normalize()));
+  EXPECT_TRUE(hemi.Contains(S2Point(1, 0, -(1 - kEps)).Normalize()));
+  EXPECT_FALSE(hemi.InteriorContains(S2Point(1, 0, -(1 + kEps)).Normalize()));
 
   // A concave cap.
-  S2Cap concave = S2Cap::FromAxisAngle(GetLatLngPoint(80, 10),
-                                       S1Angle::Degrees(150));
+  S2Cap concave =
+      S2Cap::FromAxisAngle(GetLatLngPoint(80, 10), S1Angle::Degrees(150));
   EXPECT_TRUE(concave.Contains(GetLatLngPoint(-70 * (1 - kEps), 10)));
   EXPECT_FALSE(concave.Contains(GetLatLngPoint(-70 * (1 + kEps), 10)));
   EXPECT_TRUE(concave.Contains(GetLatLngPoint(-50 * (1 - kEps), -170)));
   // TODO: fix this test on Darwin
-  //EXPECT_FALSE(concave.Contains(GetLatLngPoint(-50 * (1 + kEps), -170)));
+  // EXPECT_FALSE(concave.Contains(GetLatLngPoint(-50 * (1 + kEps), -170)));
 
   // Cap containment tests.
   EXPECT_FALSE(empty.Contains(xaxis));
@@ -110,11 +110,9 @@ TEST(S2Cap, Basic) {
   EXPECT_FALSE(xaxis.InteriorIntersects(empty));
   EXPECT_TRUE(hemi.Contains(tiny));
   EXPECT_TRUE(hemi.Contains(
-                  S2Cap::FromAxisAngle(S2Point(1, 0, 0),
-                                       S1Angle::Radians(M_PI_4 - kEps))));
+      S2Cap::FromAxisAngle(S2Point(1, 0, 0), S1Angle::Radians(M_PI_4 - kEps))));
   EXPECT_FALSE(hemi.Contains(
-                   S2Cap::FromAxisAngle(S2Point(1, 0, 0),
-                                        S1Angle::Radians(M_PI_4 + kEps))));
+      S2Cap::FromAxisAngle(S2Point(1, 0, 0), S1Angle::Radians(M_PI_4 + kEps))));
   EXPECT_TRUE(concave.Contains(hemi));
   EXPECT_TRUE(concave.InteriorIntersects(hemi.Complement()));
   EXPECT_FALSE(concave.Contains(S2Cap::FromAxisHeight(-concave.axis(), 0.1)));
@@ -130,43 +128,47 @@ TEST(S2Cap, GetRectBound) {
   // degrees.  (EXPECT_DOUBLE_EQ isn't sufficient.)
 
   // Cap that includes the south pole.
-  S2LatLngRect rect = S2Cap::FromAxisAngle(GetLatLngPoint(-45, 57),
-                                           S1Angle::Degrees(50)).GetRectBound();
+  S2LatLngRect rect =
+      S2Cap::FromAxisAngle(GetLatLngPoint(-45, 57), S1Angle::Degrees(50))
+          .GetRectBound();
   EXPECT_NEAR(rect.lat_lo().degrees(), -90, kDegreeEps);
   EXPECT_NEAR(rect.lat_hi().degrees(), 5, kDegreeEps);
   EXPECT_TRUE(rect.lng().is_full());
 
   // Cap that is tangent to the north pole.
   rect = S2Cap::FromAxisAngle(S2Point(1, 0, 1).Normalize(),
-                              S1Angle::Radians(M_PI_4 + 1e-16)).GetRectBound();
+                              S1Angle::Radians(M_PI_4 + 1e-16))
+             .GetRectBound();
   EXPECT_NEAR(rect.lat().lo(), 0, kEps);
   EXPECT_NEAR(rect.lat().hi(), M_PI_2, kEps);
   EXPECT_TRUE(rect.lng().is_full());
 
   rect = S2Cap::FromAxisAngle(S2Point(1, 0, 1).Normalize(),
-                              S1Angle::Degrees(45 + 5e-15)).GetRectBound();
+                              S1Angle::Degrees(45 + 5e-15))
+             .GetRectBound();
   EXPECT_NEAR(rect.lat_lo().degrees(), 0, kDegreeEps);
   EXPECT_NEAR(rect.lat_hi().degrees(), 90, kDegreeEps);
   EXPECT_TRUE(rect.lng().is_full());
 
   // The eastern hemisphere.
-  rect = S2Cap::FromAxisAngle(S2Point(0, 1, 0),
-                              S1Angle::Radians(M_PI_2 + 2e-16)).GetRectBound();
+  rect =
+      S2Cap::FromAxisAngle(S2Point(0, 1, 0), S1Angle::Radians(M_PI_2 + 2e-16))
+          .GetRectBound();
   EXPECT_NEAR(rect.lat_lo().degrees(), -90, kDegreeEps);
   EXPECT_NEAR(rect.lat_hi().degrees(), 90, kDegreeEps);
   EXPECT_TRUE(rect.lng().is_full());
 
   // A cap centered on the equator.
-  rect = S2Cap::FromAxisAngle(GetLatLngPoint(0, 50),
-                              S1Angle::Degrees(20)).GetRectBound();
+  rect = S2Cap::FromAxisAngle(GetLatLngPoint(0, 50), S1Angle::Degrees(20))
+             .GetRectBound();
   EXPECT_NEAR(rect.lat_lo().degrees(), -20, kDegreeEps);
   EXPECT_NEAR(rect.lat_hi().degrees(), 20, kDegreeEps);
   EXPECT_NEAR(rect.lng_lo().degrees(), 30, kDegreeEps);
   EXPECT_NEAR(rect.lng_hi().degrees(), 70, kDegreeEps);
 
   // A cap centered on the north pole.
-  rect = S2Cap::FromAxisAngle(GetLatLngPoint(90, 123),
-                              S1Angle::Degrees(10)).GetRectBound();
+  rect = S2Cap::FromAxisAngle(GetLatLngPoint(90, 123), S1Angle::Degrees(10))
+             .GetRectBound();
   EXPECT_NEAR(rect.lat_lo().degrees(), 80, kDegreeEps);
   EXPECT_NEAR(rect.lat_hi().degrees(), 90, kDegreeEps);
   EXPECT_TRUE(rect.lng().is_full());
@@ -211,8 +213,8 @@ TEST(S2Cap, S2CellMethods) {
     for (int cap_face = 0; cap_face < 6; ++cap_face) {
       // A cap that barely contains all of 'cap_face'.
       S2Point center = S2::GetNorm(cap_face);
-      S2Cap covering = S2Cap::FromAxisAngle(
-          center, S1Angle::Radians(kFaceRadius + kEps));
+      S2Cap covering =
+          S2Cap::FromAxisAngle(center, S1Angle::Radians(kFaceRadius + kEps));
       EXPECT_EQ(cap_face == face, covering.Contains(root_cell));
       EXPECT_EQ(cap_face != anti_face, covering.MayIntersect(root_cell));
       EXPECT_EQ(center.DotProd(edge_cell.GetCenter()) > 0.1,
@@ -223,8 +225,8 @@ TEST(S2Cap, S2CellMethods) {
                 covering.MayIntersect(corner_cell));
 
       // A cap that barely intersects the edges of 'cap_face'.
-      S2Cap bulging = S2Cap::FromAxisAngle(
-          center, S1Angle::Radians(M_PI_4 + kEps));
+      S2Cap bulging =
+          S2Cap::FromAxisAngle(center, S1Angle::Radians(M_PI_4 + kEps));
       EXPECT_FALSE(bulging.Contains(root_cell));
       EXPECT_EQ(cap_face != anti_face, bulging.MayIntersect(root_cell));
       EXPECT_EQ(cap_face == face, bulging.Contains(edge_cell));

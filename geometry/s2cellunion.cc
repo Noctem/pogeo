@@ -11,7 +11,6 @@ using std::reverse;
 #include <vector>
 using std::vector;
 
-
 #include "base/integral_types.h"
 #include "base/logging.h"
 #include "s2.h"
@@ -104,8 +103,8 @@ bool S2CellUnion::Normalize() {
     while (output.size() >= 3) {
       // A necessary (but not sufficient) condition is that the XOR of the
       // four cells must be zero.  This is also very fast to test.
-      if ((output.end()[-3].id() ^ output.end()[-2].id() ^ output.back().id())
-          != id.id())
+      if ((output.end()[-3].id() ^ output.end()[-2].id() ^
+           output.back().id()) != id.id())
         break;
 
       // Now we do a slightly more expensive but exact test.  First, compute a
@@ -117,8 +116,7 @@ bool S2CellUnion::Normalize() {
       uint64 id_masked = (id.id() & mask);
       if ((output.end()[-3].id() & mask) != id_masked ||
           (output.end()[-2].id() & mask) != id_masked ||
-          (output.end()[-1].id() & mask) != id_masked ||
-          id.is_face())
+          (output.end()[-1].id() & mask) != id_masked || id.is_face())
         break;
 
       // Replace four children by their parent cell.
@@ -245,7 +243,7 @@ bool S2CellUnion::Contains(S2CellId const& id) const {
   // if and only if one of these two cell ids contains this cell.
 
   vector<S2CellId>::const_iterator i =
-    lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
+      lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
   if (i != cell_ids_.end() && i->range_min() <= id) return true;
   return i != cell_ids_.begin() && (--i)->range_max() >= id;
 }
@@ -255,7 +253,7 @@ bool S2CellUnion::Intersects(S2CellId const& id) const {
   // This is an exact test; see the comments for Contains() above.
 
   vector<S2CellId>::const_iterator i =
-    lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
+      lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
   if (i != cell_ids_.end() && i->range_min() <= id.range_max()) return true;
   return i != cell_ids_.begin() && (--i)->range_max() >= id.range_min();
 }
@@ -296,10 +294,9 @@ void S2CellUnion::GetIntersection(S2CellUnion const* x, S2CellId const& id) {
     cell_ids_.push_back(id);
   } else {
     vector<S2CellId>::const_iterator i =
-      lower_bound(x->cell_ids_.begin(), x->cell_ids_.end(), id.range_min());
+        lower_bound(x->cell_ids_.begin(), x->cell_ids_.end(), id.range_min());
     S2CellId idmax = id.range_max();
-    while (i != x->cell_ids_.end() && *i <= idmax)
-      cell_ids_.push_back(*i++);
+    while (i != x->cell_ids_.end() && *i <= idmax) cell_ids_.push_back(*i++);
   }
 }
 
@@ -349,8 +346,7 @@ void S2CellUnion::GetIntersection(S2CellUnion const* x, S2CellUnion const* y) {
   DCHECK(!Normalize());
 }
 
-static void GetDifferenceInternal(S2CellId cell,
-                                  S2CellUnion const* y,
+static void GetDifferenceInternal(S2CellId cell, S2CellUnion const* y,
                                   vector<S2CellId>* cell_ids) {
   // Add the difference between cell and y to cell_ids.
   // If they intersect but the difference is non-empty, divides and conquers.
@@ -359,7 +355,7 @@ static void GetDifferenceInternal(S2CellId cell,
     cell_ids->push_back(cell);
   } else if (!y->Contains(cell)) {
     S2CellId child = cell.child_begin();
-    for (int i = 0; ; ++i) {
+    for (int i = 0;; ++i) {
       GetDifferenceInternal(child, y, cell_ids);
       if (i == 3) break;  // Avoid unnecessary next() computation.
       child = child.next();
@@ -392,7 +388,7 @@ void S2CellUnion::Expand(int level) {
       id = id.parent(level);
       // Optimization: skip over any cells contained by this one.  This is
       // especially important when very small regions are being expanded.
-      while (i > 0 && id.contains(cell_id(i-1))) --i;
+      while (i > 0 && id.contains(cell_id(i - 1))) --i;
     }
     output.push_back(id);
     id.AppendAllNeighbors(level, &output);
@@ -423,14 +419,13 @@ void S2CellUnion::InitFromRange(S2CellId const& min_id,
 
   // We repeatedly add the largest cell we can.
   cell_ids_.clear();
-  for (S2CellId next_min_id = min_id; next_min_id <= max_id; ) {
+  for (S2CellId next_min_id = min_id; next_min_id <= max_id;) {
     DCHECK(next_min_id.is_leaf());
 
     // Find the largest cell that starts at "next_min_id" and doesn't extend
     // beyond "max_id".
     S2CellId next_id = next_min_id;
-    while (!next_id.is_face() &&
-           next_id.parent().range_min() == next_min_id &&
+    while (!next_id.is_face() && next_id.parent().range_min() == next_min_id &&
            next_id.parent().range_max() <= max_id) {
       next_id = next_id.parent();
     }
@@ -446,8 +441,7 @@ void S2CellUnion::InitFromRange(S2CellId const& min_id,
 uint64 S2CellUnion::LeafCellsCovered() const {
   uint64 num_leaves = 0;
   for (int i = 0; i < num_cells(); ++i) {
-    const int inverted_level =
-        S2CellId::kMaxLevel - cell_id(i).level();
+    const int inverted_level = S2CellId::kMaxLevel - cell_id(i).level();
     num_leaves += (1ULL << (inverted_level << 1));
   }
   return num_leaves;

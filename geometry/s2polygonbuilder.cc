@@ -27,7 +27,6 @@ using std::multiset;
 #include <vector>
 using std::vector;
 
-
 #include "base/logging.h"
 #include "base/macros.h"
 #include "s2.h"
@@ -57,15 +56,12 @@ void S2PolygonBuilderOptions::set_edge_splice_fraction(double fraction) {
 }
 
 S2PolygonBuilder::S2PolygonBuilder()
-  : options_(S2PolygonBuilderOptions()), edges_(new EdgeSet) {
-}
+    : options_(S2PolygonBuilderOptions()), edges_(new EdgeSet) {}
 
 S2PolygonBuilder::S2PolygonBuilder(S2PolygonBuilderOptions const& options)
-  : options_(options), edges_(new EdgeSet) {
-}
+    : options_(options), edges_(new EdgeSet) {}
 
-S2PolygonBuilder::~S2PolygonBuilder() {
-}
+S2PolygonBuilder::~S2PolygonBuilder() {}
 
 bool S2PolygonBuilder::HasEdge(S2Point const& v0, S2Point const& v1) {
   EdgeSet::const_iterator candidates = edges_->find(v0);
@@ -175,7 +171,7 @@ S2Loop* S2PolygonBuilder::AssembleLoop(S2Point const& v0, S2Point const& v1,
   // vertex that we have seen before *except* for the first vertex (v0).
   // This ensures that only CCW loops are constructed when possible.
 
-  vector<S2Point> path;          // The path so far.
+  vector<S2Point> path;               // The path so far.
   unordered_map<S2Point, int> index;  // Maps a vertex to its index in "path".
   path.push_back(v0);
   path.push_back(v1);
@@ -192,7 +188,9 @@ S2Loop* S2PolygonBuilder::AssembleLoop(S2Point const& v0, S2Point const& v1,
       for (VertexSet::const_iterator i = vset.begin(); i != vset.end(); ++i) {
         // We prefer the leftmost outgoing edge, ignoring any reverse edges.
         if (*i == v0) continue;
-        if (!v2_found || S2::OrderedCCW(v0, v2, *i, v1)) { v2 = *i; }
+        if (!v2_found || S2::OrderedCCW(v0, v2, *i, v1)) {
+          v2 = *i;
+        }
         v2_found = true;
       }
     }
@@ -258,21 +256,21 @@ class S2PolygonBuilder::PointIndex {
 
  public:
   PointIndex(double vertex_radius, double edge_fraction)
-    : vertex_radius_(vertex_radius),
-      edge_fraction_(edge_fraction),
-      // We compute an S2CellId level such that the vertex neighbors at that
-      // level of any point A are a covering for spherical cap (i.e. "disc")
-      // of the given search radius centered at A.  This requires that the
-      // minimum cell width at that level must be twice the search radius.
-      level_(min(S2::kMinWidth.GetMaxLevel(2 * vertex_radius),
-                 S2CellId::kMaxLevel - 1)) {
+      : vertex_radius_(vertex_radius),
+        edge_fraction_(edge_fraction),
+        // We compute an S2CellId level such that the vertex neighbors at that
+        // level of any point A are a covering for spherical cap (i.e. "disc")
+        // of the given search radius centered at A.  This requires that the
+        // minimum cell width at that level must be twice the search radius.
+        level_(min(S2::kMinWidth.GetMaxLevel(2 * vertex_radius),
+                   S2CellId::kMaxLevel - 1)) {
     // We insert a sentinel so that we don't need to test for map_.end().
     map_.insert(make_pair(S2CellId::Sentinel(), S2Point()));
   }
 
   void Insert(S2Point const& p) {
     S2CellId::FromPoint(p).AppendVertexNeighbors(level_, &ids_);
-    for (int i = ids_.size(); --i >= 0; ) {
+    for (int i = ids_.size(); --i >= 0;) {
       map_.insert(make_pair(ids_[i], p));
     }
     ids_.clear();
@@ -280,7 +278,7 @@ class S2PolygonBuilder::PointIndex {
 
   void Erase(S2Point const& p) {
     S2CellId::FromPoint(p).AppendVertexNeighbors(level_, &ids_);
-    for (int i = ids_.size(); --i >= 0; ) {
+    for (int i = ids_.size(); --i >= 0;) {
       Map::iterator j = map_.lower_bound(ids_[i]);
       for (; j->second != p; ++j) {
         DCHECK_EQ(ids_[i], j->first);
@@ -304,8 +302,7 @@ class S2PolygonBuilder::PointIndex {
     }
   }
 
-  bool FindNearbyPoint(S2Point const& v0, S2Point const& v1,
-                       S2Point* nearby) {
+  bool FindNearbyPoint(S2Point const& v0, S2Point const& v1, S2Point* nearby) {
     // Return a point whose distance from the edge (v0,v1) is less than
     // vertex_radius_, and which is not equal to v0 or v1.  The current
     // implementation returns the closest such point.
@@ -325,8 +322,8 @@ class S2PolygonBuilder::PointIndex {
     sort(ids_.begin(), ids_.end());
 
     double best_dist = 2 * vertex_radius_;
-    for (int i = ids_.size(); --i >= 0; ) {
-      if (i > 0 && ids_[i-1] == ids_[i]) continue;  // Skip duplicates.
+    for (int i = ids_.size(); --i >= 0;) {
+      if (i > 0 && ids_[i - 1] == ids_[i]) continue;  // Skip duplicates.
 
       S2CellId const& max_id = ids_[i].range_max();
       for (Map::const_iterator j = map_.lower_bound(ids_[i].range_min());
@@ -390,7 +387,7 @@ void S2PolygonBuilder::BuildMergeMap(PointIndex* index, MergeMap* merge_map) {
     while (!frontier.empty()) {
       index->QueryCap(frontier.back(), &mergeable);
       frontier.pop_back();  // Do this before entering the loop below.
-      for (int j = mergeable.size(); --j >= 0; ) {
+      for (int j = mergeable.size(); --j >= 0;) {
         S2Point const& v1 = mergeable[j];
         if (v1 != *vstart) {
           // Erase from the index any vertices that will be merged.  This
@@ -499,7 +496,7 @@ bool S2PolygonBuilder::AssembleLoops(vector<S2Loop*>* loops,
   // different machine architectures (e.g. 'clovertown' vs. 'opteron'),
   // we follow the order they were added to the builder.
   unused_edges->clear();
-  for (size_t i = 0; i < starting_vertices_.size(); ) {
+  for (size_t i = 0; i < starting_vertices_.size();) {
     S2Point const& v0 = starting_vertices_[i];
     EdgeSet::const_iterator candidates = edges_->find(v0);
     if (candidates == edges_->end()) {

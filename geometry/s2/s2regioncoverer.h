@@ -197,8 +197,8 @@ class S2RegionCoverer {
   // default.
   struct CompareQueueEntries;
   typedef pair<int, Candidate*> QueueEntry;
-  typedef priority_queue<QueueEntry, vector<QueueEntry>,
-                         CompareQueueEntries> CandidateQueue;
+  typedef priority_queue<QueueEntry, vector<QueueEntry>, CompareQueueEntries>
+      CandidateQueue;
   unique_ptr<CandidateQueue> pq_;
 
   // True if we're computing an interior covering.

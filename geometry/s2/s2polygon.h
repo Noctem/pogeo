@@ -10,13 +10,12 @@ using std::multimap;
 #include <vector>
 using std::vector;
 
-
 #include "base/basictypes.h"
 #include "base/macros.h"
 #include "s2.h"
-#include "s2region.h"
 #include "s2loop.h"
 #include "s2polyline.h"
+#include "s2region.h"
 
 class S2CellUnion;
 
@@ -182,7 +181,7 @@ class S2Polygon : public S2Region {
   // This is equivalent to calling IntersectWithPolylineSloppy() with the
   // "vertex_merge_radius" set to S2EdgeUtil::kIntersectionTolerance.
   void IntersectWithPolyline(S2Polyline const* in,
-                             vector<S2Polyline*> *out) const;
+                             vector<S2Polyline*>* out) const;
 
   // Similar to IntersectWithPolyline(), except that vertices will be
   // dropped as necessary to ensure that all adjacent vertices in the
@@ -190,18 +189,18 @@ class S2Polygon : public S2Region {
   // farther than "vertex_merge_radius" apart.  Note that this can change
   // the number of output polylines and/or yield single-vertex polylines.
   void IntersectWithPolylineSloppy(S2Polyline const* in,
-                                   vector<S2Polyline*> *out,
+                                   vector<S2Polyline*>* out,
                                    S1Angle vertex_merge_radius) const;
 
   // Same as IntersectWithPolyline, but subtracts this polygon from
   // the given polyline.
   void SubtractFromPolyline(S2Polyline const* in,
-                            vector<S2Polyline*> *out) const;
+                            vector<S2Polyline*>* out) const;
 
   // Same as IntersectWithPolylineSloppy, but subtracts this polygon
   // from the given polyline.
   void SubtractFromPolylineSloppy(S2Polyline const* in,
-                                  vector<S2Polyline*> *out,
+                                  vector<S2Polyline*>* out,
                                   S1Angle vertex_merge_radius) const;
 
   // Return a polygon which is the union of the given polygons.
@@ -282,9 +281,8 @@ class S2Polygon : public S2Region {
   bool DecodeInternal(Decoder* const decoder, bool within_scope);
 
   // Internal implementation of intersect/subtract polyline functions above.
-  void InternalClipPolyline(bool invert,
-                            S2Polyline const* a,
-                            vector<S2Polyline*> *out,
+  void InternalClipPolyline(bool invert, S2Polyline const* a,
+                            vector<S2Polyline*>* out,
                             S1Angle vertex_merge_radius) const;
 
   static void InsertLoop(S2Loop* new_loop, S2Loop* parent, LoopMap* loop_map);

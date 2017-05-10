@@ -7,8 +7,8 @@
 using std::ostream;
 
 #include "base/basictypes.h"
-#include "util/math/mathutil.h"
 #include "s2.h"
+#include "util/math/mathutil.h"
 
 class S2LatLng;
 
@@ -168,9 +168,7 @@ inline S1Angle& S1Angle::operator/=(double m) {
   return *this;
 }
 
-inline S1Angle S1Angle::Radians(double radians) {
-  return S1Angle(radians);
-}
+inline S1Angle S1Angle::Radians(double radians) { return S1Angle(radians); }
 
 inline S1Angle S1Angle::Degrees(double degrees) {
   return S1Angle(degrees * (M_PI / 180));
@@ -182,13 +180,9 @@ inline S1Angle S1Angle::E5(int32 e5) {
   return Degrees(e5 * 1e-5);
 }
 
-inline S1Angle S1Angle::E6(int32 e6) {
-  return Degrees(e6 * 1e-6);
-}
+inline S1Angle S1Angle::E6(int32 e6) { return Degrees(e6 * 1e-6); }
 
-inline S1Angle S1Angle::E7(int32 e7) {
-  return Degrees(e7 * 1e-7);
-}
+inline S1Angle S1Angle::E7(int32 e7) { return Degrees(e7 * 1e-7); }
 
 inline S1Angle S1Angle::UnsignedE6(uint32 e6) {
   return Degrees(static_cast<int32>(e6) * 1e-6);

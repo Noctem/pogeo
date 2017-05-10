@@ -18,7 +18,6 @@ using std::vector;
 using std::ostringstream;
 using std::hex;
 
-
 class S2LatLngRect;
 class S2Loop;
 class S2Polygon;
@@ -58,13 +57,11 @@ class S2Testing {
   // that they enclose at most half of the unit sphere.
   static S2Polygon* MakePolygon(string const& str);
 
-
   // Returns a newly allocated loop (owned by caller) shaped as a
   // regular polygon with num_vertices vertices, all on a circle of
   // radius radius_angle around the center.  The radius is the actual
   // distance from the center to the circle along the sphere.
-  static S2Loop* MakeRegularLoop(S2Point const& center,
-                                 int num_vertices,
+  static S2Loop* MakeRegularLoop(S2Point const& center, int num_vertices,
                                  double radius_angle);
 
   // Examples of the input format:
@@ -114,10 +111,8 @@ class S2Testing {
   // Checks that "covering" completely covers the given region.  If
   // "check_tight" is true, also checks that it does not contain any cells
   // that do not intersect the given region.  ("id" is only used internally.)
-  static void CheckCovering(S2Region const& region,
-                            S2CellUnion const& covering,
-                            bool check_tight,
-                            S2CellId const& id = S2CellId());
+  static void CheckCovering(S2Region const& region, S2CellUnion const& covering,
+                            bool check_tight, S2CellId const& id = S2CellId());
 
   // Returns the user time consumed by this process, in seconds.
   static double GetCpuTime();
@@ -133,9 +128,7 @@ class S2Testing::Random {
   uint32 Rand32();
   double RandDouble();
   int32 Uniform(int32 upper_bound);
-  int32 operator() (int32 n) {
-    return Uniform(n);
-  }
+  int32 operator()(int32 n) { return Uniform(n); }
   bool OneIn(int x);
 
   // Skewed: pick "base" uniformly from range [0,max_log] and then

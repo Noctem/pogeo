@@ -30,12 +30,12 @@
 #ifndef BASE_STRTOINT_H_
 #define BASE_STRTOINT_H_
 
-#include <stdlib.h> // For strtol* functions.
+#include <stdlib.h>  // For strtol* functions.
 #include <string>
 using std::string;
 
-#include "base/port.h"
 #include "base/basictypes.h"
+#include "base/port.h"
 
 // Adapter functions for handling overflow and errno.
 int32 strto32_adapter(const char *nptr, char **endptr, int base);
@@ -73,21 +73,13 @@ inline uint64 strtou64(const char *nptr, char **endptr, int base) {
 
 // Although it returns an int, atoi() is implemented in terms of strtol, and
 // so has differing overflow and underflow behavior.  atol is the same.
-inline int32 atoi32(const char *nptr) {
-  return strto32(nptr, NULL, 10);
-}
+inline int32 atoi32(const char *nptr) { return strto32(nptr, NULL, 10); }
 
-inline int64 atoi64(const char *nptr) {
-  return strto64(nptr, NULL, 10);
-}
+inline int64 atoi64(const char *nptr) { return strto64(nptr, NULL, 10); }
 
 // Convenience versions of the above that take a string argument.
-inline int32 atoi32(const string &s) {
-  return atoi32(s.c_str());
-}
+inline int32 atoi32(const string &s) { return atoi32(s.c_str()); }
 
-inline int64 atoi64(const string &s) {
-  return atoi64(s.c_str());
-}
+inline int64 atoi64(const string &s) { return atoi64(s.c_str()); }
 
 #endif  // BASE_STRTOINT_H_

@@ -1,8 +1,8 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
+#include "s2latlng.h"
 #include "base/logging.h"
 #include "strings/stringprintf.h"
-#include "s2latlng.h"
 
 S2LatLng S2LatLng::Normalized() const {
   // remainder(x, 2 * M_PI) reduces its argument to the range [-M_PI, M_PI]
@@ -29,7 +29,7 @@ S2Point S2LatLng::ToPoint() const {
 }
 
 S2LatLng::S2LatLng(S2Point const& p)
-  : coords_(Latitude(p).radians(), Longitude(p).radians()) {
+    : coords_(Latitude(p).radians(), Longitude(p).radians()) {
   // The latitude and longitude are already normalized.
   DCHECK(is_valid());
 }
@@ -62,9 +62,7 @@ string S2LatLng::ToStringInDegrees() const {
   return StringPrintf("%f,%f", pt.lat().degrees(), pt.lng().degrees());
 }
 
-void S2LatLng::ToStringInDegrees(string* s) const {
-  *s = ToStringInDegrees();
-}
+void S2LatLng::ToStringInDegrees(string* s) const { *s = ToStringInDegrees(); }
 
 ostream& operator<<(ostream& os, S2LatLng const& ll) {
   return os << "[" << ll.lat() << ", " << ll.lng() << "]";

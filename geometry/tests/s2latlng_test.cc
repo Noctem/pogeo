@@ -1,11 +1,11 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
 #include "s2latlng.h"
+#include <gtest/gtest.h>
 #include "base/macros.h"
 #include "base/stringprintf.h"
-#include "strings/split.h"
-#include <gtest/gtest.h>
 #include "s2testing.h"
+#include "strings/split.h"
 
 TEST(S2LatLng, TestBasic) {
   S2LatLng ll_rad = S2LatLng::FromRadians(M_PI_4, M_PI_2);
@@ -32,12 +32,12 @@ TEST(S2LatLng, TestBasic) {
   EXPECT_EQ(S1Angle::Degrees(-90), better.lat());
   EXPECT_DOUBLE_EQ(0.0, better.lng().radians());
 
-  EXPECT_TRUE((S2LatLng::FromDegrees(10, 20) + S2LatLng::FromDegrees(20, 30)).
-              ApproxEquals(S2LatLng::FromDegrees(30, 50)));
-  EXPECT_TRUE((S2LatLng::FromDegrees(10, 20) - S2LatLng::FromDegrees(20, 30)).
-              ApproxEquals(S2LatLng::FromDegrees(-10, -10)));
-  EXPECT_TRUE((0.5 * S2LatLng::FromDegrees(10, 20)).
-              ApproxEquals(S2LatLng::FromDegrees(5, 10)));
+  EXPECT_TRUE((S2LatLng::FromDegrees(10, 20) + S2LatLng::FromDegrees(20, 30))
+                  .ApproxEquals(S2LatLng::FromDegrees(30, 50)));
+  EXPECT_TRUE((S2LatLng::FromDegrees(10, 20) - S2LatLng::FromDegrees(20, 30))
+                  .ApproxEquals(S2LatLng::FromDegrees(-10, -10)));
+  EXPECT_TRUE((0.5 * S2LatLng::FromDegrees(10, 20))
+                  .ApproxEquals(S2LatLng::FromDegrees(5, 10)));
 
   // Check that Invalid() returns an invalid point.
   S2LatLng invalid = S2LatLng::Invalid();
@@ -52,18 +52,19 @@ TEST(S2LatLng, TestBasic) {
 
 TEST(S2LatLng, TestConversion) {
   // Test special cases: poles, "date line"
-  EXPECT_DOUBLE_EQ(90.0,
-                   S2LatLng(S2LatLng::FromDegrees(90.0, 65.0).ToPoint())
-                   .lat().degrees());
-  EXPECT_EQ(-M_PI_2,
-            S2LatLng(S2LatLng::FromRadians(-M_PI_2, 1).ToPoint())
-            .lat().radians());
+  EXPECT_DOUBLE_EQ(
+      90.0,
+      S2LatLng(S2LatLng::FromDegrees(90.0, 65.0).ToPoint()).lat().degrees());
+  EXPECT_EQ(
+      -M_PI_2,
+      S2LatLng(S2LatLng::FromRadians(-M_PI_2, 1).ToPoint()).lat().radians());
   EXPECT_DOUBLE_EQ(180.0,
                    fabs(S2LatLng(S2LatLng::FromDegrees(12.2, 180.0).ToPoint())
-                        .lng().degrees()));
-  EXPECT_EQ(M_PI,
-            fabs(S2LatLng(S2LatLng::FromRadians(0.1, -M_PI).ToPoint())
-                 .lng().radians()));
+                            .lng()
+                            .degrees()));
+  EXPECT_EQ(M_PI, fabs(S2LatLng(S2LatLng::FromRadians(0.1, -M_PI).ToPoint())
+                           .lng()
+                           .radians()));
 
   // Test a bunch of random points.
   for (int i = 0; i < 100000; ++i) {
@@ -73,20 +74,23 @@ TEST(S2LatLng, TestConversion) {
 }
 
 TEST(S2LatLng, TestDistance) {
-  EXPECT_EQ(0.0,
-            S2LatLng::FromDegrees(90, 0).GetDistance(
-                S2LatLng::FromDegrees(90, 0)).radians());
+  EXPECT_EQ(0.0, S2LatLng::FromDegrees(90, 0)
+                     .GetDistance(S2LatLng::FromDegrees(90, 0))
+                     .radians());
   EXPECT_NEAR(77.0,
-              S2LatLng::FromDegrees(-37, 25).GetDistance(
-                  S2LatLng::FromDegrees(-66, -155)).degrees(),
+              S2LatLng::FromDegrees(-37, 25)
+                  .GetDistance(S2LatLng::FromDegrees(-66, -155))
+                  .degrees(),
               1e-13);
   EXPECT_NEAR(115.0,
-              S2LatLng::FromDegrees(0, 165).GetDistance(
-                  S2LatLng::FromDegrees(0, -80)).degrees(),
+              S2LatLng::FromDegrees(0, 165)
+                  .GetDistance(S2LatLng::FromDegrees(0, -80))
+                  .degrees(),
               1e-13);
   EXPECT_NEAR(180.0,
-              S2LatLng::FromDegrees(47, -127).GetDistance(
-                  S2LatLng::FromDegrees(-47, 53)).degrees(),
+              S2LatLng::FromDegrees(47, -127)
+                  .GetDistance(S2LatLng::FromDegrees(-47, 53))
+                  .degrees(),
               2e-6);
 }
 
@@ -95,12 +99,12 @@ TEST(S2LatLng, TestToString) {
     double lat, lng;
     double expected_lat, expected_lng;
   } values[] = {
-    {0, 0, 0, 0},
-    {1.5, 91.7, 1.5, 91.7},
-    {9.9, -0.31, 9.9, -0.31},
-    {sqrt(2), -sqrt(5), 1.414214, -2.236068},
-    {91.3, 190.4, 90, -169.6},
-    {-100, -710, -90, 10},
+      {0, 0, 0, 0},
+      {1.5, 91.7, 1.5, 91.7},
+      {9.9, -0.31, 9.9, -0.31},
+      {sqrt(2), -sqrt(5), 1.414214, -2.236068},
+      {91.3, 190.4, 90, -169.6},
+      {-100, -710, -90, 10},
   };
   for (int i = 0; i < ARRAYSIZE(values); ++i) {
     SCOPED_TRACE(StringPrintf("Iteration %d", i));
@@ -136,4 +140,3 @@ static void BM_ToPoint(int iters) {
 }
 BENCHMARK(BM_ToPoint);
 #endif
-

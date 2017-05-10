@@ -44,9 +44,7 @@ class R1Interval {
   static inline R1Interval Empty() { return R1Interval(); }
 
   // Convenience method to construct an interval containing a single point.
-  static R1Interval FromPoint(double p) {
-    return R1Interval(p, p);
-  }
+  static R1Interval FromPoint(double p) { return R1Interval(p, p); }
 
   // Convenience method to construct the minimal interval containing
   // the two given points.  This is equivalent to starting with an empty
@@ -83,13 +81,9 @@ class R1Interval {
   // is negative.
   double GetLength() const { return hi() - lo(); }
 
-  bool Contains(double p) const {
-    return p >= lo() && p <= hi();
-  }
+  bool Contains(double p) const { return p >= lo() && p <= hi(); }
 
-  bool InteriorContains(double p) const {
-    return p > lo() && p < hi();
-  }
+  bool InteriorContains(double p) const { return p > lo() && p < hi(); }
 
   // Return true if this interval contains the interval 'y'.
   bool Contains(R1Interval const& y) const {
@@ -131,9 +125,14 @@ class R1Interval {
 
   // Expand the interval so that it contains the given point "p".
   void AddPoint(double p) {
-    if (is_empty()) { set_lo(p); set_hi(p); }
-    else if (p < lo()) { set_lo(p); }
-    else if (p > hi()) { set_hi(p); }
+    if (is_empty()) {
+      set_lo(p);
+      set_hi(p);
+    } else if (p < lo()) {
+      set_lo(p);
+    } else if (p > hi()) {
+      set_hi(p);
+    }
   }
 
   // Return an interval that contains all points with a distance "radius" of

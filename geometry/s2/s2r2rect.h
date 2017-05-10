@@ -53,8 +53,7 @@ class S2R2Rect : public S2Region {
   // Construct a rectangle from a center point and size in each dimension.
   // Both components of size should be non-negative, i.e. this method cannot
   // be used to create an empty rectangle.
-  static S2R2Rect FromCenterSize(R2Point const& center,
-                                 R2Point const& size);
+  static S2R2Rect FromCenterSize(R2Point const& center, R2Point const& size);
 
   // Convenience method to construct a rectangle containing a single point.
   static S2R2Rect FromPoint(R2Point const& p);
@@ -69,8 +68,8 @@ class S2R2Rect : public S2Region {
   // Accessor methods.
   R1Interval const& x() const { return x_; }
   R1Interval const& y() const { return y_; }
-  R1Interval *mutable_x() { return &x_; }
-  R1Interval *mutable_y() { return &y_; }
+  R1Interval* mutable_x() { return &x_; }
+  R1Interval* mutable_y() { return &y_; }
   R2Point lo() const { return R2Point(x_.lo(), y_.lo()); }
   R2Point hi() const { return R2Point(x_.hi(), y_.hi()); }
 
@@ -174,12 +173,12 @@ class S2R2Rect : public S2Region {
 };
 
 inline S2R2Rect::S2R2Rect(R2Point const& lo, R2Point const& hi)
-  : x_(lo.x(), hi.x()), y_(lo.y(), hi.y()) {
+    : x_(lo.x(), hi.x()), y_(lo.y(), hi.y()) {
   DCHECK(is_valid());
 }
 
 inline S2R2Rect::S2R2Rect(R1Interval const& x, R1Interval const& y)
-  : x_(x), y_(y) {
+    : x_(x), y_(y) {
   DCHECK(is_valid());
 }
 
@@ -192,9 +191,7 @@ inline bool S2R2Rect::is_valid() const {
   return x_.is_empty() == y_.is_empty();
 }
 
-inline bool S2R2Rect::is_empty() const {
-  return x_.is_empty();
-}
+inline bool S2R2Rect::is_empty() const { return x_.is_empty(); }
 
 inline bool S2R2Rect::operator==(S2R2Rect const& other) const {
   return x_ == other.x_ && y_ == other.y_;

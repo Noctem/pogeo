@@ -4,10 +4,10 @@
 // See strtoint.h for details on how to use this component.
 //
 
-#include <errno.h>
-#include "base/port.h"
-#include "base/basictypes.h"
 #include "base/strtoint.h"
+#include <errno.h>
+#include "base/basictypes.h"
+#include "base/port.h"
 
 // Replacement strto[u]l functions that have identical overflow and underflow
 // characteristics for both ILP-32 and LP-64 platforms, including errno
@@ -27,8 +27,7 @@ int32 strto32_adapter(const char *nptr, char **endptr, int base) {
     errno = ERANGE;
     return kint32max;
   }
-  if (errno == 0)
-    errno = saved_errno;
+  if (errno == 0) errno = saved_errno;
   return static_cast<int32>(result);
 }
 
@@ -42,7 +41,6 @@ uint32 strtou32_adapter(const char *nptr, char **endptr, int base) {
     errno = ERANGE;
     return kuint32max;
   }
-  if (errno == 0)
-    errno = saved_errno;
+  if (errno == 0) errno = saved_errno;
   return static_cast<uint32>(result);
 }

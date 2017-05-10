@@ -23,10 +23,10 @@ using std::make_pair;
 #include "s2loop.h"
 
 #include "base/logging.h"
-#include "util/coding/coder.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2edgeindex.h"
+#include "util/coding/coder.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 
@@ -35,31 +35,28 @@ S2Point const* S2LoopIndex::edge_from(int index) const {
 }
 
 S2Point const* S2LoopIndex::edge_to(int index) const {
-  return &loop_->vertex(index+1);
+  return &loop_->vertex(index + 1);
 }
 
-int S2LoopIndex::num_edges() const {
-  return loop_->num_vertices();
-}
+int S2LoopIndex::num_edges() const { return loop_->num_vertices(); }
 
 S2Loop::S2Loop()
-  : num_vertices_(0),
-    vertices_(NULL),
-    owns_vertices_(false),
-    bound_(S2LatLngRect::Empty()),
-    depth_(0),
-    index_(this),
-    num_find_vertex_calls_(0) {
-}
+    : num_vertices_(0),
+      vertices_(NULL),
+      owns_vertices_(false),
+      bound_(S2LatLngRect::Empty()),
+      depth_(0),
+      index_(this),
+      num_find_vertex_calls_(0) {}
 
 S2Loop::S2Loop(vector<S2Point> const& vertices)
-  : num_vertices_(0),
-    vertices_(NULL),
-    owns_vertices_(false),
-    bound_(S2LatLngRect::Full()),
-    depth_(0),
-    index_(this),
-    num_find_vertex_calls_(0) {
+    : num_vertices_(0),
+      vertices_(NULL),
+      owns_vertices_(false),
+      bound_(S2LatLngRect::Full()),
+      depth_(0),
+      index_(this),
+      num_find_vertex_calls_(0) {
   Init(vertices);
 }
 
@@ -115,26 +112,25 @@ bool S2Loop::IsValid() const {
   index_.PredictAdditionalCalls(num_vertices());
   S2EdgeIndex::Iterator it(&index_);
   for (int i = 0; i < num_vertices(); ++i) {
-    S2EdgeUtil::EdgeCrosser crosser(&vertex(i), &vertex(i+1), &vertex(0));
+    S2EdgeUtil::EdgeCrosser crosser(&vertex(i), &vertex(i + 1), &vertex(0));
     int previous_index = -2;
-    for (it.GetCandidates(vertex(i), vertex(i+1)); !it.Done(); it.Next()) {
+    for (it.GetCandidates(vertex(i), vertex(i + 1)); !it.Done(); it.Next()) {
       int ai = it.Index();
       // There is no need to test the same thing twice.  Moreover, two edges
       // that abut at ai+1 will have been tested for equality above.
-      if (ai > i+1) {
+      if (ai > i + 1) {
         if (previous_index != ai) crosser.RestartAt(&vertex(ai));
         // Beware, this may return the loop is valid if there is a
         // "vertex crossing".
         // TODO(user): Fix that.
-        crosses = crosser.RobustCrossing(&vertex(ai+1)) > 0;
+        crosses = crosser.RobustCrossing(&vertex(ai + 1)) > 0;
         previous_index = ai + 1;
         if (crosses) {
           VLOG(2) << "Edges " << i << " and " << ai << " cross";
           // additional debugging information:
-          VLOG(2) << "Edge locations in degrees: "
-                  << S2LatLng(vertex(i)) << "-" << S2LatLng(vertex(i+1))
-                  << " and "
-                  << S2LatLng(vertex(ai)) << "-" << S2LatLng(vertex(ai+1));
+          VLOG(2) << "Edge locations in degrees: " << S2LatLng(vertex(i)) << "-"
+                  << S2LatLng(vertex(i + 1)) << " and " << S2LatLng(vertex(ai))
+                  << "-" << S2LatLng(vertex(ai + 1));
           break;
         }
       }
@@ -152,9 +148,7 @@ bool S2Loop::IsValid(vector<S2Point> const& vertices, int max_adjacent) {
   return loop.IsValid();
 }
 
-bool S2Loop::IsValid(int max_adjacent) const {
-  return IsValid();
-}
+bool S2Loop::IsValid(int max_adjacent) const { return IsValid(); }
 
 void S2Loop::InitOrigin() {
   // The bounding box does not need to be correct before calling this
@@ -175,10 +169,9 @@ void S2Loop::InitOrigin() {
   // The test below is written so that B is inside if C=R but not if A=R.
 
   origin_inside_ = false;  // Initialize before calling Contains().
-  bool v1_inside = S2::OrderedCCW(S2::Ortho(vertex(1)), vertex(0), vertex(2),
-                                  vertex(1));
-  if (v1_inside != Contains(vertex(1)))
-    origin_inside_ = true;
+  bool v1_inside =
+      S2::OrderedCCW(S2::Ortho(vertex(1)), vertex(0), vertex(2), vertex(1));
+  if (v1_inside != Contains(vertex(1))) origin_inside_ = true;
 }
 
 void S2Loop::InitBound() {
@@ -211,9 +204,7 @@ void S2Loop::InitBound() {
 }
 
 S2Loop::S2Loop(S2Cell const& cell)
-    : bound_(cell.GetRectBound()),
-      index_(this),
-      num_find_vertex_calls_(0) {
+    : bound_(cell.GetRectBound()), index_(this), num_find_vertex_calls_(0) {
   num_vertices_ = 4;
   vertices_ = new S2Point[num_vertices_];
   depth_ = 0;
@@ -232,20 +223,18 @@ S2Loop::~S2Loop() {
 }
 
 S2Loop::S2Loop(S2Loop const* src)
-  : num_vertices_(src->num_vertices_),
-    vertices_(new S2Point[num_vertices_]),
-    owns_vertices_(true),
-    bound_(src->bound_),
-    origin_inside_(src->origin_inside_),
-    depth_(src->depth_),
-    index_(this),
-    num_find_vertex_calls_(0) {
+    : num_vertices_(src->num_vertices_),
+      vertices_(new S2Point[num_vertices_]),
+      owns_vertices_(true),
+      bound_(src->bound_),
+      origin_inside_(src->origin_inside_),
+      depth_(src->depth_),
+      index_(this),
+      num_find_vertex_calls_(0) {
   memcpy(vertices_, src->vertices_, num_vertices_ * sizeof(vertices_[0]));
 }
 
-S2Loop* S2Loop::Clone() const {
-  return new S2Loop(this);
-}
+S2Loop* S2Loop::Clone() const { return new S2Loop(this); }
 
 int S2Loop::FindVertex(S2Point const& p) const {
   num_find_vertex_calls_++;
@@ -268,7 +257,6 @@ int S2Loop::FindVertex(S2Point const& p) const {
   if (it == vertex_to_index_.end()) return -1;
   return it->second;
 }
-
 
 bool S2Loop::IsNormalized() const {
   // Optimization: if the longitude span is less than 180 degrees, then the
@@ -358,9 +346,7 @@ double S2Loop::GetTurningAngle() const {
   return dir * angle;
 }
 
-S2Cap S2Loop::GetCapBound() const {
-  return bound_.GetCapBound();
-}
+S2Cap S2Loop::GetCapBound() const { return bound_.GetCapBound(); }
 
 bool S2Loop::Contains(S2Cell const& cell) const {
   // A future optimization could also take advantage of the fact than an S2Cell
@@ -404,7 +390,7 @@ bool S2Loop::Contains(S2Point const& p) const {
     int ai = it.Index();
     if (previous_index != ai - 1) crosser.RestartAt(&vertex(ai));
     previous_index = ai;
-    inside ^= crosser.EdgeOrVertexCrossing(&vertex(ai+1));
+    inside ^= crosser.EdgeOrVertexCrossing(&vertex(ai + 1));
   }
   return inside;
 }
@@ -430,16 +416,15 @@ bool S2Loop::DecodeWithinScope(Decoder* const decoder) {
   return DecodeInternal(decoder, true);
 }
 
-bool S2Loop::DecodeInternal(Decoder* const decoder,
-                            bool within_scope) {
+bool S2Loop::DecodeInternal(Decoder* const decoder, bool within_scope) {
   unsigned char version = decoder->get8();
   if (version > kCurrentEncodingVersionNumber) return false;
 
   num_vertices_ = decoder->get32();
   if (owns_vertices_) delete[] vertices_;
   if (within_scope) {
-    vertices_ = const_cast<S2Point *>(reinterpret_cast<S2Point const*>(
-                    decoder->ptr()));
+    vertices_ =
+        const_cast<S2Point*>(reinterpret_cast<S2Point const*>(decoder->ptr()));
     decoder->skip(num_vertices_ * sizeof(*vertices_));
     owns_vertices_ = false;
   } else {
@@ -469,24 +454,24 @@ bool S2Loop::DecodeInternal(Decoder* const decoder,
 // AreBoundariesCrossing.
 class WedgeProcessor {
  public:
-  virtual ~WedgeProcessor() { }
+  virtual ~WedgeProcessor() {}
 
   virtual bool ProcessWedge(S2Point const& a0, S2Point const& ab1,
                             S2Point const& a2, S2Point const& b0,
                             S2Point const& b2) = 0;
 };
 
-bool S2Loop::AreBoundariesCrossing(
-    S2Loop const* b, WedgeProcessor* wedge_processor) const {
+bool S2Loop::AreBoundariesCrossing(S2Loop const* b,
+                                   WedgeProcessor* wedge_processor) const {
   // See the header file for a description of what this method does.
   index_.PredictAdditionalCalls(b->num_vertices());
   S2EdgeIndex::Iterator it(&index_);
   for (int j = 0; j < b->num_vertices(); ++j) {
-    S2EdgeUtil::EdgeCrosser crosser(&b->vertex(j), &b->vertex(j+1),
+    S2EdgeUtil::EdgeCrosser crosser(&b->vertex(j), &b->vertex(j + 1),
                                     &b->vertex(0));
     int previous_index = -2;
-    for (it.GetCandidates(b->vertex(j), b->vertex(j+1));
-         !it.Done(); it.Next()) {
+    for (it.GetCandidates(b->vertex(j), b->vertex(j + 1)); !it.Done();
+         it.Next()) {
       int ai = it.Index();
       if (previous_index != ai - 1) crosser.RestartAt(&vertex(ai));
       previous_index = ai;
@@ -495,9 +480,10 @@ bool S2Loop::AreBoundariesCrossing(
       if (crossing > 0) return true;
       // We only need to check each shared vertex once, so we only
       // consider the case where vertex(i+1) == b->vertex(j+1).
-      if (vertex(ai+1) == b->vertex(j+1) &&
-          wedge_processor->ProcessWedge(vertex(ai), vertex(ai+1), vertex(ai+2),
-                                        b->vertex(j), b->vertex(j+2))) {
+      if (vertex(ai + 1) == b->vertex(j + 1) &&
+          wedge_processor->ProcessWedge(vertex(ai), vertex(ai + 1),
+                                        vertex(ai + 2), b->vertex(j),
+                                        b->vertex(j + 2))) {
         return false;
       }
     }
@@ -509,9 +495,9 @@ bool S2Loop::AreBoundariesCrossing(
 // DoesntContain() then returns true if there is a wedge of B not
 // contained in the associated wedge of A (and hence loop B is not
 // contained in loop A).
-class ContainsWedgeProcessor: public WedgeProcessor {
+class ContainsWedgeProcessor : public WedgeProcessor {
  public:
-  ContainsWedgeProcessor(): doesnt_contain_(false) {}
+  ContainsWedgeProcessor() : doesnt_contain_(false) {}
   bool DoesntContain() { return doesnt_contain_; }
 
  protected:
@@ -548,8 +534,7 @@ bool S2Loop::Contains(S2Loop const* b) const {
   // Unless there are shared vertices, we need to check whether A contains a
   // vertex of B.  Since shared vertices are rare, it is more efficient to do
   // this test up front as a quick rejection test.
-  if (!Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0)
-    return false;
+  if (!Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0) return false;
 
   // Now check whether there are any edge crossings, and also check the loop
   // relationship at any shared vertices.
@@ -571,9 +556,9 @@ bool S2Loop::Contains(S2Loop const* b) const {
 // WedgeProcessor to be used to check if loop A intersects loop B.
 // Intersects() then returns true when A and B have at least one pair
 // of associated wedges that intersect.
-class IntersectsWedgeProcessor: public WedgeProcessor {
+class IntersectsWedgeProcessor : public WedgeProcessor {
  public:
-  IntersectsWedgeProcessor(): intersects_(false) {}
+  IntersectsWedgeProcessor() : intersects_(false) {}
   bool Intersects() { return intersects_; }
 
  protected:
@@ -601,8 +586,7 @@ bool S2Loop::Intersects(S2Loop const* b) const {
   // Unless there are shared vertices, we need to check whether A contains a
   // vertex of B.  Since shared vertices are rare, it is more efficient to do
   // this test up front as a quick acceptance test.
-  if (Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0)
-    return true;
+  if (Contains(b->vertex(0)) && FindVertex(b->vertex(0)) < 0) return true;
 
   // Now check whether there are any edge crossings, and also check the loop
   // relationship at any shared vertices.
@@ -627,12 +611,13 @@ bool S2Loop::Intersects(S2Loop const* b) const {
 // other (therefore they have a proper intersection).
 // CrossesOrMayContain() then returns -1 if A crossed B, 0 if it is
 // not possible for A to contain B, and 1 otherwise.
-class ContainsOrCrossesProcessor: public WedgeProcessor {
+class ContainsOrCrossesProcessor : public WedgeProcessor {
  public:
-  ContainsOrCrossesProcessor():
-      has_boundary_crossing_(false),
-      a_has_strictly_super_wedge_(false), b_has_strictly_super_wedge_(false),
-      has_disjoint_wedge_(false) {}
+  ContainsOrCrossesProcessor()
+      : has_boundary_crossing_(false),
+        a_has_strictly_super_wedge_(false),
+        b_has_strictly_super_wedge_(false),
+        has_disjoint_wedge_(false) {}
 
   int CrossesOrMayContain() {
     if (has_boundary_crossing_) return -1;
@@ -713,7 +698,7 @@ bool S2Loop::ContainsNested(S2Loop const* b) const {
   }
   // Check whether the edge order around b->vertex(1) is compatible with
   // A containing B.
-  return S2EdgeUtil::WedgeContains(vertex(m-1), vertex(m), vertex(m+1),
+  return S2EdgeUtil::WedgeContains(vertex(m - 1), vertex(m), vertex(m + 1),
                                    b->vertex(0), b->vertex(2));
 }
 
@@ -781,17 +766,17 @@ static bool MatchBoundaries(S2Loop const* a, S2Loop const* b, int a_offset,
     int io = i + a_offset;
     if (io >= a->num_vertices()) io -= a->num_vertices();
 
-    if (i < a->num_vertices() && done.count(make_pair(i+1, j)) == 0 &&
-        S2EdgeUtil::GetDistance(a->vertex(io+1),
-                                b->vertex(j),
-                                b->vertex(j+1)).radians() <= max_error) {
-      pending.push_back(make_pair(i+1, j));
+    if (i < a->num_vertices() && done.count(make_pair(i + 1, j)) == 0 &&
+        S2EdgeUtil::GetDistance(a->vertex(io + 1), b->vertex(j),
+                                b->vertex(j + 1))
+                .radians() <= max_error) {
+      pending.push_back(make_pair(i + 1, j));
     }
-    if (j < b->num_vertices() && done.count(make_pair(i, j+1)) == 0 &&
-        S2EdgeUtil::GetDistance(b->vertex(j+1),
-                                a->vertex(io),
-                                a->vertex(io+1)).radians() <= max_error) {
-      pending.push_back(make_pair(i, j+1));
+    if (j < b->num_vertices() && done.count(make_pair(i, j + 1)) == 0 &&
+        S2EdgeUtil::GetDistance(b->vertex(j + 1), a->vertex(io),
+                                a->vertex(io + 1))
+                .radians() <= max_error) {
+      pending.push_back(make_pair(i, j + 1));
     }
   }
   return false;
@@ -816,9 +801,7 @@ S2Point S2Loop::Project(S2Point const& point) const {
 
   for (int v = 0; v < num_vertices(); ++v) {
     S1Angle distance_to_segment =
-        S2EdgeUtil::GetDistance(point,
-                                vertex(v),
-                                vertex(v + 1));
+        S2EdgeUtil::GetDistance(point, vertex(v), vertex(v + 1));
     if (distance_to_segment < min_distance) {
       min_distance = distance_to_segment;
       min_vertex_index = v;
@@ -826,9 +809,7 @@ S2Point S2Loop::Project(S2Point const& point) const {
   }
 
   S2Point closest_point = S2EdgeUtil::GetClosestPoint(
-      point,
-      vertex(min_vertex_index),
-      vertex(min_vertex_index + 1));
+      point, vertex(min_vertex_index), vertex(min_vertex_index + 1));
 
   return closest_point;
 }
@@ -844,11 +825,8 @@ S1Angle S2Loop::GetDistance(S2Point const& point) const {
 
   for (int v = 0; v < num_vertices(); ++v) {
     S1Angle distance_to_segment =
-        S2EdgeUtil::GetDistance(point,
-                                vertex(v),
-                                vertex(v + 1));
-    if (distance_to_segment < min_distance)
-      min_distance = distance_to_segment;
+        S2EdgeUtil::GetDistance(point, vertex(v), vertex(v + 1));
+    if (distance_to_segment < min_distance) min_distance = distance_to_segment;
   }
 
   return min_distance;

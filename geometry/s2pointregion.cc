@@ -2,15 +2,14 @@
 
 #include "s2pointregion.h"
 #include "base/logging.h"
-#include "util/coding/coder.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2latlngrect.h"
+#include "util/coding/coder.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 
-S2PointRegion::~S2PointRegion() {
-}
+S2PointRegion::~S2PointRegion() {}
 
 S2PointRegion* S2PointRegion::Clone() const {
   return new S2PointRegion(point_);
@@ -41,8 +40,8 @@ void S2PointRegion::Encode(Encoder* encoder) const {
 
 bool S2PointRegion::Decode(Decoder* decoder) {
   unsigned char version = decoder->get8();
-  if (version > kCurrentEncodingVersionNumber) return false; 
-  
+  if (version > kCurrentEncodingVersionNumber) return false;
+
   for (int i = 0; i < 3; ++i) {
     point_[i] = decoder->getdouble();
   }

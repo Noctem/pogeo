@@ -345,34 +345,22 @@ inline bool S2CellId::is_valid() const {
   return (face() < kNumFaces && (lsb() & GG_ULONGLONG(0x1555555555555555)));
 }
 
-inline int S2CellId::face() const {
-  return id_ >> kPosBits;
-}
+inline int S2CellId::face() const { return id_ >> kPosBits; }
 
-inline uint64 S2CellId::pos() const {
-  return id_ & (~uint64(0) >> kFaceBits);
-}
+inline uint64 S2CellId::pos() const { return id_ & (~uint64(0) >> kFaceBits); }
 
-inline int S2CellId::GetSizeIJ() const {
-  return GetSizeIJ(level());
-}
+inline int S2CellId::GetSizeIJ() const { return GetSizeIJ(level()); }
 
-inline double S2CellId::GetSizeST() const {
-  return GetSizeST(level());
-}
+inline double S2CellId::GetSizeST() const { return GetSizeST(level()); }
 
-inline int S2CellId::GetSizeIJ(int level) {
-  return 1 << (kMaxLevel - level);
-}
+inline int S2CellId::GetSizeIJ(int level) { return 1 << (kMaxLevel - level); }
 
 inline double S2CellId::GetSizeST(int level) {
   // Floating-point multiplication is much faster than division.
   return GetSizeIJ(level) * (1.0 / kMaxSize);
 }
 
-inline bool S2CellId::is_leaf() const {
-  return int(id_) & 1;
-}
+inline bool S2CellId::is_leaf() const { return int(id_) & 1; }
 
 inline bool S2CellId::is_face() const {
   return (id_ & (lsb_for_level(0) - 1)) == 0;
@@ -457,13 +445,9 @@ inline S2CellId S2CellId::child_end(int level) const {
   return S2CellId(id_ + lsb() + lsb_for_level(level));
 }
 
-inline S2CellId S2CellId::next() const {
-  return S2CellId(id_ + (lsb() << 1));
-}
+inline S2CellId S2CellId::next() const { return S2CellId(id_ + (lsb() << 1)); }
 
-inline S2CellId S2CellId::prev() const {
-  return S2CellId(id_ - (lsb() << 1));
-}
+inline S2CellId S2CellId::prev() const { return S2CellId(id_ - (lsb() << 1)); }
 
 inline S2CellId S2CellId::next_wrap() const {
   DCHECK(is_valid());
@@ -490,11 +474,12 @@ inline S2CellId S2CellId::End(int level) {
 ostream& operator<<(ostream& os, S2CellId const& id);
 
 namespace std {
-  template<> struct hash<S2CellId> {
-    size_t operator()(S2CellId const& id) const {
-      return static_cast<size_t>(id.id() >> 32) + static_cast<size_t>(id.id());
-    }
-  };
+template <>
+struct hash<S2CellId> {
+  size_t operator()(S2CellId const& id) const {
+    return static_cast<size_t>(id.id() >> 32) + static_cast<size_t>(id.id());
+  }
+};
 }  // namespace std
 
 #endif  // UTIL_GEOMETRY_S2CELLID_H_

@@ -12,10 +12,10 @@ using std::min;
 using std::max;
 using std::swap;
 using std::reverse;
-        // for min
-#include "util/coding/varint.h"
+// for min
 #include "base/logging.h"
 #include "base/port.h"
+#include "util/coding/varint.h"
 #include "util/endian/endian.h"
 
 /* Class for encoding data into a memory buffer */
@@ -42,8 +42,8 @@ class Encoder {
   // put no more than n bytes, stopping when c is put
   void putcn(const void* mem, int c, int n);
 
-  void puts(const void* mem);                // put a c-string including \0
-  void puts_without_null(const char* mem);   // put a c-string without \0
+  void puts(const void* mem);               // put a c-string including \0
+  void puts_without_null(const char* mem);  // put a c-string without \0
   void putfloat(float f);
   void putdouble(double d);
 
@@ -119,32 +119,32 @@ class Encoder {
 class Decoder {
  public:
   // Empty constructor to create uninitialized decoder
-  inline Decoder() { }
+  inline Decoder() {}
 
   // NOTE: for efficiency reasons, this is not virtual.  so don't add
   // any members that really need to be destructed, and be careful about
   // inheritance.
-  ~Decoder() { }
+  ~Decoder() {}
 
   // Initialize decoder to decode from "buf"
   explicit Decoder(const void* buf, int maxn);
   void reset(const void* buf, int maxn);
 
   // Decoding routines.  Note that these do not check bounds
-  unsigned char  get8();
+  unsigned char get8();
   uint16 get16();
   uint32 get32();
   uint64 get64();
   uword_t getword();
-  float  getfloat();
+  float getfloat();
   double getdouble();
-  void   getn(void* mem, int n);
-  void   getcn(void* mem, int c, int n);    // get no more than n bytes,
-                                            // stopping after c is got
-  void   gets(void* mem, int n);            // get a c-string no more than
-                                            // n bytes. always appends '\0'
-  void   skip(int n);
-  unsigned char const* ptr();       // Return ptr to current position in buffer
+  void getn(void* mem, int n);
+  void getcn(void* mem, int c, int n);  // get no more than n bytes,
+                                        // stopping after c is got
+  void gets(void* mem, int n);          // get a c-string no more than
+                                        // n bytes. always appends '\0'
+  void skip(int n);
+  unsigned char const* ptr();  // Return ptr to current position in buffer
 
   // "get_varint" actually checks bounds
   bool get_varint32(uint32* v);
@@ -190,9 +190,7 @@ inline void Encoder::reset(void* b, int maxn) {
   underlying_buffer_ = NULL;
 }
 
-inline void Encoder::clear() {
-  buf_ = orig_;
-}
+inline void Encoder::clear() { buf_ = orig_; }
 
 inline void Encoder::Ensure(int N) {
   DCHECK(ensure_allowed());
@@ -201,13 +199,9 @@ inline void Encoder::Ensure(int N) {
   }
 }
 
-inline int Encoder::length() const {
-  return (buf_ - orig_);
-}
+inline int Encoder::length() const { return (buf_ - orig_); }
 
-inline int Encoder::avail() const {
-  return (limit_ - buf_);
-}
+inline int Encoder::avail() const { return (limit_ - buf_); }
 
 inline void Encoder::putn(const void* src, int n) {
   memcpy(buf_, src, n);
@@ -215,15 +209,12 @@ inline void Encoder::putn(const void* src, int n) {
 }
 
 inline void Encoder::putcn(const void* src, int c, int n) {
-  unsigned char *old = buf_;
-  buf_ = static_cast<unsigned char *>(memccpy(buf_, src, c, n));
-  if (buf_ == NULL)
-    buf_ = old + n;
+  unsigned char* old = buf_;
+  buf_ = static_cast<unsigned char*>(memccpy(buf_, src, c, n));
+  if (buf_ == NULL) buf_ = old + n;
 }
 
-inline void Encoder::puts(const void* src) {
-  putcn(src, '\0', limit_ - buf_);
-}
+inline void Encoder::puts(const void* src) { putcn(src, '\0', limit_ - buf_); }
 
 inline void Encoder::puts_without_null(const char* mem) {
   while (*mem != '\0' && buf_ < limit_) {
@@ -232,13 +223,13 @@ inline void Encoder::puts_without_null(const char* mem) {
 }
 
 inline void Encoder::put_varint32(uint32 v) {
-  buf_ = reinterpret_cast<unsigned char*>
-         (Varint::Encode32(reinterpret_cast<char*>(buf_), v));
+  buf_ = reinterpret_cast<unsigned char*>(
+      Varint::Encode32(reinterpret_cast<char*>(buf_), v));
 }
 
 inline void Encoder::put_varint64(uint64 v) {
-  buf_ = reinterpret_cast<unsigned char*>
-         (Varint::Encode64(reinterpret_cast<char*>(buf_), v));
+  buf_ = reinterpret_cast<unsigned char*>(
+      Varint::Encode64(reinterpret_cast<char*>(buf_), v));
 }
 
 // DEPRECATED
@@ -262,13 +253,9 @@ inline void Decoder::reset(const void* b, int maxn) {
   limit_ = orig_ + maxn;
 }
 
-inline int Decoder::pos() const {
-  return (buf_ - orig_);
-}
+inline int Decoder::pos() const { return (buf_ - orig_); }
 
-inline int Decoder::avail() const {
-  return (limit_ - buf_);
-}
+inline int Decoder::avail() const { return (limit_ - buf_); }
 
 inline void Decoder::getn(void* dst, int n) {
   memcpy(dst, buf_, n);
@@ -276,29 +263,24 @@ inline void Decoder::getn(void* dst, int n) {
 }
 
 inline void Decoder::getcn(void* dst, int c, int n) {
-  void *ptr;
+  void* ptr;
   ptr = memccpy(dst, buf_, c, n);
   if (ptr == NULL)
     buf_ = buf_ + n;
   else
-    buf_ = buf_ + (reinterpret_cast<unsigned char *>(ptr) -
-                   reinterpret_cast<unsigned char *>(dst));
+    buf_ = buf_ + (reinterpret_cast<unsigned char*>(ptr) -
+                   reinterpret_cast<unsigned char*>(dst));
 }
 
 inline void Decoder::gets(void* dst, int n) {
   int len = min<int>((n - 1), (limit_ - buf_));
-  (reinterpret_cast<char *>(dst))[len] = '\0';
+  (reinterpret_cast<char*>(dst))[len] = '\0';
   getcn(dst, '\0', len);
 }
 
-inline void Decoder::skip(int n) {
-  buf_ += n;
-}
+inline void Decoder::skip(int n) { buf_ += n; }
 
-inline unsigned char const* Decoder::ptr() {
-  return buf_;
-}
-
+inline unsigned char const* Decoder::ptr() { return buf_; }
 
 // DEPRECATED
 //

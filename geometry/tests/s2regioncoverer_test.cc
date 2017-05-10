@@ -22,13 +22,10 @@ using std::string;
 #include <vector>
 using std::vector;
 
-
+#include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/logging.h"
 #include "base/strtoint.h"
-#include "strings/split.h"
-#include "strings/stringprintf.h"
-#include <gtest/gtest.h>
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2cellid.h"
@@ -36,6 +33,8 @@ using std::vector;
 #include "s2latlng.h"
 #include "s2loop.h"
 #include "s2testing.h"
+#include "strings/split.h"
+#include "strings/stringprintf.h"
 
 #define FLAGS_max_cells "4,8"
 //              "Comma-separated list of values to use for 'max_cells'");
@@ -50,8 +49,8 @@ TEST(S2RegionCoverer, RandomCells) {
   // Test random cell ids at all levels.
   for (int i = 0; i < 10000; ++i) {
     S2CellId id = S2Testing::GetRandomCellId();
-    SCOPED_TRACE(StringPrintf("Iteration %d, cell ID token %s",
-                              i, id.ToToken().c_str()));
+    SCOPED_TRACE(StringPrintf("Iteration %d, cell ID token %s", i,
+                              id.ToToken().c_str()));
     vector<S2CellId> covering;
     coverer.GetCovering(S2Cell(id), &covering);
     EXPECT_EQ(covering.size(), 1);
@@ -61,8 +60,7 @@ TEST(S2RegionCoverer, RandomCells) {
 
 static void CheckCovering(S2RegionCoverer const& coverer,
                           S2Region const& region,
-                          vector<S2CellId> const& covering,
-                          bool interior) {
+                          vector<S2CellId> const& covering, bool interior) {
   // Keep track of how many cells have the same coverer.min_level() ancestor.
   unordered_map<S2CellId, int> min_level_cells;
   for (int i = 0; i < covering.size(); ++i) {
@@ -75,7 +73,8 @@ static void CheckCovering(S2RegionCoverer const& coverer,
   if (covering.size() > coverer.max_cells()) {
     // If the covering has more than the requested number of cells, then check
     // that the cell count cannot be reduced by using the parent of some cell.
-    for (unordered_map<S2CellId, int>::const_iterator i = min_level_cells.begin();
+    for (unordered_map<S2CellId, int>::const_iterator i =
+             min_level_cells.begin();
          i != min_level_cells.end(); ++i) {
       EXPECT_EQ(i->second, 1);
     }
@@ -101,10 +100,11 @@ TEST(S2RegionCoverer, RandomCaps) {
     } while (coverer.min_level() > coverer.max_level());
     coverer.set_max_cells(S2Testing::rnd.Skewed(10));
     coverer.set_level_mod(1 + S2Testing::rnd.Uniform(3));
-    double max_area =  min(4 * M_PI, (3 * coverer.max_cells() + 1) *
-                           S2Cell::AverageArea(coverer.min_level()));
-    S2Cap cap = S2Testing::GetRandomCap(0.1 * S2Cell::AverageArea(kMaxLevel),
-                                        max_area);
+    double max_area =
+        min(4 * M_PI, (3 * coverer.max_cells() + 1) *
+                          S2Cell::AverageArea(coverer.min_level()));
+    S2Cap cap =
+        S2Testing::GetRandomCap(0.1 * S2Cell::AverageArea(kMaxLevel), max_area);
     vector<S2CellId> covering, interior;
     coverer.GetCovering(cap, &covering);
     CheckCovering(coverer, cap, covering, false);
@@ -136,9 +136,9 @@ TEST(S2RegionCoverer, SimpleCoverings) {
     int level = S2Testing::rnd.Uniform(kMaxLevel + 1);
     coverer.set_min_level(level);
     coverer.set_max_level(level);
-    double max_area =  min(4 * M_PI, 1000 * S2Cell::AverageArea(level));
-    S2Cap cap = S2Testing::GetRandomCap(0.1 * S2Cell::AverageArea(kMaxLevel),
-                                        max_area);
+    double max_area = min(4 * M_PI, 1000 * S2Cell::AverageArea(level));
+    S2Cap cap =
+        S2Testing::GetRandomCap(0.1 * S2Cell::AverageArea(kMaxLevel), max_area);
     vector<S2CellId> covering;
     S2RegionCoverer::GetSimpleCovering(cap, cap.axis(), level, &covering);
     CheckCovering(coverer, cap, covering, false);
@@ -188,8 +188,8 @@ static void TestAccuracy(int max_cells) {
     // Choose the log of the cap area to be uniformly distributed over
     // the allowable range.  Don't try to approximate regions that are so
     // small they can't use the given maximum number of cells efficiently.
-    double const min_cap_area = S2Cell::AverageArea(S2CellId::kMaxLevel)
-                                * max_cells * max_cells;
+    double const min_cap_area =
+        S2Cell::AverageArea(S2CellId::kMaxLevel) * max_cells * max_cells;
     S2Cap cap = S2Testing::GetRandomCap(min_cap_area, 4 * M_PI);
     double cap_area = cap.area();
 
@@ -232,8 +232,8 @@ static void TestAccuracy(int max_cells) {
   }
   for (int method = 0; method < kNumMethods; ++method) {
     printf("\nMax cells %d, method %d:\n", max_cells, method);
-    printf("  Average cells: %.4f\n", cell_total[method] /
-           static_cast<double>(FLAGS_iters));
+    printf("  Average cells: %.4f\n",
+           cell_total[method] / static_cast<double>(FLAGS_iters));
     printf("  Average area ratio: %.4f\n", ratio_total[method] / FLAGS_iters);
     vector<double>& mratios = ratios[method];
     sort(mratios.begin(), mratios.end());
@@ -250,11 +250,11 @@ static void TestAccuracy(int max_cells) {
     for (; !worst_caps.empty(); worst_caps.pop()) {
       WorstCap const& w = worst_caps.top();
       S2LatLng ll(w.cap.axis());
-      printf("    Ratio %.4f, Cells %d, "
-             "Center (%.8f, %.8f), Km %.6f\n",
-             w.ratio, w.num_cells,
-             ll.lat().degrees(), ll.lng().degrees(),
-             w.cap.angle().radians() * 6367.0);
+      printf(
+          "    Ratio %.4f, Cells %d, "
+          "Center (%.8f, %.8f), Km %.6f\n",
+          w.ratio, w.num_cells, ll.lat().degrees(), ll.lng().degrees(),
+          w.cap.angle().radians() * 6367.0);
     }
   }
 }
@@ -290,4 +290,3 @@ static void BM_Covering(int iters, int max_cells, int num_vertices) {
 }
 BENCHMARK(BM_Covering)->RangePair(8, 1024, 8, 1<<17);
 #endif
-

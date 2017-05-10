@@ -5,7 +5,8 @@
 #define windowBits 15
 #define GZIP_ENCODING 16
 
-bool gzip::compress(const std::string &data, std::string &compressedData, int level) {
+bool gzip::compress(const std::string &data, std::string &compressedData,
+                    int level) {
   unsigned char out[CHUNK];
   z_stream strm;
   strm.zalloc = Z_NULL;

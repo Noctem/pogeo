@@ -41,8 +41,7 @@ class S1IntervalTestBase : public testing::Test {
         mid12(M_PI_2 - 0.01, M_PI_2 + 0.02),
         mid23(M_PI - 0.01, -M_PI + 0.02),
         mid34(-M_PI_2 - 0.01, -M_PI_2 + 0.02),
-        mid41(-0.01, 0.02) {
-  }
+        mid41(-0.01, 0.02) {}
 
  protected:
   const S1Interval empty, full;
@@ -300,27 +299,43 @@ TEST_F(S1IntervalTestBase, IntervalOps) {
 }
 
 TEST_F(S1IntervalTestBase, AddPoint) {
-  S1Interval r = empty; r.AddPoint(0);
+  S1Interval r = empty;
+  r.AddPoint(0);
   EXPECT_EQ(r, zero);
-  r = empty; r.AddPoint(M_PI);
+  r = empty;
+  r.AddPoint(M_PI);
   EXPECT_EQ(r, pi);
-  r = empty; r.AddPoint(-M_PI);
+  r = empty;
+  r.AddPoint(-M_PI);
   EXPECT_EQ(r, mipi);
-  r = empty; r.AddPoint(M_PI); r.AddPoint(-M_PI);
+  r = empty;
+  r.AddPoint(M_PI);
+  r.AddPoint(-M_PI);
   EXPECT_EQ(r, pi);
-  r = empty; r.AddPoint(-M_PI); r.AddPoint(M_PI);
+  r = empty;
+  r.AddPoint(-M_PI);
+  r.AddPoint(M_PI);
   EXPECT_EQ(r, mipi);
-  r = empty; r.AddPoint(mid12.lo()); r.AddPoint(mid12.hi());
+  r = empty;
+  r.AddPoint(mid12.lo());
+  r.AddPoint(mid12.hi());
   EXPECT_EQ(r, mid12);
-  r = empty; r.AddPoint(mid23.lo()); r.AddPoint(mid23.hi());
+  r = empty;
+  r.AddPoint(mid23.lo());
+  r.AddPoint(mid23.hi());
   EXPECT_EQ(r, mid23);
-  r = quad1; r.AddPoint(-0.9*M_PI); r.AddPoint(-M_PI_2);
+  r = quad1;
+  r.AddPoint(-0.9 * M_PI);
+  r.AddPoint(-M_PI_2);
   EXPECT_EQ(r, quad123);
-  r = full; r.AddPoint(0);
+  r = full;
+  r.AddPoint(0);
   EXPECT_TRUE(r.is_full());
-  r = full; r.AddPoint(M_PI);
+  r = full;
+  r.AddPoint(M_PI);
   EXPECT_TRUE(r.is_full());
-  r = full; r.AddPoint(-M_PI);
+  r = full;
+  r.AddPoint(-M_PI);
   EXPECT_TRUE(r.is_full());
 }
 
@@ -362,8 +377,7 @@ TEST_F(S1IntervalTestBase, GetDirectedHausdorffDistance) {
 
   EXPECT_EQ(0.0, quad12.GetDirectedHausdorffDistance(quad123));
   S1Interval in(3.0, -3.0);  // an interval whose complement center is 0.
-  EXPECT_FLOAT_EQ(3.0,
-                  S1Interval(-0.1,0.2).GetDirectedHausdorffDistance(in));
+  EXPECT_FLOAT_EQ(3.0, S1Interval(-0.1, 0.2).GetDirectedHausdorffDistance(in));
   EXPECT_FLOAT_EQ(3.0 - 0.1,
                   S1Interval(0.1, 0.2).GetDirectedHausdorffDistance(in));
   EXPECT_FLOAT_EQ(3.0 - 0.1,

@@ -25,10 +25,9 @@ TEST(S2RegionUnionTest, Basic) {
   EXPECT_EQ(S2LatLngRect::Empty(), ru_empty.GetRectBound());
   unique_ptr<S2Region> empty_clone(ru_empty.Clone());
 
-  regions.push_back(new S2PointRegion(S2LatLng::FromDegrees(35, 40)
-                                      .ToPoint()));
-  regions.push_back(new S2PointRegion(S2LatLng::FromDegrees(-35, -40)
-                                      .ToPoint()));
+  regions.push_back(new S2PointRegion(S2LatLng::FromDegrees(35, 40).ToPoint()));
+  regions.push_back(
+      new S2PointRegion(S2LatLng::FromDegrees(-35, -40).ToPoint()));
 
   // Check that Clone() returns a deep copy.
   S2RegionUnion* two_points_orig = new S2RegionUnion(&regions);
@@ -37,7 +36,7 @@ TEST(S2RegionUnionTest, Basic) {
   unique_ptr<S2RegionUnion> two_points(two_points_orig->Clone());
   delete two_points_orig;
   // TODO: fix this test on Darwin
-  //EXPECT_EQ(S2LatLngRect(S2LatLng::FromDegrees(-35, -40),
+  // EXPECT_EQ(S2LatLngRect(S2LatLng::FromDegrees(-35, -40),
   //                       S2LatLng::FromDegrees(35, 40)),
   //          two_points->GetRectBound());
 
@@ -52,8 +51,7 @@ TEST(S2RegionUnionTest, Basic) {
   // Check that we can Add() another region.
   unique_ptr<S2RegionUnion> three_points(two_points->Clone());
   EXPECT_FALSE(three_points->Contains(S2LatLng::FromDegrees(10, 10).ToPoint()));
-  three_points->Add(new S2PointRegion(S2LatLng::FromDegrees(10, 10)
-                                          .ToPoint()));
+  three_points->Add(new S2PointRegion(S2LatLng::FromDegrees(10, 10).ToPoint()));
   EXPECT_TRUE(three_points->Contains(S2LatLng::FromDegrees(10, 10).ToPoint()));
 
   S2RegionCoverer coverer;

@@ -16,7 +16,6 @@ using std::make_pair;
 #include <vector>
 using std::vector;
 
-
 #include "base/logging.h"
 #include "base/macros.h"
 #include "s2cellid.h"
@@ -83,7 +82,7 @@ class S2EdgeIndex {
  public:
   S2EdgeIndex() { Reset(); }
 
-  virtual ~S2EdgeIndex() {  }
+  virtual ~S2EdgeIndex() {}
 
   // An iterator on data edges that may cross a query edge (a,b).
   // Create the iterator, call GetCandidates(), then Done()/Next()
@@ -93,7 +92,7 @@ class S2EdgeIndex {
   // From() and To().
   class Iterator {
    public:
-    explicit Iterator(S2EdgeIndex* edge_index): edge_index_(edge_index) {}
+    explicit Iterator(S2EdgeIndex* edge_index) : edge_index_(edge_index) {}
 
     // Initializes the iterator to iterate over a set of candidates that may
     // cross the edge (a,b).
@@ -185,33 +184,29 @@ class S2EdgeIndex {
   //
   // It is guaranteed that no child of a covering cell will fully contain
   // the covered edge.
-  int GetCovering(S2Point const& a, S2Point const& b,
-                  bool thicken_edge,
+  int GetCovering(S2Point const& a, S2Point const& b, bool thicken_edge,
                   vector<S2CellId>* result) const;
 
   // Adds to candidate_crossings all the edges present in any ancestor of any
   // cell of cover, down to minimum_s2_level_used.  The cell->edge map
   // is in the variable mapping.
-  static void GetEdgesInParentCells(
-    const vector<S2CellId>& cover,
-    const CellEdgeMultimap& mapping,
-    int minimum_s2_level_used,
-    vector<int>* candidate_crossings);
+  static void GetEdgesInParentCells(const vector<S2CellId>& cover,
+                                    const CellEdgeMultimap& mapping,
+                                    int minimum_s2_level_used,
+                                    vector<int>* candidate_crossings);
 
   // Returns true if the edge and the cell (including boundary) intersect.
-  static bool EdgeIntersectsCellBoundary(
-    S2Point const& a, S2Point const& b,
-    const S2Cell& cell);
+  static bool EdgeIntersectsCellBoundary(S2Point const& a, S2Point const& b,
+                                         const S2Cell& cell);
 
   // Appends to candidate_crossings the edges that are fully contained in an
   // S2 covering of edge.  The covering of edge used is initially cover, but
   // is refined to eliminate quickly subcells that contain many edges but do
   // not intersect with edge.
-  static void GetEdgesInChildrenCells(
-    S2Point const& a, S2Point const& b,
-    vector<S2CellId>* cover,
-    const CellEdgeMultimap& mapping,
-    vector<int>* candidate_crossings);
+  static void GetEdgesInChildrenCells(S2Point const& a, S2Point const& b,
+                                      vector<S2CellId>* cover,
+                                      const CellEdgeMultimap& mapping,
+                                      vector<int>* candidate_crossings);
 
   // Maps cell ids to covered edges; has the property that the set of all cell
   // ids mapping to a particular edge forms a covering of that edge.

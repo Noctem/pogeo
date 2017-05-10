@@ -6,7 +6,7 @@
 #include "s2cell.h"
 #include "s2latlngrect.h"
 
-S2RegionIntersection::S2RegionIntersection() { }
+S2RegionIntersection::S2RegionIntersection() {}
 
 S2RegionIntersection::S2RegionIntersection(vector<S2Region*>* regions) {
   Init(regions);
@@ -27,7 +27,7 @@ void S2RegionIntersection::Init(vector<S2Region*>* regions) {
 }
 
 S2RegionIntersection::S2RegionIntersection(S2RegionIntersection const* src)
-  : regions_(src->num_regions()) {
+    : regions_(src->num_regions()) {
   for (int i = 0; i < num_regions(); ++i) {
     regions_[i] = src->region(i)->Clone();
   }

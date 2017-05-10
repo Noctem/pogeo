@@ -1,9 +1,9 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
+#include "s2cap.h"
 #include "base/integral_types.h"
 #include "base/logging.h"
 #include "s2.h"
-#include "s2cap.h"
 #include "s2cell.h"
 #include "s2latlngrect.h"
 
@@ -54,8 +54,8 @@ S2Cap S2Cap::Complement() const {
 
 bool S2Cap::Contains(S2Cap const& other) const {
   if (is_full() || other.is_empty()) return true;
-  return angle().radians() >= axis_.Angle(other.axis_) +
-                              other.angle().radians();
+  return angle().radians() >=
+         axis_.Angle(other.axis_) + other.angle().radians();
 }
 
 bool S2Cap::Intersects(S2Cap const& other) const {
@@ -105,13 +105,9 @@ S2Cap S2Cap::Expanded(S1Angle const& distance) const {
   return FromAxisAngle(axis_, angle() + distance);
 }
 
-S2Cap* S2Cap::Clone() const {
-  return new S2Cap(*this);
-}
+S2Cap* S2Cap::Clone() const { return new S2Cap(*this); }
 
-S2Cap S2Cap::GetCapBound() const {
-  return *this;
-}
+S2Cap S2Cap::GetCapBound() const { return *this; }
 
 S2LatLngRect S2Cap::GetRectBound() const {
   if (is_empty()) return S2LatLngRect::Empty();
@@ -157,8 +153,7 @@ S2LatLngRect S2Cap::GetRectBound() const {
       lng[1] = remainder(axis_ll.lng().radians() + angle_A, 2 * M_PI);
     }
   }
-  return S2LatLngRect(R1Interval(lat[0], lat[1]),
-                      S1Interval(lng[0], lng[1]));
+  return S2LatLngRect(R1Interval(lat[0], lat[1]), S1Interval(lng[0], lng[1]));
 }
 
 bool S2Cap::Intersects(S2Cell const& cell, S2Point const* vertices) const {
@@ -200,7 +195,7 @@ bool S2Cap::Intersects(S2Cell const& cell, S2Point const* vertices) const {
     // the interior of the cap.  We just need to check whether the point
     // of closest approach occurs between the two edge endpoints.
     S2Point dir = edge.CrossProd(axis_);
-    if (dir.DotProd(vertices[k]) < 0 && dir.DotProd(vertices[(k+1)&3]) > 0)
+    if (dir.DotProd(vertices[k]) < 0 && dir.DotProd(vertices[(k + 1) & 3]) > 0)
       return true;
   }
   return false;
@@ -244,8 +239,7 @@ bool S2Cap::InteriorContains(S2Point const& p) const {
 
 bool S2Cap::operator==(S2Cap const& other) const {
   return (axis_ == other.axis_ && height_ == other.height_) ||
-         (is_empty() && other.is_empty()) ||
-         (is_full() && other.is_full());
+         (is_empty() && other.is_empty()) || (is_full() && other.is_full());
 }
 
 bool S2Cap::ApproxEquals(S2Cap const& other, double max_error) {

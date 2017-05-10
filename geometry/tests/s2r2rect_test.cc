@@ -5,13 +5,13 @@
 
 #include "s2r2rect.h"
 
-#include "strings/stringprintf.h"
 #include <gtest/gtest.h>
 #include "s2.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2latlngrect.h"
 #include "s2testing.h"
+#include "strings/stringprintf.h"
 
 static S2R2Rect MakeRect(double x_lo, double y_lo, double x_hi, double y_hi) {
   // Convenience method to construct a rectangle.  This method is
@@ -99,10 +99,10 @@ TEST(S2R2Rect, FromCell) {
 
 TEST(S2R2Rect, FromCenterSize) {
   // FromCenterSize()
-  EXPECT_TRUE(S2R2Rect::FromCenterSize(R2Point(0.3, 0.5), R2Point(0.2, 0.4)).
-              ApproxEquals(MakeRect(0.2, 0.3, 0.4, 0.7)));
-  EXPECT_TRUE(S2R2Rect::FromCenterSize(R2Point(1, 0.1), R2Point(0, 2)).
-              ApproxEquals(MakeRect(1, -0.9, 1, 1.1)));
+  EXPECT_TRUE(S2R2Rect::FromCenterSize(R2Point(0.3, 0.5), R2Point(0.2, 0.4))
+                  .ApproxEquals(MakeRect(0.2, 0.3, 0.4, 0.7)));
+  EXPECT_TRUE(S2R2Rect::FromCenterSize(R2Point(1, 0.1), R2Point(0, 2))
+                  .ApproxEquals(MakeRect(1, -0.9, 1, 1.1)));
 }
 
 TEST(S2R2Rect, FromPoint) {
@@ -138,9 +138,9 @@ TEST(S2R2Rect, SimplePredicates) {
   // Make sure that GetVertex() returns vertices in CCW order.
   for (int k = 0; k < 4; ++k) {
     SCOPED_TRACE(StringPrintf("k=%d", k));
-    EXPECT_TRUE(S2::SimpleCCW(S2R2Rect::ToS2Point(r1.GetVertex((k-1)&3)),
+    EXPECT_TRUE(S2::SimpleCCW(S2R2Rect::ToS2Point(r1.GetVertex((k - 1) & 3)),
                               S2R2Rect::ToS2Point(r1.GetVertex(k)),
-                              S2R2Rect::ToS2Point(r1.GetVertex((k+1)&3))));
+                              S2R2Rect::ToS2Point(r1.GetVertex((k + 1) & 3))));
   }
 }
 
@@ -165,28 +165,21 @@ TEST(S2R2Rect, IntervalOperations) {
 
   EXPECT_EQ(MakeRect(0, 0.25, 0.5, 0.75), r1);
   TestIntervalOps(r1, MakeRect(0.45, 0.1, 0.75, 0.3), "FFTT",
-                  MakeRect(0, 0.1, 0.75, 0.75),
-                  MakeRect(0.45, 0.25, 0.5, 0.3));
+                  MakeRect(0, 0.1, 0.75, 0.75), MakeRect(0.45, 0.25, 0.5, 0.3));
   TestIntervalOps(r1, MakeRect(0.5, 0.1, 0.7, 0.3), "FFTF",
-                  MakeRect(0, 0.1, 0.7, 0.75),
-                  MakeRect(0.5, 0.25, 0.5, 0.3));
+                  MakeRect(0, 0.1, 0.7, 0.75), MakeRect(0.5, 0.25, 0.5, 0.3));
   TestIntervalOps(r1, MakeRect(0.45, 0.1, 0.7, 0.25), "FFTF",
-                  MakeRect(0, 0.1, 0.7, 0.75),
-                  MakeRect(0.45, 0.25, 0.5, 0.25));
+                  MakeRect(0, 0.1, 0.7, 0.75), MakeRect(0.45, 0.25, 0.5, 0.25));
 
-  TestIntervalOps(MakeRect(0.1, 0.2, 0.1, 0.3),
-                  MakeRect(0.15, 0.7, 0.2, 0.8), "FFFF",
-                  MakeRect(0.1, 0.2, 0.2, 0.8),
-                  empty);
+  TestIntervalOps(MakeRect(0.1, 0.2, 0.1, 0.3), MakeRect(0.15, 0.7, 0.2, 0.8),
+                  "FFFF", MakeRect(0.1, 0.2, 0.2, 0.8), empty);
 
   // Check that the intersection of two rectangles that overlap in x but not y
   // is valid, and vice versa.
-  TestIntervalOps(MakeRect(0.1, 0.2, 0.4, 0.5),
-                  MakeRect(0, 0, 0.2, 0.1), "FFFF",
-                  MakeRect(0, 0, 0.4, 0.5), empty);
-  TestIntervalOps(MakeRect(0, 0, 0.1, 0.3),
-                  MakeRect(0.2, 0.1, 0.3, 0.4), "FFFF",
-                  MakeRect(0, 0, 0.3, 0.4), empty);
+  TestIntervalOps(MakeRect(0.1, 0.2, 0.4, 0.5), MakeRect(0, 0, 0.2, 0.1),
+                  "FFFF", MakeRect(0, 0, 0.4, 0.5), empty);
+  TestIntervalOps(MakeRect(0, 0, 0.1, 0.3), MakeRect(0.2, 0.1, 0.3, 0.4),
+                  "FFFF", MakeRect(0, 0, 0.3, 0.4), empty);
 }
 
 TEST(S2R2Rect, AddPoint) {
@@ -205,8 +198,9 @@ TEST(S2R2Rect, AddPoint) {
 
 TEST(S2R2Rect, Expanded) {
   // Expanded()
-  EXPECT_TRUE(MakeRect(0.2, 0.4, 0.3, 0.7).Expanded(R2Point(0.1, 0.3)).
-              ApproxEquals(MakeRect(0.1, 0.1, 0.4, 1.0)));
+  EXPECT_TRUE(MakeRect(0.2, 0.4, 0.3, 0.7)
+                  .Expanded(R2Point(0.1, 0.3))
+                  .ApproxEquals(MakeRect(0.1, 0.1, 0.4, 1.0)));
   EXPECT_TRUE(S2R2Rect::Empty().Expanded(R2Point(0.1, 0.3)).is_empty());
 }
 

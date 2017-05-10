@@ -16,20 +16,24 @@
 //
 // The expression below rounds up (43 + sizeof(void*)) to the nearest
 // multiple of sizeof(void*).
-static_assert(sizeof(S2Cell) <= ((43+2*sizeof(void*)-1) & -sizeof(void*)),
+static_assert(sizeof(S2Cell) <= ((43 + 2 * sizeof(void*) - 1) & -sizeof(void*)),
               "S2Cell_is_getting_bloated");
 
 S2Point S2Cell::GetVertexRaw(int k) const {
   // Vertices are returned in the order SW, SE, NE, NW.
-  return S2::FaceUVtoXYZ(face_, uv_[0][(k>>1) ^ (k&1)], uv_[1][k>>1]);
+  return S2::FaceUVtoXYZ(face_, uv_[0][(k >> 1) ^ (k & 1)], uv_[1][k >> 1]);
 }
 
 S2Point S2Cell::GetEdgeRaw(int k) const {
   switch (k) {
-    case 0:  return S2::GetVNorm(face_, uv_[1][0]);   // South
-    case 1:  return S2::GetUNorm(face_, uv_[0][1]);   // East
-    case 2:  return -S2::GetVNorm(face_, uv_[1][1]);  // North
-    default: return -S2::GetUNorm(face_, uv_[0][0]);  // West
+    case 0:
+      return S2::GetVNorm(face_, uv_[1][0]);  // South
+    case 1:
+      return S2::GetUNorm(face_, uv_[0][1]);  // East
+    case 2:
+      return -S2::GetVNorm(face_, uv_[1][1]);  // North
+    default:
+      return -S2::GetUNorm(face_, uv_[0][0]);  // West
   }
 }
 
@@ -60,7 +64,7 @@ bool S2Cell::Subdivide(S2Cell children[4]) const {
   // Create four children with the appropriate bounds.
   S2CellId id = id_.child_begin();
   for (int pos = 0; pos < 4; ++pos, id = id.next()) {
-    S2Cell *child = &children[pos];
+    S2Cell* child = &children[pos];
     child->face_ = face_;
     child->level_ = level_ + 1;
     child->orientation_ = orientation_ ^ S2::kPosToOrientation[pos];
@@ -72,20 +76,16 @@ bool S2Cell::Subdivide(S2Cell children[4]) const {
     int i = ij >> 1;
     int j = ij & 1;
     child->uv_[0][i] = uv_[0][i];
-    child->uv_[0][1-i] = uv_mid[0];
+    child->uv_[0][1 - i] = uv_mid[0];
     child->uv_[1][j] = uv_[1][j];
-    child->uv_[1][1-j] = uv_mid[1];
+    child->uv_[1][1 - j] = uv_mid[1];
   }
   return true;
 }
 
-S2Point S2Cell::GetCenterRaw() const {
-  return id_.ToPointRaw();
-}
+S2Point S2Cell::GetCenterRaw() const { return id_.ToPointRaw(); }
 
-double S2Cell::AverageArea(int level) {
-  return S2::kAvgArea.GetValue(level);
-}
+double S2Cell::AverageArea(int level) { return S2::kAvgArea.GetValue(level); }
 
 double S2Cell::ApproxArea() const {
   // All cells at the first two levels have the same area.
@@ -94,8 +94,9 @@ double S2Cell::ApproxArea() const {
   // First, compute the approximate area of the cell when projected
   // perpendicular to its normal.  The cross product of its diagonals gives
   // the normal, and the length of the normal is twice the projected area.
-  double flat_area = 0.5 * (GetVertex(2) - GetVertex(0)).
-                     CrossProd(GetVertex(3) - GetVertex(1)).Norm();
+  double flat_area = 0.5 * (GetVertex(2) - GetVertex(0))
+                               .CrossProd(GetVertex(3) - GetVertex(1))
+                               .Norm();
 
   // Now, compensate for the curvature of the cell surface by pretending
   // that the cell is shaped like a spherical cap.  The ratio of the
@@ -114,9 +115,7 @@ double S2Cell::ExactArea() const {
   return S2::Area(v0, v1, v2) + S2::Area(v0, v2, v3);
 }
 
-S2Cell* S2Cell::Clone() const {
-  return new S2Cell(*this);
-}
+S2Cell* S2Cell::Clone() const { return new S2Cell(*this); }
 
 S2Cap S2Cell::GetCapBound() const {
   // Use the cell center in (u,v)-space as the cap axis.  This vector is
@@ -130,7 +129,8 @@ S2Cap S2Cell::GetCapBound() const {
 
   double u = 0.5 * (uv_[0][0] + uv_[0][1]);
   double v = 0.5 * (uv_[1][0] + uv_[1][1]);
-  S2Cap cap = S2Cap::FromAxisHeight(S2::FaceUVtoXYZ(face_,u,v).Normalize(), 0);
+  S2Cap cap =
+      S2Cap::FromAxisHeight(S2::FaceUVtoXYZ(face_, u, v).Normalize(), 0);
   for (int k = 0; k < 4; ++k) {
     cap.AddPoint(GetVertex(k));
   }
@@ -170,37 +170,43 @@ S2LatLngRect S2Cell::GetRectBound() const {
     // maximum result magnitude is Pi, with a floating-point exponent of 1.
     // Therefore adding or subtracting 2**-51 will always change the result.
     static double const kMaxError = 1.0 / (int64(1) << 51);
-    R1Interval lat = R1Interval::FromPointPair(GetLatitude(i, j),
-                                               GetLatitude(1-i, 1-j));
+    R1Interval lat =
+        R1Interval::FromPointPair(GetLatitude(i, j), GetLatitude(1 - i, 1 - j));
     lat = lat.Expanded(kMaxError).Intersection(S2LatLngRect::FullLat());
     if (lat.lo() == -M_PI_2 || lat.hi() == M_PI_2) {
       return S2LatLngRect(lat, S1Interval::Full());
     }
-    S1Interval lng = S1Interval::FromPointPair(GetLongitude(i, 1-j),
-                                               GetLongitude(1-i, j));
+    S1Interval lng = S1Interval::FromPointPair(GetLongitude(i, 1 - j),
+                                               GetLongitude(1 - i, j));
     return S2LatLngRect(lat, lng.Expanded(kMaxError));
   }
 
   // The 4 cells around the equator extend to +/-45 degrees latitude at the
   // midpoints of their top and bottom edges.  The two cells covering the
   // poles extend down to +/-35.26 degrees at their vertices.
-  static double const kPoleMinLat = asin(sqrt(1./3));  // 35.26 degrees
+  static double const kPoleMinLat = asin(sqrt(1. / 3));  // 35.26 degrees
 
   // The face centers are the +X, +Y, +Z, -X, -Y, -Z axes in that order.
   DCHECK_EQ(((face_ < 3) ? 1 : -1), S2::GetNorm(face_)[face_ % 3]);
   switch (face_) {
-    case 0:  return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
-                                 S1Interval(-M_PI_4, M_PI_4));
-    case 1:  return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
-                                 S1Interval(M_PI_4, 3*M_PI_4));
-    case 2:  return S2LatLngRect(R1Interval(kPoleMinLat, M_PI_2),
-                                 S1Interval(-M_PI, M_PI));
-    case 3:  return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
-                                 S1Interval(3*M_PI_4, -3*M_PI_4));
-    case 4:  return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
-                                 S1Interval(-3*M_PI_4, -M_PI_4));
-    default: return S2LatLngRect(R1Interval(-M_PI_2, -kPoleMinLat),
-                                 S1Interval(-M_PI, M_PI));
+    case 0:
+      return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
+                          S1Interval(-M_PI_4, M_PI_4));
+    case 1:
+      return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
+                          S1Interval(M_PI_4, 3 * M_PI_4));
+    case 2:
+      return S2LatLngRect(R1Interval(kPoleMinLat, M_PI_2),
+                          S1Interval(-M_PI, M_PI));
+    case 3:
+      return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
+                          S1Interval(3 * M_PI_4, -3 * M_PI_4));
+    case 4:
+      return S2LatLngRect(R1Interval(-M_PI_4, M_PI_4),
+                          S1Interval(-3 * M_PI_4, -M_PI_4));
+    default:
+      return S2LatLngRect(R1Interval(-M_PI_2, -kPoleMinLat),
+                          S1Interval(-M_PI, M_PI));
   }
 }
 
@@ -218,6 +224,5 @@ bool S2Cell::Contains(S2Point const& p) const {
   // true for both adjacent cells.
   double u, v;
   if (!S2::FaceXYZtoUV(face_, p, &u, &v)) return false;
-  return (u >= uv_[0][0] && u <= uv_[0][1] &&
-          v >= uv_[1][0] && v <= uv_[1][1]);
+  return (u >= uv_[0][0] && u <= uv_[0][1] && v >= uv_[1][0] && v <= uv_[1][1]);
 }

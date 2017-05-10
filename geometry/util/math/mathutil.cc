@@ -8,10 +8,7 @@ using std::vector;
 #include "base/logging.h"
 
 MathUtil::QuadraticRootType MathUtil::DegenerateQuadraticRoots(
-    long double b,
-    long double c,
-    long double *r1,
-    long double *r2) {
+    long double b, long double c, long double *r1, long double *r2) {
   // This degenerate quadratic is really a linear equation b * x = -c.
   if (b == 0.0) {
     // The equation is constant, c == 0.
@@ -31,23 +28,21 @@ MathUtil::QuadraticRootType MathUtil::DegenerateQuadraticRoots(
   return kTwoRealRoots;
 }
 
-bool MathUtil::RealRootsForCubic(long double const a,
-                                 long double const b,
-                                 long double const c,
-                                 long double *const r1,
-                                 long double *const r2,
-                                 long double *const r3) {
+bool MathUtil::RealRootsForCubic(long double const a, long double const b,
+                                 long double const c, long double *const r1,
+                                 long double *const r2, long double *const r3) {
   // According to Numerical Recipes (pp. 184-5), what
   // follows is an arrangement of computations to
   // compute the roots of a cubic that minimizes
   // roundoff error (as pointed out by A.J. Glassman).
 
-  long double const a_squared = a*a, a_third = a/3.0, b_tripled = 3.0*b;
+  long double const a_squared = a * a, a_third = a / 3.0, b_tripled = 3.0 * b;
   long double const Q = (a_squared - b_tripled) / 9.0;
-  long double const R = (2.0*a_squared*a - 3.0*a*b_tripled + 27.0*c) / 54.0;
+  long double const R =
+      (2.0 * a_squared * a - 3.0 * a * b_tripled + 27.0 * c) / 54.0;
 
-  long double const R_squared = R*R;
-  long double const Q_cubed = Q*Q*Q;
+  long double const R_squared = R * R;
+  long double const Q_cubed = Q * Q * Q;
   long double const root_Q = sqrt(Q);
 
   if (R_squared < Q_cubed) {
@@ -63,7 +58,7 @@ bool MathUtil::RealRootsForCubic(long double const a,
   }
 
   long double const A =
-    -sgn(R) * pow(abs(R) + sqrt(R_squared - Q_cubed), 1.0/3.0L);
+      -sgn(R) * pow(abs(R) + sqrt(R_squared - Q_cubed), 1.0 / 3.0L);
 
   if (A != 0.0) {  // in which case, B from NR is zero
     *r1 = A + Q / A - a_third;
@@ -76,8 +71,8 @@ bool MathUtil::RealRootsForCubic(long double const a,
 
 // Returns the greatest common divisor of two unsigned integers x and y,
 // and assigns a, and b such that a*x + b*y = gcd(x, y).
-unsigned int MathUtil::ExtendedGCD(unsigned int x, unsigned int y,
-                                   int* a, int* b) {
+unsigned int MathUtil::ExtendedGCD(unsigned int x, unsigned int y, int *a,
+                                   int *b) {
   *a = 1;
   *b = 0;
   int c = 0;
@@ -102,9 +97,8 @@ unsigned int MathUtil::ExtendedGCD(unsigned int x, unsigned int y,
   return x;
 }
 
-
-void MathUtil::ShardsToRead(const vector<bool>& shards_to_write,
-                            vector<bool>* shards_to_read) {
+void MathUtil::ShardsToRead(const vector<bool> &shards_to_write,
+                            vector<bool> *shards_to_read) {
   const int N = shards_to_read->size();
   const int M = shards_to_write.size();
   CHECK(N > 0 || M == 0) << ": have shards to write but not to read";
@@ -138,14 +132,10 @@ double MathUtil::Harmonic(int64 const n, double *const e) {
   //        + 1/(2n) - 1/(12n^2) + 1/(120n^4) - error,
   //   with 0 < error < 1/(256*n^4).
 
-  double const
-    d = static_cast<double>(n),
-    d2 = d * d,
-    d4 = d2 * d2;
+  double const d = static_cast<double>(n), d2 = d * d, d4 = d2 * d2;
 
   return (log(d) + 0.5772156649)  // ln + Gamma constant
-    + 1 / (2 * d) - 1 / (12 * d2) + 1 / (120 * d4)
-    - (*e = 1 / (256 * d4));
+         + 1 / (2 * d) - 1 / (12 * d2) + 1 / (120 * d4) - (*e = 1 / (256 * d4));
 }
 
 // The formula is extracted from the following page
@@ -153,11 +143,8 @@ double MathUtil::Harmonic(int64 const n, double *const e) {
 double MathUtil::Stirling(double n) {
   static const double kLog2Pi = log(2 * M_PI);
   const double logN = log(n);
-  return (n * logN
-          - n
-          + 0.5 * (kLog2Pi + logN)      // 0.5 * log(2 * M_PI * n)
-          + 1 / (12 * n)
-          - 1 / (360 * n * n * n));
+  return (n * logN - n + 0.5 * (kLog2Pi + logN)  // 0.5 * log(2 * M_PI * n)
+          + 1 / (12 * n) - 1 / (360 * n * n * n));
 }
 
 double MathUtil::LogCombinations(int n, int k) {

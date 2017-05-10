@@ -29,8 +29,8 @@ using std::make_pair;
 #include <vector>
 using std::vector;
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 // for strcasecmp (check SuSv3 -- this is the only header it's in!)
 // MSVC doesn't have <strings.h>. Luckily, it defines equivalent
@@ -38,19 +38,19 @@ using std::vector;
 #ifndef _WIN32
 #include <strings.h>
 #endif
-#include <ctype.h>      // not needed, but removing it will break the build
+#include <ctype.h>  // not needed, but removing it will break the build
 
 // A buffer size which is large enough for all the FastToBuffer functions, as
 // well as DoubleToBuffer and FloatToBuffer.  We define this here in case other
 // string headers depend on it.
-static const int kFastToBufferSize =       32;
+static const int kFastToBufferSize = 32;
 
 #include "base/basictypes.h"
-#include "base/logging.h"  // for CHECK
-#include "base/strtoint.h"
 #include "base/int128.h"
-#include "stringprintf.h"
+#include "base/logging.h"  // for CHECK
 #include "base/port.h"
+#include "base/strtoint.h"
+#include "stringprintf.h"
 
 // ----------------------------------------------------------------------
 // FloatToString()
@@ -123,20 +123,20 @@ char* FastHex32ToBuffer(uint32 i, char* buffer);
 
 // at least 22 bytes long
 inline char* FastIntToBuffer(int i, char* buffer) {
-  return (sizeof(i) == 4 ?
-          FastInt32ToBuffer(i, buffer) : FastInt64ToBuffer(i, buffer));
+  return (sizeof(i) == 4 ? FastInt32ToBuffer(i, buffer)
+                         : FastInt64ToBuffer(i, buffer));
 }
 inline char* FastUIntToBuffer(unsigned int i, char* buffer) {
-  return (sizeof(i) == 4 ?
-          FastUInt32ToBuffer(i, buffer) : FastUInt64ToBuffer(i, buffer));
+  return (sizeof(i) == 4 ? FastUInt32ToBuffer(i, buffer)
+                         : FastUInt64ToBuffer(i, buffer));
 }
 inline char* FastLongToBuffer(long i, char* buffer) {
-  return (sizeof(i) == 4 ?
-          FastInt32ToBuffer(i, buffer) : FastInt64ToBuffer(i, buffer));
+  return (sizeof(i) == 4 ? FastInt32ToBuffer(i, buffer)
+                         : FastInt64ToBuffer(i, buffer));
 }
 inline char* FastULongToBuffer(unsigned long i, char* buffer) {
-  return (sizeof(i) == 4 ?
-          FastUInt32ToBuffer(i, buffer) : FastUInt64ToBuffer(i, buffer));
+  return (sizeof(i) == 4 ? FastUInt32ToBuffer(i, buffer)
+                         : FastUInt64ToBuffer(i, buffer));
 }
 
 // A generic "number type" to buffer template and specializations.
@@ -144,17 +144,22 @@ inline char* FastULongToBuffer(unsigned long i, char* buffer) {
 // The specialization of FastNumToBuffer<>() should always be made explicit:
 //    FastNumToBuffer<int32>(mynums);  // yes
 //    FastNumToBuffer(mynums);         // no
-template<typename T> char* FastNumToBuffer(T, char*);
-template<> inline char* FastNumToBuffer<int32>(int32 i, char* buffer) {
+template <typename T>
+char* FastNumToBuffer(T, char*);
+template <>
+inline char* FastNumToBuffer<int32>(int32 i, char* buffer) {
   return FastInt32ToBuffer(i, buffer);
 }
-template<> inline char* FastNumToBuffer<int64>(int64 i, char* buffer) {
+template <>
+inline char* FastNumToBuffer<int64>(int64 i, char* buffer) {
   return FastInt64ToBuffer(i, buffer);
 }
-template<> inline char* FastNumToBuffer<uint32>(uint32 i, char* buffer) {
+template <>
+inline char* FastNumToBuffer<uint32>(uint32 i, char* buffer) {
   return FastUInt32ToBuffer(i, buffer);
 }
-template<> inline char* FastNumToBuffer<uint64>(uint64 i, char* buffer) {
+template <>
+inline char* FastNumToBuffer<uint64>(uint64 i, char* buffer) {
   return FastUInt64ToBuffer(i, buffer);
 }
 
@@ -175,9 +180,9 @@ template<> inline char* FastNumToBuffer<uint64>(uint64 i, char* buffer) {
 // ----------------------------------------------------------------------
 
 char* FastInt32ToBufferLeft(int32 i, char* buffer);    // at least 12 bytes
-char* FastUInt32ToBufferLeft(uint32 i, char* buffer);    // at least 12 bytes
+char* FastUInt32ToBufferLeft(uint32 i, char* buffer);  // at least 12 bytes
 char* FastInt64ToBufferLeft(int64 i, char* buffer);    // at least 22 bytes
-char* FastUInt64ToBufferLeft(uint64 i, char* buffer);    // at least 22 bytes
+char* FastUInt64ToBufferLeft(uint64 i, char* buffer);  // at least 22 bytes
 
 // Just define these in terms of the above.
 inline char* FastUInt32ToBuffer(uint32 i, char* buffer) {
@@ -288,6 +293,6 @@ inline uint64 ParseLeadingUDec64Value(const string& str, uint64 deflt) {
 //    otherwise.
 // -------------------------------------------------------------------------
 bool DictionaryParse(const string& encoded_str,
-                      vector<pair<string, string> >* items);
+                     vector<pair<string, string> >* items);
 
-#endif   /* #ifndef STRINGS_STRUTIL_H_ */
+#endif /* #ifndef STRINGS_STRUTIL_H_ */

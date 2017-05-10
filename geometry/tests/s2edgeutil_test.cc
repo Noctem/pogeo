@@ -14,10 +14,9 @@ using std::string;
 #include <vector>
 using std::vector;
 
-
+#include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include <gtest/gtest.h>
 #include "s2cap.h"
 #include "s2polyline.h"
 #include "s2testing.h"
@@ -35,8 +34,8 @@ void CompareResult(int actual, int expected) {
   }
 }
 
-void TestCrossing(S2Point a, S2Point b, S2Point c, S2Point d,
-                  int robust, bool edge_or_vertex, bool simple) {
+void TestCrossing(S2Point a, S2Point b, S2Point c, S2Point d, int robust,
+                  bool edge_or_vertex, bool simple) {
   a = a.Normalize();
   b = b.Normalize();
   c = c.Normalize();
@@ -54,8 +53,8 @@ void TestCrossing(S2Point a, S2Point b, S2Point c, S2Point d,
   EXPECT_EQ(edge_or_vertex, crosser.EdgeOrVertexCrossing(&c));
 }
 
-void TestCrossings(S2Point a, S2Point b, S2Point c, S2Point d,
-                   int robust, bool edge_or_vertex, bool simple) {
+void TestCrossings(S2Point a, S2Point b, S2Point c, S2Point d, int robust,
+                   bool edge_or_vertex, bool simple) {
   TestCrossing(a, b, c, d, robust, edge_or_vertex, simple);
   TestCrossing(b, a, c, d, robust, edge_or_vertex, simple);
   TestCrossing(a, b, d, c, robust, edge_or_vertex, simple);
@@ -71,29 +70,29 @@ TEST(S2EdgeUtil, Crossings) {
   // but we do a few simple tests here.
 
   // Two regular edges that cross.
-  TestCrossings(S2Point(1, 2, 1), S2Point(1, -3, 0.5),
-                S2Point(1, -0.5, -3), S2Point(0.1, 0.5, 3), 1, true, true);
+  TestCrossings(S2Point(1, 2, 1), S2Point(1, -3, 0.5), S2Point(1, -0.5, -3),
+                S2Point(0.1, 0.5, 3), 1, true, true);
 
   // Two regular edges that cross antipodal points.
-  TestCrossings(S2Point(1, 2, 1), S2Point(1, -3, 0.5),
-                S2Point(-1, 0.5, 3), S2Point(-0.1, -0.5, -3), -1, false, true);
+  TestCrossings(S2Point(1, 2, 1), S2Point(1, -3, 0.5), S2Point(-1, 0.5, 3),
+                S2Point(-0.1, -0.5, -3), -1, false, true);
 
   // Two edges on the same great circle.
-  TestCrossings(S2Point(0, 0, -1), S2Point(0, 1, 0),
-                S2Point(0, 1, 1), S2Point(0, 0, 1), -1, false, true);
+  TestCrossings(S2Point(0, 0, -1), S2Point(0, 1, 0), S2Point(0, 1, 1),
+                S2Point(0, 0, 1), -1, false, true);
 
   // Two edges that cross where one vertex is S2::Origin().
-  TestCrossings(S2Point(1, 0, 0), S2::Origin(),
-                S2Point(1, -0.1, 1), S2Point(1, 1, -0.1), 1, true, true);
+  TestCrossings(S2Point(1, 0, 0), S2::Origin(), S2Point(1, -0.1, 1),
+                S2Point(1, 1, -0.1), 1, true, true);
 
   // Two edges that cross antipodal points where one vertex is S2::Origin().
-  TestCrossings(S2Point(1, 0, 0), S2Point(0, 1, 0),
-                S2Point(0, 0, -1), S2Point(-1, -1, 1), -1, false, true);
+  TestCrossings(S2Point(1, 0, 0), S2Point(0, 1, 0), S2Point(0, 0, -1),
+                S2Point(-1, -1, 1), -1, false, true);
 
   // Two edges that share an endpoint.  The Ortho() direction is (-4,0,2),
   // and edge CD is further CCW around (2,3,4) than AB.
-  TestCrossings(S2Point(2, 3, 4), S2Point(-1, 2, 5),
-                S2Point(7, -2, 3), S2Point(2, 3, 4), 0, false, true);
+  TestCrossings(S2Point(2, 3, 4), S2Point(-1, 2, 5), S2Point(7, -2, 3),
+                S2Point(2, 3, 4), 0, false, true);
 
   // Two edges that barely cross each other near the middle of one edge.  The
   // edge AB is approximately in the x=y plane, while CD is approximately
@@ -108,24 +107,22 @@ TEST(S2EdgeUtil, Crossings) {
   // Two edges that barely cross each other near the end of both edges.  This
   // example cannot be handled using regular double-precision arithmetic due
   // to floating-point underflow.
-  TestCrossings(S2Point(0, 0, 1), S2Point(2, -1e-323, 1),
-                S2Point(1, -1, 1), S2Point(1e-323, 0, 1), 1, true, false);
+  TestCrossings(S2Point(0, 0, 1), S2Point(2, -1e-323, 1), S2Point(1, -1, 1),
+                S2Point(1e-323, 0, 1), 1, true, false);
 
   // In this version, the edges are separated by a distance of about 1e-640.
-  TestCrossings(S2Point(0, 0, 1), S2Point(2, 1e-323, 1),
-                S2Point(1, -1, 1), S2Point(1e-323, 0, 1), -1, false, false);
+  TestCrossings(S2Point(0, 0, 1), S2Point(2, 1e-323, 1), S2Point(1, -1, 1),
+                S2Point(1e-323, 0, 1), -1, false, false);
 
   // Two edges that barely cross each other near the middle of one edge.
   // Computing the exact determinant of some of the triangles in this test
   // requires more than 2000 bits of precision.
   TestCrossings(S2Point(1, -1e-323, -1e-323), S2Point(1e-323, 1, 1e-323),
-                S2Point(1, -1, 1e-323), S2Point(1, 1, 0),
-                1, true, false);
+                S2Point(1, -1, 1e-323), S2Point(1, 1, 0), 1, true, false);
 
   // In this version, the edges are separated by a distance of about 1e-640.
   TestCrossings(S2Point(1, 1e-323, -1e-323), S2Point(-1e-323, 1, 1e-323),
-                S2Point(1, -1, 1e-323), S2Point(1, 1, 0),
-                -1, false, false);
+                S2Point(1, -1, 1e-323), S2Point(1, 1, 0), -1, false, false);
 }
 
 // This isn't available in googletest
@@ -172,8 +169,8 @@ void BM_RobustCrossing(int iters) {
 BENCHMARK(BM_RobustCrossing);
 
 #endif
-S2LatLngRect GetEdgeBound(double x1, double y1, double z1,
-                          double x2, double y2, double z2) {
+S2LatLngRect GetEdgeBound(double x1, double y1, double z1, double x2, double y2,
+                          double z2) {
   S2EdgeUtil::RectBounder bounder;
   S2Point p1 = S2Point(x1, y1, z1).Normalize();
   S2Point p2 = S2Point(x2, y2, z2).Normalize();
@@ -185,24 +182,26 @@ S2LatLngRect GetEdgeBound(double x1, double y1, double z1,
 TEST(S2EdgeUtil, RectBounder) {
   // Check cases where min/max latitude is not at a vertex.
   EXPECT_DOUBLE_EQ(M_PI_4,
-                   GetEdgeBound(1,1,1, 1,-1,1).lat().hi());     // Max, CW
+                   GetEdgeBound(1, 1, 1, 1, -1, 1).lat().hi());  // Max, CW
   EXPECT_DOUBLE_EQ(M_PI_4,
-                   GetEdgeBound(1,-1,1, 1,1,1).lat().hi());     // Max, CCW
+                   GetEdgeBound(1, -1, 1, 1, 1, 1).lat().hi());  // Max, CCW
   EXPECT_DOUBLE_EQ(-M_PI_4,
-                   GetEdgeBound(1,-1,-1, -1,-1,-1).lat().lo()); // Min, CW
+                   GetEdgeBound(1, -1, -1, -1, -1, -1).lat().lo());  // Min, CW
   EXPECT_DOUBLE_EQ(-M_PI_4,
-                   GetEdgeBound(-1,1,-1, -1,-1,-1).lat().lo()); // Min, CCW
+                   GetEdgeBound(-1, 1, -1, -1, -1, -1).lat().lo());  // Min, CCW
 
   // Check cases where the edge passes through one of the poles.
-  EXPECT_DOUBLE_EQ(M_PI_2, GetEdgeBound(.3,.4,1, -.3,-.4,1).lat().hi());
-  EXPECT_DOUBLE_EQ(-M_PI_2, GetEdgeBound(.3,.4,-1, -.3,-.4,-1).lat().lo());
+  EXPECT_DOUBLE_EQ(M_PI_2, GetEdgeBound(.3, .4, 1, -.3, -.4, 1).lat().hi());
+  EXPECT_DOUBLE_EQ(-M_PI_2, GetEdgeBound(.3, .4, -1, -.3, -.4, -1).lat().lo());
 
   // Check cases where the min/max latitude is attained at a vertex.
-  static double const kCubeLat = asin(sqrt(1./3));  // 35.26 degrees
-  EXPECT_TRUE(GetEdgeBound(1,1,1, 1,-1,-1).lat().
-              ApproxEquals(R1Interval(-kCubeLat, kCubeLat)));
-  EXPECT_TRUE(GetEdgeBound(1,-1,1, 1,1,-1).lat().
-              ApproxEquals(R1Interval(-kCubeLat, kCubeLat)));
+  static double const kCubeLat = asin(sqrt(1. / 3));  // 35.26 degrees
+  EXPECT_TRUE(GetEdgeBound(1, 1, 1, 1, -1, -1)
+                  .lat()
+                  .ApproxEquals(R1Interval(-kCubeLat, kCubeLat)));
+  EXPECT_TRUE(GetEdgeBound(1, -1, 1, 1, 1, -1)
+                  .lat()
+                  .ApproxEquals(R1Interval(-kCubeLat, kCubeLat)));
 }
 
 TEST(S2EdgeUtil, LongitudePruner) {
@@ -244,58 +243,58 @@ TEST(S2EdgeUtil, Wedges) {
 
   // Intersection in one wedge.
   TestWedge(S2Point(-1, 0, 10), S2Point(0, 0, 1), S2Point(1, 2, 10),
-            S2Point(0, 1, 10), S2Point(1, -2, 10),
-            false, true, S2EdgeUtil::WEDGE_PROPERLY_OVERLAPS);
+            S2Point(0, 1, 10), S2Point(1, -2, 10), false, true,
+            S2EdgeUtil::WEDGE_PROPERLY_OVERLAPS);
   // Intersection in two wedges.
   TestWedge(S2Point(-1, -1, 10), S2Point(0, 0, 1), S2Point(1, -1, 10),
-            S2Point(1, 0, 10), S2Point(-1, 1, 10),
-            false, true, S2EdgeUtil::WEDGE_PROPERLY_OVERLAPS);
+            S2Point(1, 0, 10), S2Point(-1, 1, 10), false, true,
+            S2EdgeUtil::WEDGE_PROPERLY_OVERLAPS);
 
   // Normal containment.
   TestWedge(S2Point(-1, -1, 10), S2Point(0, 0, 1), S2Point(1, -1, 10),
-            S2Point(-1, 0, 10), S2Point(1, 0, 10),
-            true, true, S2EdgeUtil::WEDGE_PROPERLY_CONTAINS);
+            S2Point(-1, 0, 10), S2Point(1, 0, 10), true, true,
+            S2EdgeUtil::WEDGE_PROPERLY_CONTAINS);
   // Containment with equality on one side.
   TestWedge(S2Point(2, 1, 10), S2Point(0, 0, 1), S2Point(-1, -1, 10),
-            S2Point(2, 1, 10), S2Point(1, -5, 10),
-            true, true, S2EdgeUtil::WEDGE_PROPERLY_CONTAINS);
+            S2Point(2, 1, 10), S2Point(1, -5, 10), true, true,
+            S2EdgeUtil::WEDGE_PROPERLY_CONTAINS);
   // Containment with equality on the other side.
   TestWedge(S2Point(2, 1, 10), S2Point(0, 0, 1), S2Point(-1, -1, 10),
-            S2Point(1, -2, 10), S2Point(-1, -1, 10),
-            true, true, S2EdgeUtil::WEDGE_PROPERLY_CONTAINS);
+            S2Point(1, -2, 10), S2Point(-1, -1, 10), true, true,
+            S2EdgeUtil::WEDGE_PROPERLY_CONTAINS);
 
   // Containment with equality on both sides.
   TestWedge(S2Point(-2, 3, 10), S2Point(0, 0, 1), S2Point(4, -5, 10),
-            S2Point(-2, 3, 10), S2Point(4, -5, 10),
-            true, true, S2EdgeUtil::WEDGE_EQUALS);
+            S2Point(-2, 3, 10), S2Point(4, -5, 10), true, true,
+            S2EdgeUtil::WEDGE_EQUALS);
 
   // Disjoint with equality on one side.
   TestWedge(S2Point(-2, 3, 10), S2Point(0, 0, 1), S2Point(4, -5, 10),
-            S2Point(4, -5, 10), S2Point(-2, -3, 10),
-            false, false, S2EdgeUtil::WEDGE_IS_DISJOINT);
+            S2Point(4, -5, 10), S2Point(-2, -3, 10), false, false,
+            S2EdgeUtil::WEDGE_IS_DISJOINT);
   // Disjoint with equality on the other side.
   TestWedge(S2Point(-2, 3, 10), S2Point(0, 0, 1), S2Point(0, 5, 10),
-            S2Point(4, -5, 10), S2Point(-2, 3, 10),
-            false, false, S2EdgeUtil::WEDGE_IS_DISJOINT);
+            S2Point(4, -5, 10), S2Point(-2, 3, 10), false, false,
+            S2EdgeUtil::WEDGE_IS_DISJOINT);
   // Disjoint with equality on both sides.
   TestWedge(S2Point(-2, 3, 10), S2Point(0, 0, 1), S2Point(4, -5, 10),
-            S2Point(4, -5, 10), S2Point(-2, 3, 10),
-            false, false, S2EdgeUtil::WEDGE_IS_DISJOINT);
+            S2Point(4, -5, 10), S2Point(-2, 3, 10), false, false,
+            S2EdgeUtil::WEDGE_IS_DISJOINT);
 
   // B contains A with equality on one side.
   TestWedge(S2Point(2, 1, 10), S2Point(0, 0, 1), S2Point(1, -5, 10),
-            S2Point(2, 1, 10), S2Point(-1, -1, 10),
-            false, true, S2EdgeUtil::WEDGE_IS_PROPERLY_CONTAINED);
+            S2Point(2, 1, 10), S2Point(-1, -1, 10), false, true,
+            S2EdgeUtil::WEDGE_IS_PROPERLY_CONTAINED);
   // B contains A with equality on the other side.
   TestWedge(S2Point(2, 1, 10), S2Point(0, 0, 1), S2Point(1, -5, 10),
-            S2Point(-2, 1, 10), S2Point(1, -5, 10),
-            false, true, S2EdgeUtil::WEDGE_IS_PROPERLY_CONTAINED);
+            S2Point(-2, 1, 10), S2Point(1, -5, 10), false, true,
+            S2EdgeUtil::WEDGE_IS_PROPERLY_CONTAINED);
 }
 
 // Given a point X and an edge AB, check that the distance from X to AB is
 // "distance_radians" and the closest point on AB is "expected_closest".
-void CheckDistance(S2Point x, S2Point a, S2Point b,
-                   double distance_radians, S2Point expected_closest) {
+void CheckDistance(S2Point x, S2Point a, S2Point b, double distance_radians,
+                   S2Point expected_closest) {
   x = x.Normalize();
   a = a.Normalize();
   b = b.Normalize();
@@ -312,40 +311,40 @@ void CheckDistance(S2Point x, S2Point a, S2Point b,
 }
 
 TEST(S2EdgeUtil, Distance) {
-  CheckDistance(S2Point(1, 0, 0), S2Point(1, 0, 0), S2Point(0, 1, 0),
-                0, S2Point(1, 0, 0));
-  CheckDistance(S2Point(0, 1, 0), S2Point(1, 0, 0), S2Point(0, 1, 0),
-                0, S2Point(0, 1, 0));
-  CheckDistance(S2Point(1, 3, 0), S2Point(1, 0, 0), S2Point(0, 1, 0),
-                0, S2Point(1, 3, 0));
-  CheckDistance(S2Point(0, 0, 1), S2Point(1, 0, 0), S2Point(0, 1, 0),
-                M_PI_2, S2Point(1, 0, 0));
-  CheckDistance(S2Point(0, 0, -1), S2Point(1, 0, 0), S2Point(0, 1, 0),
-                M_PI_2, S2Point(1, 0, 0));
+  CheckDistance(S2Point(1, 0, 0), S2Point(1, 0, 0), S2Point(0, 1, 0), 0,
+                S2Point(1, 0, 0));
+  CheckDistance(S2Point(0, 1, 0), S2Point(1, 0, 0), S2Point(0, 1, 0), 0,
+                S2Point(0, 1, 0));
+  CheckDistance(S2Point(1, 3, 0), S2Point(1, 0, 0), S2Point(0, 1, 0), 0,
+                S2Point(1, 3, 0));
+  CheckDistance(S2Point(0, 0, 1), S2Point(1, 0, 0), S2Point(0, 1, 0), M_PI_2,
+                S2Point(1, 0, 0));
+  CheckDistance(S2Point(0, 0, -1), S2Point(1, 0, 0), S2Point(0, 1, 0), M_PI_2,
+                S2Point(1, 0, 0));
   CheckDistance(S2Point(-1, -1, 0), S2Point(1, 0, 0), S2Point(0, 1, 0),
                 0.75 * M_PI, S2Point(0, 0, 0));
 
-  CheckDistance(S2Point(0, 1, 0), S2Point(1, 0, 0), S2Point(1, 1, 0),
-                M_PI_4, S2Point(1, 1, 0));
-  CheckDistance(S2Point(0, -1, 0), S2Point(1, 0, 0), S2Point(1, 1, 0),
-                M_PI_2, S2Point(1, 0, 0));
+  CheckDistance(S2Point(0, 1, 0), S2Point(1, 0, 0), S2Point(1, 1, 0), M_PI_4,
+                S2Point(1, 1, 0));
+  CheckDistance(S2Point(0, -1, 0), S2Point(1, 0, 0), S2Point(1, 1, 0), M_PI_2,
+                S2Point(1, 0, 0));
 
-  CheckDistance(S2Point(0, -1, 0), S2Point(1, 0, 0), S2Point(-1, 1, 0),
-                M_PI_2, S2Point(1, 0, 0));
-  CheckDistance(S2Point(-1, -1, 0), S2Point(1, 0, 0), S2Point(-1, 1, 0),
-                M_PI_2, S2Point(-1, 1, 0));
+  CheckDistance(S2Point(0, -1, 0), S2Point(1, 0, 0), S2Point(-1, 1, 0), M_PI_2,
+                S2Point(1, 0, 0));
+  CheckDistance(S2Point(-1, -1, 0), S2Point(1, 0, 0), S2Point(-1, 1, 0), M_PI_2,
+                S2Point(-1, 1, 0));
 
   CheckDistance(S2Point(1, 1, 1), S2Point(1, 0, 0), S2Point(0, 1, 0),
-                asin(sqrt(1./3)), S2Point(1, 1, 0));
+                asin(sqrt(1. / 3)), S2Point(1, 1, 0));
   CheckDistance(S2Point(1, 1, -1), S2Point(1, 0, 0), S2Point(0, 1, 0),
-                asin(sqrt(1./3)), S2Point(1, 1, 0));
+                asin(sqrt(1. / 3)), S2Point(1, 1, 0));
 
   CheckDistance(S2Point(-1, 0, 0), S2Point(1, 1, 0), S2Point(1, 1, 0),
                 0.75 * M_PI, S2Point(1, 1, 0));
-  CheckDistance(S2Point(0, 0, -1), S2Point(1, 1, 0), S2Point(1, 1, 0),
-                M_PI_2, S2Point(1, 1, 0));
-  CheckDistance(S2Point(-1, 0, 0), S2Point(1, 0, 0), S2Point(1, 0, 0),
-                M_PI, S2Point(1, 0, 0));
+  CheckDistance(S2Point(0, 0, -1), S2Point(1, 1, 0), S2Point(1, 1, 0), M_PI_2,
+                S2Point(1, 1, 0));
+  CheckDistance(S2Point(-1, 0, 0), S2Point(1, 0, 0), S2Point(1, 0, 0), M_PI,
+                S2Point(1, 0, 0));
 }
 
 void CheckInterpolate(double t, S2Point a, S2Point b, S2Point expected) {
@@ -372,9 +371,9 @@ TEST(S2EdgeUtil, Interpolate) {
 
   // Test that interpolation is done using distances on the sphere rather than
   // linear distances.
-  CheckInterpolate(1./3, S2Point(1, 0, 0), S2Point(0, 1, 0),
+  CheckInterpolate(1. / 3, S2Point(1, 0, 0), S2Point(0, 1, 0),
                    S2Point(sqrt(3), 1, 0));
-  CheckInterpolate(2./3, S2Point(1, 0, 0), S2Point(0, 1, 0),
+  CheckInterpolate(2. / 3, S2Point(1, 0, 0), S2Point(0, 1, 0),
                    S2Point(1, sqrt(3), 0));
 
   // Test that interpolation is accurate on a long edge (but not so long that
@@ -384,8 +383,7 @@ TEST(S2EdgeUtil, Interpolate) {
     S2Point a = S2LatLng::FromRadians(0, 0).ToPoint();
     S2Point b = S2LatLng::FromRadians(0, kLng).ToPoint();
     for (double f = 0.4; f > 1e-15; f *= 0.1) {
-      CheckInterpolate(f, a, b,
-                       S2LatLng::FromRadians(0, f * kLng).ToPoint());
+      CheckInterpolate(f, a, b, S2LatLng::FromRadians(0, f * kLng).ToPoint());
       CheckInterpolate(1 - f, a, b,
                        S2LatLng::FromRadians(0, (1 - f) * kLng).ToPoint());
     }
@@ -397,8 +395,8 @@ TEST(S2EdgeUtil, InterpolateCanExtrapolate) {
   const S2Point j(0, 1, 0);
   // Initial vectors at 90 degrees.
   CheckInterpolate(0, i, j, S2Point(1, 0, 0));
-  CheckInterpolate(1, i, j ,S2Point(0, 1, 0));
-  CheckInterpolate(1.5, i, j ,S2Point(-1, 1, 0));
+  CheckInterpolate(1, i, j, S2Point(0, 1, 0));
+  CheckInterpolate(1.5, i, j, S2Point(-1, 1, 0));
   CheckInterpolate(2, i, j, S2Point(-1, 0, 0));
   CheckInterpolate(3, i, j, S2Point(0, -1, 0));
   CheckInterpolate(4, i, j, S2Point(1, 0, 0));
@@ -406,7 +404,7 @@ TEST(S2EdgeUtil, InterpolateCanExtrapolate) {
   // Negative values of t.
   CheckInterpolate(-1, i, j, S2Point(0, -1, 0));
   CheckInterpolate(-2, i, j, S2Point(-1, 0, 0));
-  CheckInterpolate(-3, i, j ,S2Point(0, 1, 0));
+  CheckInterpolate(-3, i, j, S2Point(0, 1, 0));
   CheckInterpolate(-4, i, j, S2Point(1, 0, 0));
 
   // Initial vectors at 45 degrees.
@@ -421,9 +419,7 @@ TEST(S2EdgeUtil, InterpolateCanExtrapolate) {
   S2Point p(S2EdgeUtil::Interpolate(0.001, i, j));
   // We should get back where we started.
   CheckInterpolate(1000, i, p, j);
-
 }
-
 
 TEST(S2EdgeUtil, RepeatedInterpolation) {
   // Check that points do not drift away from unit length when repeated
@@ -497,8 +493,8 @@ bool IsEdgeBNearEdgeA(string const& a_str, const string& b_str,
   EXPECT_EQ(2, a->num_vertices());
   unique_ptr<S2Polyline> b(S2Testing::MakePolyline(b_str));
   EXPECT_EQ(2, b->num_vertices());
-  return S2EdgeUtil::IsEdgeBNearEdgeA(a->vertex(0), a->vertex(1),
-                                      b->vertex(0), b->vertex(1),
+  return S2EdgeUtil::IsEdgeBNearEdgeA(a->vertex(0), a->vertex(1), b->vertex(0),
+                                      b->vertex(1),
                                       S1Angle::Degrees(max_error_degrees));
 }
 
@@ -533,8 +529,7 @@ TEST(S2EdgeUtil, EdgeBNearEdgeA) {
   // The two arcs here are nearly as long as S2 edges can be (just shy of 180
   // degrees), and their endpoints are less than 1 degree apart.  Their
   // midpoints, however, are at opposite ends of the sphere along its equator.
-  EXPECT_FALSE(IsEdgeBNearEdgeA(
-                   "0:-179.75, 0:-0.25", "0:179.75, 0:0.25", 1.0));
+  EXPECT_FALSE(IsEdgeBNearEdgeA("0:-179.75, 0:-0.25", "0:179.75, 0:0.25", 1.0));
 
   // At the equator, the second arc here is 9.75 degrees from the first, and
   // closer at all other points.  However, the southern point of the second arc
@@ -562,7 +557,6 @@ TEST(S2EdgeUtil, EdgeBNearEdgeA) {
   EXPECT_TRUE(IsEdgeBNearEdgeA("0:0, 1:0", "1.2:0, 1.1:0", 0.25));
 }
 
-
 TEST(S2EdgeUtil, CollinearEdgesThatDontTouch) {
   const int kIters = 1000;
   for (int iter = 0; iter < kIters; ++iter) {
@@ -577,7 +571,6 @@ TEST(S2EdgeUtil, CollinearEdgesThatDontTouch) {
     EXPECT_GT(0, crosser.RobustCrossing(&c));
   }
 }
-
 
 TEST(S2EdgeUtil, CoincidentZeroLengthEdgesThatDontTouch) {
   // Since normalization is not perfect, and vertices are not always perfectly
@@ -602,16 +595,19 @@ TEST(S2EdgeUtil, CoincidentZeroLengthEdgesThatDontTouch) {
     // If all components were zero, try again.  Note that normalization may
     // convert a non-zero point into a zero one due to underflow (!)
     p = p.Normalize();
-    if (p == S2Point(0, 0, 0)) { --iter; continue; }
+    if (p == S2Point(0, 0, 0)) {
+      --iter;
+      continue;
+    }
 
     // Now every non-zero component should have exactly the same mantissa.
     // This implies that if we scale the point by an arbitrary factor, every
     // non-zero component will still have the same mantissa.  Scale the points
     // so that they are all distinct and yet still satisfy S2::IsNormalized().
-    S2Point a = (1-3e-16) * p;
-    S2Point b = (1-1e-16) * p;
+    S2Point a = (1 - 3e-16) * p;
+    S2Point b = (1 - 1e-16) * p;
     S2Point c = p;
-    S2Point d = (1+2e-16) * p;
+    S2Point d = (1 + 2e-16) * p;
 
     // Verify that the expected edges do not cross.
     EXPECT_GT(0, S2EdgeUtil::RobustCrossing(a, b, c, d));

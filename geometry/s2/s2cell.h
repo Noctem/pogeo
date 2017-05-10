@@ -132,12 +132,8 @@ class S2Cell : public S2Region {
   double uv_[2][2];
 };
 
-inline int S2Cell::GetSizeIJ() const {
-  return S2CellId::GetSizeIJ(level());
-}
+inline int S2Cell::GetSizeIJ() const { return S2CellId::GetSizeIJ(level()); }
 
-inline double S2Cell::GetSizeST() const {
-  return S2CellId::GetSizeST(level());
-}
+inline double S2Cell::GetSizeST() const { return S2CellId::GetSizeST(level()); }
 
 #endif  // UTIL_GEOMETRY_S2CELL_H_

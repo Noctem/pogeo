@@ -12,8 +12,7 @@ unsigned int bitScanReverse(unsigned long long x) { return __builtin_clzll(x); }
 #else
 unsigned int bitScanReverse(unsigned long long x) {
   unsigned int r = 0;
-  while (x >>= 1)
-    r++;
+  while (x >>= 1) r++;
   return 64 - r;
 }
-#endif // _MSC_VER
+#endif  // _MSC_VER

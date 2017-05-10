@@ -98,32 +98,25 @@ void SplitStringToHashmapUsing(const string& full, const char* delim,
 //   They cannot handle decimal numbers with leading 0s, since they will be
 //   treated as octal.
 // ----------------------------------------------------------------------
-bool SplitOneIntToken(const char** source, const char* delim,
-                      int* value);
-bool SplitOneInt32Token(const char** source, const char* delim,
-                        int32* value);
-bool SplitOneUint32Token(const char** source, const char* delim,
-                         uint32* value);
-bool SplitOneInt64Token(const char** source, const char* delim,
-                        int64* value);
-bool SplitOneUint64Token(const char** source, const char* delim,
-                         uint64* value);
-bool SplitOneDoubleToken(const char** source, const char* delim,
-                         double* value);
-bool SplitOneFloatToken(const char** source, const char* delim,
-                        float* value);
+bool SplitOneIntToken(const char** source, const char* delim, int* value);
+bool SplitOneInt32Token(const char** source, const char* delim, int32* value);
+bool SplitOneUint32Token(const char** source, const char* delim, uint32* value);
+bool SplitOneInt64Token(const char** source, const char* delim, int64* value);
+bool SplitOneUint64Token(const char** source, const char* delim, uint64* value);
+bool SplitOneDoubleToken(const char** source, const char* delim, double* value);
+bool SplitOneFloatToken(const char** source, const char* delim, float* value);
 
 // Some aliases, so that the function names are standardized against the names
 // of the reflection setters/getters in proto2. This makes it easier to use
 // certain macros with reflection when creating custom text formats for protos.
 
 inline bool SplitOneUInt32Token(const char** source, const char* delim,
-                         uint32* value) {
+                                uint32* value) {
   return SplitOneUint32Token(source, delim, value);
 }
 
 inline bool SplitOneUInt64Token(const char** source, const char* delim,
-                         uint64* value) {
+                                uint64* value) {
   return SplitOneUint64Token(source, delim, value);
 }
 
@@ -155,6 +148,5 @@ bool SplitOneHexUint32Token(const char** source, const char* delim,
                             uint32* value);
 bool SplitOneHexUint64Token(const char** source, const char* delim,
                             uint64* value);
-
 
 #endif  // STRINGS_SPLIT_H_

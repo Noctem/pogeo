@@ -12,25 +12,22 @@ using std::string;
 #include <vector>
 using std::vector;
 
-
-#include "base/commandlineflags.h"
-#include "base/stringprintf.h"
-#include "base/logging.h"
 #include <gtest/gtest.h>
+#include "base/commandlineflags.h"
+#include "base/logging.h"
+#include "base/stringprintf.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2cellid.h"
 #include "s2edgeutil.h"
 #include "s2loop.h"
 #include "s2testing.h"
-#include "util/math/vector3-inl.h"
 #include "util/math/matrix3x3-inl.h"
+#include "util/math/vector3-inl.h"
 
 typedef pair<S2Point, S2Point> S2Edge;
 
 static const double kEarthRadiusMeters = 6371000;
-
-
 
 // Generates a random edge whose center is in the given cap.
 static S2Edge RandomEdgeCrossingCap(double max_length_meters,
@@ -50,8 +47,7 @@ static S2Edge RandomEdgeCrossingCap(double max_length_meters,
 // "edge_length_meters_max" and each of whose center is in a randomly located
 // cap with radius "cap_span_meters", and puts results into "edges".
 static void GenerateRandomEarthEdges(double edge_length_meters_max,
-                                     double cap_span_meters,
-                                     int num_edges,
+                                     double cap_span_meters, int num_edges,
                                      vector<S2Edge>* edges) {
   S2Cap cap = S2Cap::FromAxisAngle(
       S2Testing::RandomPoint(),
@@ -73,15 +69,15 @@ static string ToString(const S2Edge& e1, const S2Edge& e2) {
   v2 = v2 - v1;
   v3 = v3 - v1;
   v4 = v4 - v1;
-  return StringPrintf("[%6.2f,%6.2f] 0,0 -> %3.3e,%3.3e) --"
-                      " (%3.3e,%3.3e -> %3.3e %3.3e)",
-                      u1, v1, u2, v2, u3, v3, u4, v4);
+  return StringPrintf(
+      "[%6.2f,%6.2f] 0,0 -> %3.3e,%3.3e) --"
+      " (%3.3e,%3.3e -> %3.3e %3.3e)",
+      u1, v1, u2, v2, u3, v3, u4, v4);
 }
 
-class EdgeVectorIndex: public S2EdgeIndex {
+class EdgeVectorIndex : public S2EdgeIndex {
  public:
-  explicit EdgeVectorIndex(vector<S2Edge> const* edges):
-      edges_(edges) {}
+  explicit EdgeVectorIndex(vector<S2Edge> const* edges) : edges_(edges) {}
 
   virtual int num_edges() const { return edges_->size(); }
   virtual S2Point const* edge_from(int index) const {
@@ -90,12 +86,12 @@ class EdgeVectorIndex: public S2EdgeIndex {
   virtual S2Point const* edge_to(int index) const {
     return &((*edges_)[index].second);
   }
+
  private:
   vector<S2Edge> const* edges_;
 };
 
-static void TestAllCrossings(vector<S2Edge> const& all_edges,
-                             int min_crossings,
+static void TestAllCrossings(vector<S2Edge> const& all_edges, int min_crossings,
                              int max_checks_crossings_ratio) {
   EdgeVectorIndex index(&all_edges);
   index.ComputeIndex();
@@ -115,40 +111,34 @@ static void TestAllCrossings(vector<S2Edge> const& all_edges,
     }
 
     for (int i = 0; i < all_edges.size(); ++i) {
-      int crossing = S2EdgeUtil::RobustCrossing(e.first, e.second,
-                                                all_edges[i].first,
-                                                all_edges[i].second);
-      if (crossing  >= 0) {
+      int crossing = S2EdgeUtil::RobustCrossing(
+          e.first, e.second, all_edges[i].first, all_edges[i].second);
+      if (crossing >= 0) {
         EXPECT_EQ(1, candidate_set.count(i))
-            << "Edge " << i <<  " is not a candidate of edge " << in
-            << " (" << ToString(all_edges[i], e) << ")";
+            << "Edge " << i << " is not a candidate of edge " << in << " ("
+            << ToString(all_edges[i], e) << ")";
         ++total_crossings;
       }
     }
   }
 
   VLOG(1) << "Pairs/num crossings/check crossing ratio: "
-          << all_edges.size() * all_edges.size() << "/"
-          << total_crossings << "/"
-          << total_index_checks / total_crossings;
+          << all_edges.size() * all_edges.size() << "/" << total_crossings
+          << "/" << total_index_checks / total_crossings;
   EXPECT_LE(min_crossings, total_crossings);
   EXPECT_GE(total_crossings * max_checks_crossings_ratio, total_index_checks);
 }
 
-
 // Generates random edges and tests, for each edge,
 // that all those that cross are candidates.
-static void TestCrossingsRandomInCap(int num_edges,
-                                     double edge_length_max,
-                                     double cap_span_meters,
-                                     int min_crossings,
+static void TestCrossingsRandomInCap(int num_edges, double edge_length_max,
+                                     double cap_span_meters, int min_crossings,
                                      int max_checks_crossings_ratio) {
   vector<S2Edge> all_edges;
   GenerateRandomEarthEdges(edge_length_max, cap_span_meters, num_edges,
                            &all_edges);
   TestAllCrossings(all_edges, min_crossings, max_checks_crossings_ratio);
 }
-
 
 TEST(S2EdgeIndex, LoopCandidateOfItself) {
   vector<S2Point> ps;  // A diamond loop around 0,180.
@@ -158,7 +148,7 @@ TEST(S2EdgeIndex, LoopCandidateOfItself) {
   ps.push_back(S2Testing::MakePoint("1:-180"));
   vector<S2Edge> all_edges;
   for (int i = 0; i < 4; ++i) {
-    all_edges.push_back(make_pair(ps[i], ps[(i+1)%4]));
+    all_edges.push_back(make_pair(ps[i], ps[(i + 1) % 4]));
   }
   TestAllCrossings(all_edges, 0, 16);
 }
@@ -201,7 +191,7 @@ TEST(S2EdgeIndex, LongEdgeCrossesLoop) {
   S2Loop* loop = S2Testing::MakeRegularLoop(loop_center, 4,
                                             7e-3);  // = 5km/6400km
   for (int i = 0; i < loop->num_vertices(); ++i) {
-    all_edges.push_back(make_pair(loop->vertex(i), loop->vertex(i+1)));
+    all_edges.push_back(make_pair(loop->vertex(i), loop->vertex(i + 1)));
   }
   delete loop;
   EdgeVectorIndex index(&all_edges);
@@ -213,7 +203,7 @@ TEST(S2EdgeIndex, LongEdgeCrossesLoop) {
 }
 
 TEST(S2EdgeIndex, CollinearEdgesOnCellBoundaries) {
-  //FLAGS_always_recurse_on_children = true;
+  // FLAGS_always_recurse_on_children = true;
   const int kNumPointsOnEdge = 8;  // About 32 edges
   for (int level = 0; level <= S2CellId::kMaxLevel; ++level) {
     S2Cell cell(S2Testing::GetRandomCellId(level));
@@ -223,15 +213,15 @@ TEST(S2EdgeIndex, CollinearEdgesOnCellBoundaries) {
     S2Point p2 = cell.GetVertex(v2);
     S2Point p2_p1 = (p2 - p1) / kNumPointsOnEdge;
     vector<S2Edge> all_edges;
-    S2Point points[kNumPointsOnEdge+1];
+    S2Point points[kNumPointsOnEdge + 1];
     for (int i = 0; i <= kNumPointsOnEdge; ++i) {
       points[i] = (p1 + i * p2_p1).Normalize();
       for (int j = 0; j < i; ++j) {
         all_edges.push_back(make_pair(points[i], points[j]));
       }
     }
-    TestAllCrossings(all_edges, kNumPointsOnEdge*kNumPointsOnEdge,
-                     kNumPointsOnEdge*kNumPointsOnEdge);
+    TestAllCrossings(all_edges, kNumPointsOnEdge * kNumPointsOnEdge,
+                     kNumPointsOnEdge * kNumPointsOnEdge);
   }
 }
 
@@ -388,4 +378,3 @@ BENCHMARK(BM_QuadTreeFindCost)
   ->Arg(1000)
   ->Arg(10000);
 #endif
-
