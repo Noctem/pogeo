@@ -42,10 +42,12 @@ cdef extern from "json11.hpp" namespace "json11" nogil:
         array &array_items()
         object_ &object_items()
 
-        Json & operator[](size_t i)
-        Json & operator[](const string &key)
+        Json &operator[](size_t i)
+        Json &operator[](const string &key)
         string dump(int indent)
 
         void dump(string &out)
         string dump()
 
+        @staticmethod
+        Json parse(const string &in_, string &err)

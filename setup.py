@@ -13,6 +13,8 @@ MANY_LINUX = False
 if platform == 'win32':
     libraries = ['pthreadVC2']
     macros.append(('PTW32_STATIC_LIB', None))
+    if 'APPVEYOR' in environ:
+        macros.append(('DEPLOYMENT', None))
     c_args = cpp_args = None
 elif platform == 'darwin':
     c_args = ['-O3']

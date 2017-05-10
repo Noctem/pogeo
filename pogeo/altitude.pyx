@@ -5,11 +5,12 @@ from libc.stdint cimport uint8_t, uint64_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
-from cython.operator cimport dereference as deref
+from cython.operator cimport postincrement as incr, dereference as deref
 
 from cyrandom.cyrandom cimport random, uniform
 
 from ._cpython cimport Py_uhash_t
+from ._json cimport Json
 from ._libcpp cimport min
 from ._urlencode cimport urlencode
 from .geo.s2 cimport S2Point
@@ -23,11 +24,6 @@ from .utils cimport coords_to_s2point, get_s2points, time
 from pickle import dump, load, HIGHEST_PROTOCOL
 from time import sleep
 from urllib.request import urlopen
-
-try:
-    from ujson import loads as json_loads
-except ImportError:
-    from json import loads as json_loads
 
 
 DEF RETRY_TIMEOUT = 30.0
@@ -64,7 +60,10 @@ cdef class AltitudeCache:
 
     def request(self, unicode url, float first_request_time=0.0, uint8_t retry_counter=0):
         cdef:
-            dict response, result
+            bytes read_page
+            string response, err, status
+            Json parsed, result
+            Json.array results
             double lat, lon
             uint64_t cell_id
             float elapsed
@@ -88,23 +87,29 @@ cdef class AltitudeCache:
         if page.code == 500 or page.code == 503 or page.code == 504:
             self.request(url, first_request_time, retry_counter + 1)
 
-        response = json_loads(page.read().decode(page.headers.get_param("charset") or "utf-8"))
+        read_page = page.read()
+        response = string(read_page)
+        parsed = Json.parse(response, err)
 
-        cdef str status = response['status']
-        if status == 'OK':
+        status = parsed[string(b'status')].string_value()
+        if status == string(b'OK'):
             pass
-        elif status == 'ZERO_RESULTS':
+        elif status == string(b'ZERO_RESULTS'):
             return
-        elif status == 'OVER_QUERY_LIMIT':
+        elif status == string(b'OVER_QUERY_LIMIT'):
             self.request(url, first_request_time, retry_counter + 1)
         else:
-            raise ApiError(response.get('error_message', status))
+            raise ApiError(parsed[string(b'error_message')].string_value())
 
-        for result in response['results']:
-            lat = result['location']['lat']
-            lon = result['location']['lng']
+        results = parsed[string(b'results')].array_items()
+        it = results.begin()
+        while it != results.end():
+            result = deref(it)
+            lat = result[string(b'location')][string(b'lat')].number_value()
+            lon = result[string(b'location')][string(b'lng')].number_value()
             cell_id = S2CellId.FromPoint(coords_to_s2point(lat, lon)).parent(self.level).id()
-            self.cache[cell_id] = result['elevation']
+            self.cache[cell_id] = result[string(b'elevation')].number_value()
+            incr(it)
         self.changed = True
 
     cpdef double get(self, Location loc):
