@@ -3,8 +3,9 @@
 
 from libc.stdint cimport int16_t, uint64_t
 from libcpp cimport bool
-from libcpp.set cimport set
 from libcpp.string cimport string
+
+from cpython cimport bool as pybool
 
 from cython.operator cimport preincrement as incr, dereference as deref
 
@@ -25,33 +26,29 @@ DEF ATKIV = 6
 DEF DEFIV = 7
 DEF STAIV = 8
 
-DEF DURATION = 1
-
 DEF COMPRESSION = 9
 
 
 cdef class SightingCache:
-    def __cinit__(
-            self, set[int16_t] trash, dict names, object moves, object damage,
-            tuple idfilter, object Sighting, object session_maker, bool int_id):
-        self.trash = trash
-        self.names = {k: v.encode('utf-8') for k,v in names.items()}
-        self.filter_ids = idfilter
+    def __cinit__(self, conf, db, names):
+        self.trash = conf.TRASH_IDS
+        self.filter_ids = conf.MAP_FILTER_IDS
+        self.int_id = conf.SPAWN_ID_INT
+        self.extra = pybool(conf.ENCOUNTER)
 
-        if moves:
+        self.names = {k: v.encode('utf-8') for k,v in names.POKEMON.items()}
+
+        s = db.Sighting
+        if self.extra:
             self.columns = (
-                Sighting.id, Sighting.pokemon_id, Sighting.spawn_id, Sighting.expire_timestamp,
-                Sighting.move_1, Sighting.move_2, Sighting.atk_iv, Sighting.def_iv, Sighting.sta_iv)
-            self.moves = {k: v.encode('utf-8') for k,v in moves.items()}
-            self.damage = dict(damage)
-            self.extra = True
+                s.id, s.pokemon_id, s.spawn_id, s.expire_timestamp, s.move_1,
+                s.move_2, s.atk_iv, s.def_iv, s.sta_iv)
+            self.moves = {k: v.encode('utf-8') for k,v in names.MOVES.items()}
+            self.damage = dict(names.DAMAGE)
         else:
-            self.columns = Sighting.id, Sighting.pokemon_id, Sighting.spawn_id, Sighting.expire_timestamp
-            self.extra = False
+            self.columns = s.id, s.pokemon_id, s.spawn_id, s.expire_timestamp
 
-        self.session_maker = session_maker
-        self.int_id = int_id
-        self.last_update = 0
+        self.session_maker = db.Session
 
     cdef void update_cache(self):
         self.last_update = int_time()
@@ -181,90 +178,3 @@ cdef class SightingCache:
             return compressed
         else:
             return Json(jarray).dump()
-
-
-cdef class SpawnCache:
-    def __cinit__(self, bool int_id, object Spawnpoint, object session_maker):
-        self.int_id = int_id
-        self.Spawnpoint = Spawnpoint
-        self.session_maker = session_maker
-        self.last_update = 0
-
-    cdef void update_cache(self):
-        self.last_update = int_time()
-        session = self.session_maker(autoflush=False)
-        try:
-            query = session.query(self.Spawnpoint.id, self.Spawnpoint.duration, self.Spawnpoint.spawn_id, self.Spawnpoint.despawn_time)
-
-            context = query._compile_context()
-            conn = query._get_bind_args(
-                context,
-                query._connection_from_session,
-                close_with_result=True)
-
-            cursor = conn.execute(context.statement, query._params)
-            context.runid = loading._new_runid()
-            self.process_results(cursor.cursor)
-        except Exception:
-            session.rollback()
-            raise
-        finally:
-            cursor.close()
-            session.close()
-
-    cdef void process_results(self, object cursor):
-        cdef:
-            tuple spawnpoint
-            Json.object_ jobject
-            string i_id = string(b'id')
-            string i_lat = string(b'lat')
-            string i_lon = string(b'lon')
-            string i_spawnid = string(b'spawn_id')
-            string i_despawn = string(b'despawn_time')
-            string i_duration = string(b'duration')
-            uint64_t cellid
-            string token
-            int id_
-            S2Point point
-
-        while True:
-            spawnpoint = <tuple>cursor.fetchone()
-            if spawnpoint is None:
-                return
-
-            jobject = Json.object_()
-
-            id_ = spawnpoint[INDEX]
-            if id_ > self.last_id:
-                self.last_id = id_
-
-            jobject[i_id] = Json(id_)
-
-            if self.int_id:
-                cellid = spawnpoint[SPAWN_ID]
-                point = cellid_to_s2point(cellid)
-                jobject[i_spawnid] = Json(<int>cellid)
-            else:
-                token = string(<char*>spawnpoint[SPAWN_ID])
-                point = token_to_s2point(token)
-                jobject[i_spawnid] = Json(token)
-
-            jobject[i_despawn] = Json(<int>spawnpoint[EXPIRATION])
-            jobject[i_duration] = Json(<int>spawnpoint[DURATION])
-
-            jobject[i_lat] = Json(s2point_to_lat(point))
-            jobject[i_lon] = Json(s2point_to_lon(point))
-
-            self.cache.push_back(Json(jobject))
-
-    def get_json(self, bool gz=True):
-        if self.last_update + 30 < int_time():
-            self.update_cache()
-
-        cdef string compressed
-
-        if gz:
-            compress(Json(self.cache).dump(), compressed, COMPRESSION)
-            return compressed
-        else:
-            return Json(self.cache).dump()
