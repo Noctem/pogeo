@@ -1,11 +1,13 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=ascii
+# cython: language_level=3, cdivision=True, c_string_type=bytes, c_string_encoding=ascii
 
 from libc.math cimport log2, M_PI, pow
 from libc.stdint cimport uint64_t
+from libcpp.string cimport string
 from libcpp.vector cimport vector
 
 from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from ._json cimport Json
 from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
@@ -15,7 +17,7 @@ from .geo.s2loop cimport S2Loop
 from .geo.s2polygonbuilder cimport S2PolygonBuilder
 from .geo.s2regioncoverer cimport S2RegionCoverer
 from .location cimport Location
-from .utils cimport coords_to_s2point
+from .utils cimport coords_to_s2point, s2point_to_lat, s2point_to_lon
 
 
 cdef class Polygon:
@@ -98,6 +100,37 @@ cdef class Polygon:
 
     def project(self, Location loc):
         return Location.from_point(self.shape.Project(loc.point))
+
+    @property
+    def json(self):
+        cdef:
+            Json.object_ jobject
+            Json.array areas, area, coords, holes
+            S2Loop* loop
+            S2Point vertex
+            int i, ii, vertices, loops = self.shape.num_loops()
+
+        coords = Json.array(<size_t>2)
+
+        for i in range(loops):
+            loop = self.shape.loop(i)
+            vertices = loop.num_vertices()
+            for ii in range(vertices):
+                vertex = loop.vertex(ii)
+                coords[0] = Json(s2point_to_lat(vertex))
+                coords[1] = Json(s2point_to_lon(vertex))
+                area.push_back(Json(coords))
+
+            area.push_back(area.front())
+            if loop.is_hole():
+                holes.push_back(Json(area))
+            else:
+                areas.push_back(Json(area))
+            area.clear()
+
+        jobject[string(b'areas')] = Json(areas)
+        jobject[string(b'holes')] = Json(holes)
+        return Json(jobject).dump()
 
     @property
     def center(self):

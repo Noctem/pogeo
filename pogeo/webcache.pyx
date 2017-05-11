@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, c_string_type=unicode, c_string_encoding=utf-8
+# cython: language_level=3, c_string_type=bytes, c_string_encoding=utf-8
 
 from libc.stdint cimport int16_t, uint64_t
 from libcpp cimport bool
@@ -154,9 +154,9 @@ cdef class SightingCache:
             self.get_first()
             if gz:
                 compress(Json(self.cache).dump(), compressed, COMPRESSION)
-                return <bytes>compressed
+                return compressed
             else:
-                return Json(self.cache).dump().encode('utf-8')
+                return Json(self.cache).dump()
 
         cdef:
             Json.array jarray
@@ -178,9 +178,9 @@ cdef class SightingCache:
 
         if gz:
             compress(Json(jarray).dump(), compressed, COMPRESSION)
-            return <bytes>compressed
+            return compressed
         else:
-            return Json(jarray).dump().encode('utf-8')
+            return Json(jarray).dump()
 
 
 cdef class SpawnCache:
@@ -265,6 +265,6 @@ cdef class SpawnCache:
 
         if gz:
             compress(Json(self.cache).dump(), compressed, COMPRESSION)
-            return <bytes>compressed
+            return compressed
         else:
-            return <unicode>Json(self.cache).dump()
+            return Json(self.cache).dump()

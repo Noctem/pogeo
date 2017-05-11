@@ -24,7 +24,7 @@ cdef extern from "s2polygon.h" nogil:
         bool IsValid(bool check_loops, int max_adjacent)
         int num_loops()
         int num_vertices()
-        S2Loop loop(int k)
+        S2Loop* loop(int k)
         int GetParent(int k)
         int GetLastDescendant(int k)
         double GetArea()

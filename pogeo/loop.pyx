@@ -1,11 +1,13 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=ascii
+# cython: language_level=3, cdivision=True, c_string_type=bytes, c_string_encoding=ascii
 
 from libc.math cimport log2, M_PI, pow
 from libc.stdint cimport uint64_t
+from libcpp.string cimport string
 from libcpp.vector cimport vector
 
 from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from ._json cimport Json
 from .const cimport EARTH_RADIUS_METERS, EARTH_RADIUS_KILOMETERS
 from .geo.s2 cimport S2, S2Point
 from .geo.s2cellid cimport S2CellId
@@ -13,7 +15,7 @@ from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
 from .geo.s2regioncoverer cimport S2RegionCoverer
 from .location cimport Location
-from .utils cimport coords_to_s2point
+from .utils cimport coords_to_s2point, s2point_to_lat, s2point_to_lon
 
 
 cdef class Loop:
@@ -80,6 +82,30 @@ cdef class Loop:
 
     def project(self, Location loc):
         return Location.from_point(self.shape.Project(loc.point))
+
+    @property
+    def json(self):
+        cdef:
+            Json.object_ jobject
+            Json.array areas, area, coords
+            S2Point vertex
+            int i, vertices = self.shape.num_vertices()
+
+        jobject[string(b'holes')] = Json(areas)
+
+        coords = Json.array(<size_t>2)
+
+        for i in range(vertices):
+            vertex = self.shape.vertex(i)
+            coords[0] = Json(s2point_to_lat(vertex))
+            coords[1] = Json(s2point_to_lon(vertex))
+            area.push_back(Json(coords))
+
+        area.push_back(area.front())
+
+        areas.push_back(Json(area))
+        jobject[string(b'areas')] = Json(areas)
+        return Json(jobject).dump()
 
     @property
     def center(self):

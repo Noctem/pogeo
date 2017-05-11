@@ -21,6 +21,7 @@ cdef extern from "s2loop.h" nogil:
         bool is_hole()
         int sign()
         int num_vertices()
+        S2Point vertex(int i)
         bool IsNormalized()
         void Normalize()
         void Invert()

@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=utf-8
+# cython: language_level=3, cdivision=True, c_string_encoding=utf-8
 
 from libc.stdint cimport int16_t, uint32_t
 from libcpp cimport bool
