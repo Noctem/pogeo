@@ -54,7 +54,7 @@ static void dump(NullStruct, string &out) { out += "null"; }
 
 static void dump(double value, string &out) {
   char buf[32];
-  snprintf(buf, sizeof buf, "%.6f", value);
+  snprintf(buf, sizeof buf, "%.5f", value);
   out += buf;
 }
 

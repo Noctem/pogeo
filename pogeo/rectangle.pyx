@@ -1,11 +1,13 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=ascii
+# cython: language_level=3, cdivision=True, c_string_type=bytes, c_string_encoding=ascii
 
 from libc.math cimport log2, pow
 from libc.stdint cimport uint64_t
+from libcpp.string cimport string
 from libcpp.vector cimport vector
 
 from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
+from ._json cimport Json
 from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
@@ -90,6 +92,35 @@ cdef class Rectangle:
         cdef S2LatLng ll = S2LatLng.FromDegrees(loc.latitude, loc.longitude)
         ll = self.shape.Project(ll)
         return Location(ll.lat().degrees(), ll.lng().degrees())
+
+    @property
+    def json(self):
+        cdef:
+            Json.object_ jobject
+            Json.array areas, area, coords
+            Json north = Json(self.north)
+
+        jobject[string(b'holes')] = Json(areas)
+
+        coords = Json.array(<size_t>2)
+        coords[0] = north
+        coords[1] = Json(self.west)
+        area.push_back(Json(coords))
+
+        coords[0] = Json(self.south)
+        area.push_back(Json(coords))
+
+        coords[1] = Json(self.east)
+        area.push_back(Json(coords))
+
+        coords[0] = north
+        area.push_back(Json(coords))
+
+        area.push_back(area.front())
+
+        areas.push_back(Json(area))
+        jobject[string(b'areas')] = Json(areas)
+        return Json(jobject).dump()
 
     @property
     def center(self):

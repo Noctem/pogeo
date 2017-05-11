@@ -104,11 +104,21 @@ class TestLoop(TestCase):
         self.assertFalse(loop.contains_cellid(9749607897939050496))
         self.assertFalse(loop.contains_token('874d90ba4'))
 
+    def test_json(self):
+        loop = Loop(TRAPEZOID)
+        expected = b'{"areas": [[[40.75890, -111.85220], [40.75890, -111.82830], [40.76860, -111.83230], [40.76860, -111.84780], [40.75890, -111.85220]]], "holes": []}'
+        self.assertEqual(loop.json, expected)
+
 
 class TestPolygon(TestCase):
     def test_area(self):
         polygon = Polygon((CCW_TRIANGLE, TRAPEZOID))
         self.assertAlmostEqual(polygon.area, 1.83753, places=5)
+
+    def test_hole(self):
+        hole = ((40.76170, -111.83719), (40.76304, -111.83840), (40.76308, -111.83970), (40.76216, -111.84007), (40.76083, -111.83894)),
+        polygon = Polygon((CCW_TRIANGLE, TRAPEZOID), hole)
+        self.assertAlmostEqual(polygon.area, 1.80089, places=5)
 
     def test_contains_location(self):
         polygon = Polygon((TRAPEZOID, CW_TRIANGLE))
@@ -121,6 +131,12 @@ class TestPolygon(TestCase):
         self.assertTrue(polygon.contains_token('87525f92c'))
         self.assertFalse(polygon.contains_cellid(9749607897939050496))
         self.assertFalse(polygon.contains_token('874d90ba4'))
+
+    def test_json(self):
+        hole = ((40.76170, -111.83719), (40.76304, -111.83840), (40.76308, -111.83970), (40.76216, -111.84007), (40.76083, -111.83894)),
+        polygon = Polygon((TRAPEZOID, CCW_TRIANGLE), hole)
+        expected = b'{"areas": [[[40.75890, -111.82830], [40.76860, -111.83230], [40.76860, -111.84780], [40.75890, -111.85220], [40.75890, -111.82830]], [[40.76940, -111.88840], [40.77130, -111.89110], [40.76940, -111.89380], [40.76940, -111.88840]]], "holes": [[[40.76170, -111.83719], [40.76304, -111.83840], [40.76308, -111.83970], [40.76216, -111.84007], [40.76083, -111.83894], [40.76170, -111.83719]]]}'
+        self.assertEqual(polygon.json, expected)
 
 
 class TestPolyline(TestCase):
@@ -148,6 +164,11 @@ class TestRectangle(TestCase):
         self.assertTrue(rectangle.contains_token('874d90ba4'))
         self.assertFalse(rectangle.contains_cellid(9750961227101634560))
         self.assertFalse(rectangle.contains_token('87525f92c'))
+
+    def test_json(self):
+        rectangle = Rectangle((40.2557, -111.6561), (40.2459, -111.643241))
+        expected = b'{"areas": [[[40.25570, -111.65610], [40.24590, -111.65610], [40.24590, -111.64324], [40.25570, -111.64324], [40.25570, -111.65610]]], "holes": []}'
+        self.assertEqual(rectangle.json, expected)
 
 
 class TestUtils(TestCase):
