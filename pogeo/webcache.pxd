@@ -10,7 +10,7 @@ from libcpp.map cimport map
 from ._json cimport Json
 
 
-cdef class WebCache:
+cdef class SightingCache:
     cdef:
         Json.array cache
         set[int16_t] trash
@@ -21,6 +21,7 @@ cdef class WebCache:
         bool extra
         tuple columns
         object session_maker
+        bool int_id
         int last_id
         uint32_t last_update
 
@@ -28,3 +29,16 @@ cdef class WebCache:
     cdef void get_first(self)
     cdef void process_results(self, object cursor)
     cdef void process_extra(self, tuple pokemon, Json.object_ &jobject)
+
+
+cdef class SpawnCache:
+    cdef:
+        Json.array cache
+        bool int_id
+        object Spawnpoint
+        object session_maker
+        int last_id
+        uint32_t last_update
+
+    cdef void update_cache(self)
+    cdef void process_results(self, object cursor)

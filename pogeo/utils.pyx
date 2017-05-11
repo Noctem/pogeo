@@ -4,6 +4,7 @@
 from libc.string cimport memmove
 from libc.math cimport atan2, cos, fmod, log2, sin, sqrt
 from libc.stdint cimport uint32_t, uint64_t
+from libcpp.string cimport string
 from libcpp.vector cimport vector
 
 from ._array cimport array, clone
@@ -131,6 +132,10 @@ def location_to_token(Location p, int level=S2_LEVEL):
 
 cdef S2Point cellid_to_s2point(uint64_t cellid):
     return S2CellId(cellid << leadingZeros(cellid)).ToPointRaw()
+
+
+cdef S2Point token_to_s2point(string token):
+    return S2CellId.FromToken(token).ToPointRaw()
 
 
 cpdef double get_bearing(Location point1, Location point2):
