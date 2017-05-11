@@ -11,8 +11,9 @@ from cython.operator cimport postincrement as incr, dereference as deref
 from ._json cimport Json
 from ._urlencode cimport urlencode
 
-from urllib.request import urlopen
-
+from urllib import request
+cdef urlopen = request.urlopen
+del request
 
 def geocode(unicode query, double timeout=3.0):
     cdef:

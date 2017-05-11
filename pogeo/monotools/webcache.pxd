@@ -7,7 +7,7 @@ from libcpp.set cimport set
 from libcpp.string cimport string
 from libcpp.map cimport map
 
-from ._json cimport Json
+from .._json cimport Json
 
 
 cdef class SightingCache:
