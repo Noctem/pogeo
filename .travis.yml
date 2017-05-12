@@ -27,7 +27,9 @@ matrix:
         sources:
         - llvm-toolchain-trusty-4.0
         - ubuntu-toolchain-r-test
-        packages: clang-4.0
+        packages:
+        - clang-4.0
+        - libstdc++-6-dev
     cache:
       directories: "$HOME/.cache/pip"
   - os: linux

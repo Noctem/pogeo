@@ -15,13 +15,12 @@ if platform == 'win32':
     macros.append(('PTW32_STATIC_LIB', None))
     if 'APPVEYOR' in environ:
         macros.append(('DEPLOYMENT', None))
-    c_args = cpp_args = cpp14_args = None
+    c_args = cpp_args = None
 elif platform == 'darwin':
     c_args = ['-O3']
     if 'TRAVIS' not in environ:
         c_args.append('-march=native')
-    cpp_args = c_args + ['-std=c++11', '-stdlib=libc++']
-    cpp14_args = c_args + ['-std=c++14', '-stdlib=libc++']
+    cpp_args = c_args + ['-std=c++14', '-stdlib=libc++']
 else:
     c_args = ['-O3']
 
@@ -30,8 +29,7 @@ else:
         c_args.extend(['-static-libgcc', '-static-libstdc++'])
     elif 'TRAVIS' not in environ:
         c_args.append('-march=native')
-    cpp_args = c_args + ['-std=c++11']
-    cpp14_args = c_args + ['-std=c++14']
+    cpp_args = c_args + ['-std=c++14']
 
 libs = [('gzip', {
             'language': 'cpp',
@@ -194,8 +192,8 @@ exts = [Extension('pogeo.altitude',
                   language='c++'),
         Extension('pogeo.monotools.sightingcache',
                   define_macros=macros,
-                  extra_compile_args=cpp14_args,
-                  extra_link_args=cpp14_args if not MANY_LINUX else cpp14_args + ['-Wl,-Bstatic', '-lzlib'],
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args if not MANY_LINUX else cpp_args + ['-Wl,-Bstatic', '-lzlib'],
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/monotools/sightingcache.' + file_ext],
