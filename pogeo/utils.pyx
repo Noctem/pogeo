@@ -9,7 +9,7 @@ from libcpp.vector cimport vector
 
 from ._array cimport array, clone
 from ._bitscan cimport leadingZeros
-from ._cpython cimport _PyTime_GetSystemClock
+from ._cpython cimport _PyTime_GetSystemClock, _PyTime_GetMonotonicClock
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
 from .location cimport Location
 from .geo.s1angle cimport S1Angle
@@ -174,7 +174,11 @@ cdef vector[S2Point] get_s2points(shape bounds, int level):
     return points
 
 
-cdef float time():
+cdef float monotonic():
+    return _PyTime_GetMonotonicClock() / 1000000000.0
+
+
+cdef float float_time():
     return _PyTime_GetSystemClock() / 1000000000.0
 
 

@@ -19,7 +19,7 @@ from .geo.s2latlng cimport S2LatLng
 from .location cimport Location
 from .polyline cimport encode_s2points
 from .types cimport shape
-from .utils cimport coords_to_s2point, get_s2points, time
+from .utils cimport coords_to_s2point, get_s2points, float_time
 
 from pickle import dump, load, HIGHEST_PROTOCOL
 from time import sleep
@@ -70,9 +70,9 @@ cdef class AltitudeCache:
             double delay_seconds
 
         if first_request_time == 0.0:
-            first_request_time = time()
+            first_request_time = float_time()
         else:
-            elapsed = first_request_time - time()
+            elapsed = first_request_time - float_time()
             if elapsed > RETRY_TIMEOUT:
                 raise ApiTimeout(f'{elapsed} elapsed since first request.')
 

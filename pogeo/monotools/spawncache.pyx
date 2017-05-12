@@ -68,8 +68,6 @@ cdef class SpawnCache:
             if spawnpoint is None:
                 return
 
-            jobject = Json.object_()
-
             id_ = spawnpoint[INDEX]
             if id_ > self.last_id:
                 self.last_id = id_
