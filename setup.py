@@ -15,7 +15,7 @@ if platform == 'win32':
     macros.append(('PTW32_STATIC_LIB', None))
     if 'APPVEYOR' in environ:
         macros.append(('DEPLOYMENT', None))
-    c_args = cpp_args = None
+    c_args = cpp_args = cpp14_args = None
 elif platform == 'darwin':
     c_args = ['-O3']
     if 'TRAVIS' not in environ:
@@ -183,6 +183,14 @@ exts = [Extension('pogeo.altitude',
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/utils.' + file_ext],
+                  language='c++'),
+        Extension('pogeo.monotools.aiosightingcache',
+                  define_macros=macros,
+                  extra_compile_args=cpp_args,
+                  extra_link_args=cpp_args if not MANY_LINUX else cpp_args + ['-Wl,-Bstatic', '-lzlib'],
+                  include_dirs=include_dirs,
+                  libraries=libraries,
+                  sources=['pogeo/monotools/aiosightingcache.' + file_ext],
                   language='c++'),
         Extension('pogeo.monotools.sightingcache',
                   define_macros=macros,

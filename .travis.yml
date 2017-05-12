@@ -19,7 +19,9 @@ matrix:
     python: 3.6
     language: python
     compiler: clang-4.0
-    env: CC='clang-4.0'
+    env:
+    - CC='clang-4.0'
+    - CXX='clang++-4.0'
     addons:
       apt:
         sources:
@@ -35,7 +37,9 @@ matrix:
     cache:
       directories: "$HOME/.cache/pip"
     compiler: gcc-6
-    env: CC='gcc-6'
+    env:
+    - CC='gcc-6'
+    - CXX='g++-6'
     addons:
       apt:
         sources: ubuntu-toolchain-r-test
@@ -53,6 +57,7 @@ matrix:
     compiler: gcc-6
     env:
     - CC='gcc-6'
+    - CXX='g++-6'
     - CFLAGS='-fpermissive'
     addons:
       apt:
