@@ -21,6 +21,7 @@ elif platform == 'darwin':
     if 'TRAVIS' not in environ:
         c_args.append('-march=native')
     cpp_args = c_args + ['-std=c++11', '-stdlib=libc++']
+    cpp14_args = c_args + ['-std=c++14', '-stdlib=libc++']
 else:
     c_args = ['-O3']
 
@@ -30,8 +31,19 @@ else:
     elif 'TRAVIS' not in environ:
         c_args.append('-march=native')
     cpp_args = c_args + ['-std=c++11']
+    cpp14_args = c_args + ['-std=c++14']
 
-libs = [('s2', {
+libs = [('gzip', {
+            'language': 'cpp',
+            'include_dirs': ['include', 'include/zlib'],
+            'cflags': cpp_args,
+            'sources': ['lib/gzip.cpp']}),
+        ('json', {
+            'language': 'c++',
+            'include_dirs': ['include'],
+            'cflags': cpp_args,
+            'sources': ['lib/json11.cpp']}),
+        ('s2', {
         'language': 'c++',
         'macros': macros,
         'include_dirs': include_dirs,
@@ -74,11 +86,11 @@ libs = [('s2', {
             'language': 'c++',
             'cflags': cpp_args,
             'sources': ['lib/urlencode.cpp']}),
-        ('json', {
-            'language': 'c++',
-            'include_dirs': ['include'],
-            'cflags': cpp_args,
-            'sources': ['lib/json11.cpp']}),
+        ('vectorutils', {
+                    'language': 'cpp',
+                    'include_dirs': ['include'],
+                    'cflags': cpp_args,
+                    'sources': ['lib/vectorutils.cpp']}),
         ('zlib', {
             'language': 'c',
             'include_dirs': ['include/zlib'],
@@ -89,13 +101,7 @@ libs = [('s2', {
                 'lib/zlib/crc32.c',
                 'lib/zlib/deflate.c',
                 'lib/zlib/trees.c',
-                'lib/zlib/zutil.c'
-            ]}),
-        ('gzip', {
-            'language': 'cpp',
-            'include_dirs': ['include', 'include/zlib'],
-            'cflags': cpp_args,
-            'sources': ['lib/gzip.cpp']})]
+                'lib/zlib/zutil.c']})]
 
 try:
     from Cython.Build import cythonize
@@ -180,8 +186,8 @@ exts = [Extension('pogeo.altitude',
                   language='c++'),
         Extension('pogeo.monotools.sightingcache',
                   define_macros=macros,
-                  extra_compile_args=cpp_args,
-                  extra_link_args=cpp_args if not MANY_LINUX else cpp_args + ['-Wl,-Bstatic', '-lzlib'],
+                  extra_compile_args=cpp14_args,
+                  extra_link_args=cpp14_args if not MANY_LINUX else cpp14_args + ['-Wl,-Bstatic', '-lzlib'],
                   include_dirs=include_dirs,
                   libraries=libraries,
                   sources=['pogeo/monotools/sightingcache.' + file_ext],

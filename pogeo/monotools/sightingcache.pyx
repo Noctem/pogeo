@@ -1,20 +1,23 @@
 # distutils: language = c++
 # cython: language_level=3, c_string_type=bytes, c_string_encoding=utf-8
 
-from libc.stdint cimport int16_t, uint64_t
+from libc.stdint cimport int16_t, uint32_t, uint64_t
 from libcpp cimport bool
 from libcpp.string cimport string
 
 from cpython cimport bool as pybool
+from cpython.pythread cimport PyThread_acquire_lock, PyThread_allocate_lock, PyThread_free_lock, PyThread_release_lock
 
 from cython.operator cimport preincrement as incr, dereference as deref
 
 from ._gzip cimport compress
+from ._vectorutils cimport dump_after_id, remove_expired
 from .._json cimport Json
 from ..geo.s2 cimport S2Point
 from ..utils cimport cellid_to_s2point, int_time, s2point_to_lat, s2point_to_lon, token_to_s2point
 
 from sqlalchemy.orm import loading
+from threading import Lock
 
 DEF INDEX = 0
 DEF POKEMON_ID = 1
@@ -51,10 +54,14 @@ cdef class SightingCache:
         self.session_maker = db.Session
 
     cdef void update_cache(self):
-        self.last_update = int_time()
+        if not self.db_lock.try_lock():
+            self.lock.lock()
+            self.lock.unlock()
+            return
+
         session = self.session_maker(autoflush=False)
         try:
-            query = session.query(*self.columns).filter(self.columns[EXPIRATION] > self.last_update, self.columns[INDEX] > self.last_id)
+            query = session.query(*self.columns).filter(self.columns[EXPIRATION] > int_time(), self.columns[INDEX] > self.last_id)
             if self.filter_ids is not None:
                 query = query.filter(~self.query[POKEMON_ID].in_(self.filter_ids))
 
@@ -66,13 +73,17 @@ cdef class SightingCache:
 
             cursor = conn.execute(context.statement, query._params)
             context.runid = loading._new_runid()
+
             self.process_results(cursor.cursor)
-        except Exception:
+        except Exception as e:
             session.rollback()
-            raise
+            print(e)
+            return
         finally:
+            self.db_lock.unlock()
             cursor.close()
             session.close()
+        self.next_update = int_time() + 10
 
     cdef void process_results(self, object cursor):
         cdef:
@@ -88,13 +99,13 @@ cdef class SightingCache:
             int id_
             int16_t pokemon_id
             S2Point point
+            Json null_json = Json()
 
+        self.vector_lock.lock()
         while True:
             pokemon = <tuple>cursor.fetchone()
             if pokemon is None:
                 return
-
-            jobject = Json.object_()
 
             id_ = pokemon[INDEX]
             if id_ > self.last_id:
@@ -114,67 +125,54 @@ cdef class SightingCache:
             jobject[i_name] = Json(self.names[pokemon_id])
             jobject[i_expire] = Json(<int>pokemon[EXPIRATION])
 
-            if self.extra and pokemon[MOVE1] is not None:
-                self.process_extra(pokemon, jobject)
+            if self.extra:
+                if pokemon[MOVE1] is not None:
+                    move1 = pokemon[MOVE1]
+                    move2 = pokemon[MOVE2]
+                    jobject[string(b'atk')] = Json(<int>pokemon[ATKIV])
+                    jobject[string(b'def')] = Json(<int>pokemon[DEFIV])
+                    jobject[string(b'sta')] = Json(<int>pokemon[STAIV])
+                    jobject[string(b'move1')] = Json(self.moves[move1])
+                    jobject[string(b'move2')] = Json(self.moves[move2])
+                    jobject[string(b'damage1')] = Json(self.damage[move1])
+                    jobject[string(b'damage2')] = Json(self.damage[move2])
+                elif not jobject[string(b'move1')].is_null():
+                    jobject[string(b'atk')] = null_json
+                    jobject[string(b'def')] = null_json
+                    jobject[string(b'sta')] = null_json
+                    jobject[string(b'move1')] = null_json
+                    jobject[string(b'move2')] = null_json
+                    jobject[string(b'damage1')] = null_json
+                    jobject[string(b'damage2')] = null_json
 
             self.cache.push_back(Json(jobject))
-
-    cdef void process_extra(self, tuple pokemon, Json.object_ &jobject):
-        cdef int16_t move1, move2
-
-        move1 = pokemon[MOVE1]
-        move2 = pokemon[MOVE2]
-
-        jobject[string(b'atk')] = Json(<int>pokemon[ATKIV])
-        jobject[string(b'def')] = Json(<int>pokemon[DEFIV])
-        jobject[string(b'sta')] = Json(<int>pokemon[STAIV])
-        jobject[string(b'move1')] = Json(self.moves[move1])
-        jobject[string(b'move2')] = Json(self.moves[move2])
-        jobject[string(b'damage1')] = Json(self.damage[move1])
-        jobject[string(b'damage2')] = Json(self.damage[move2])
-
-    cdef void get_first(self):
-        cdef string time_index = string(b'expire')
-        it = self.cache.begin()
-        while it != self.cache.end():
-            if deref(it)[time_index].int_value() < int_time():
-                self.cache.erase(it)
-            else:
-                incr(it)
+        self.vector_lock.unlock()
 
     def get_json(self, int last_id, bool gz=True):
-        if self.last_update + 5 < int_time():
+        if int_time() > self.next_update:
             self.update_cache()
 
+        cdef uint32_t now = int_time()
+        if now > self.next_clean:
+            self.vector_lock.lock()
+            remove_expired(self.cache, now)
+            self.vector_lock.unlock()
+            self.next_clean = now + 35
+
         cdef string compressed
-        if last_id == 0:
-            self.get_first()
-            if gz:
-                compress(Json(self.cache).dump(), compressed, COMPRESSION)
+
+        self.vector_lock.lock_shared()
+        try:
+            if last_id == 0:
+                if gz:
+                    compress(Json(self.cache).dump(), compressed, COMPRESSION)
+                    return compressed
+                else:
+                    return Json(self.cache).dump()
+            elif gz:
+                compress(dump_after_id(self.cache, last_id), compressed, COMPRESSION)
                 return compressed
             else:
-                return Json(self.cache).dump()
-
-        cdef:
-            Json.array jarray
-            Json obj
-            string id_index = string(b'id')
-            string time_index = string(b'expire')
-
-        it = self.cache.begin()
-        while it != self.cache.end():
-            obj = deref(it)
-
-            if obj[time_index].int_value() < int_time():
-                self.cache.erase(it)
-            elif obj[id_index].int_value() < last_id:
-                incr(it)
-            else:
-                jarray.push_back(obj)
-                incr(it)
-
-        if gz:
-            compress(Json(jarray).dump(), compressed, COMPRESSION)
-            return compressed
-        else:
-            return Json(jarray).dump()
+                return dump_after_id(self.cache, last_id)
+        finally:
+            self.vector_lock.unlock_shared()

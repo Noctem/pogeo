@@ -86,6 +86,7 @@ matrix:
         - "$HOME/Library/Caches/Homebrew"
   allow_failures:
   - python: 3.7-dev
+  - compiler: clang-4.0
 before_install:
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; brew install python3 || brew
   upgrade python3; fi

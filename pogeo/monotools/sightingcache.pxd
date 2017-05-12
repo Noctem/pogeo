@@ -7,6 +7,10 @@ from libcpp.set cimport set
 from libcpp.string cimport string
 from libcpp.map cimport map
 
+from cpython.pythread cimport PyThread_type_lock
+
+from ._mutex cimport mutex
+from ._shared_mutex cimport shared_timed_mutex
 from .._json cimport Json
 
 
@@ -23,9 +27,10 @@ cdef class SightingCache:
         object session_maker
         bool int_id
         int last_id
-        uint32_t last_update
+        uint32_t next_update
+        uint32_t next_clean
+        mutex db_lock
+        shared_timed_mutex vector_lock
 
     cdef void update_cache(self)
-    cdef void get_first(self)
     cdef void process_results(self, object cursor)
-    cdef void process_extra(self, tuple pokemon, Json.object_ &jobject)
