@@ -3,11 +3,11 @@
 set -e -x
 
 if [[ "$(uname -m)" = i686 ]]; then
-	TOOLCHAIN_URL='https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/centos5-toolchain-i686.tar.bz2'
+	TOOLCHAIN_URL='https://github.com/Noctem/pogeo-toolchain/releases/download/v1.2/gcc-7.1-centos5-i686.tar.bz2'
 	export LD_LIBRARY_PATH="/toolchain/lib:${LD_LIBRARY_PATH}"
 	MFLAG="-m32"
 else
-	TOOLCHAIN_URL='https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/centos5-toolchain-x86-64.tar.bz2'
+	TOOLCHAIN_URL='https://github.com/Noctem/pogeo-toolchain/releases/download/v1.2/gcc-7.1-centos5-x86-64.tar.bz2'
 	export LD_LIBRARY_PATH="/toolchain/lib64:/toolchain/lib:${LD_LIBRARY_PATH}"
 	MFLAG="-m64"
 fi
