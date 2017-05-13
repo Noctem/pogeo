@@ -1,7 +1,7 @@
 # distutils: language = c++
 # cython: language_level=3, c_string_type=bytes, c_string_encoding=utf-8, cdivision=True
 
-from libc.stdint cimport uint8_t, uint64_t
+from libc.stdint cimport uint8_t, uint32_t, uint64_t
 from libc.stdio cimport snprintf
 from libcpp cimport bool
 from libcpp.string cimport string
@@ -102,11 +102,11 @@ cdef class SpawnCache:
                 if despawn_time > 0 and despawn_time < 60:
                     snprintf(buff, 7, "%us", despawn_time)
                 elif despawn_time < 3600:
-                    snprintf(buff, 7, "%um%us", despawn_time / 60, despawn_time % 60)
+                    snprintf(buff, 7, "%um%us", <uint32_t>(despawn_time / 60), despawn_time % 60)
                 else:
                     snprintf(buff, 7, "?")
 
-                emplace_move(jobject, b'despawn_time', buff)
+                emplace_move(jobject, b'despawn_time', string(buff))
 
             emplace_move(jobject, b'duration', <int>(spawnpoint[DURATION] or 30))
 
