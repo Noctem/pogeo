@@ -12,6 +12,7 @@ from cython.operator cimport preincrement as incr, dereference as deref
 from ._gzip cimport compress
 from ._vectorutils cimport dump_after_id, remove_expired
 from .._json cimport Json
+from .._mcpp cimport emplace, emplace_move, push_back_move
 from ..geo.s2 cimport S2Point
 from ..utils cimport cellid_to_s2point, int_time, s2point_to_lat, s2point_to_lon, token_to_s2point
 
@@ -46,6 +47,8 @@ cdef class AioSightingCache:
         else:
             self.columns = 'id, pokemon_id, spawn_id, expire_timestamp'
 
+        self.next_clean = int_time() + 60
+
     def initialize(self, loop, pool):
         self.pool_acquire = pool.acquire
         self.lock = AioLock(loop=loop)
@@ -59,7 +62,7 @@ cdef class AioSightingCache:
 
         async with self.lock:
             async with self.pool_acquire() as conn:
-                results = await conn.fetch(f'SELECT {self.columns} FROM sightings WHERE expire_timestamp > {int_time()} AND id > {self.last_id}')
+                results = await conn.fetch(f'SELECT {self.columns} FROM sightings WHERE expire_timestamp > {int_time() + 10} AND id > {self.last_id} ORDER BY expire_timestamp DESC')
 
             self.process_results(results)
         self.next_update = int_time() + 10
@@ -67,18 +70,10 @@ cdef class AioSightingCache:
     cdef void process_results(self, list results):
         cdef:
             Json.object_ jobject
-            string i_id = string(b'id')
-            string i_pokemonid = string(b'pid')
-            string i_lat = string(b'lat')
-            string i_lon = string(b'lon')
-            string i_trash = string(b'trash')
-            string i_name = string(b'name')
-            string i_expire = string(b'expire')
             int id_
             int16_t pokemon_id, move1, move2
             S2Point point
             Py_ssize_t i, length = len(results)
-            Json null_json = Json()
 
         for i in range(length):
             pokemon = results[i]
@@ -87,8 +82,8 @@ cdef class AioSightingCache:
             if id_ > self.last_id:
                 self.last_id = id_
 
-            jobject[i_id] = Json(id_)
-            jobject[i_pokemonid] = Json(<int>pokemon[POKEMON_ID])
+            emplace_move(jobject, b'id', id_)
+            emplace_move(jobject, b'pid', <int>pokemon[POKEMON_ID])
 
             try:
                 point = (cellid_to_s2point(<uint64_t>pokemon[SPAWN_ID])
@@ -96,35 +91,26 @@ cdef class AioSightingCache:
                          token_to_s2point(string(<char*>pokemon[SPAWN_ID])))
             except OverflowError:
                 continue
-            jobject[i_lat] = Json(s2point_to_lat(point))
-            jobject[i_lon] = Json(s2point_to_lon(point))
+            emplace_move(jobject, b'lat', s2point_to_lat(point))
+            emplace_move(jobject, b'lon', s2point_to_lon(point))
 
             pokemon_id = pokemon[POKEMON_ID]
-            jobject[i_trash] = Json(self.trash.find(pokemon_id) != self.trash.end())
-            jobject[i_name] = Json(self.names[pokemon_id])
-            jobject[i_expire] = Json(<int>pokemon[EXPIRATION])
+            emplace_move(jobject, b'trash', self.trash.find(pokemon_id) != self.trash.end())
+            emplace(jobject, b'name', self.names[pokemon_id])
+            emplace_move(jobject, b'expire', <int>pokemon[EXPIRATION])
 
-            if self.extra:
-                if pokemon[MOVE1] is not None:
-                    move1 = pokemon[MOVE1]
-                    move2 = pokemon[MOVE2]
-                    jobject[string(b'atk')] = Json(<int>pokemon[ATKIV])
-                    jobject[string(b'def')] = Json(<int>pokemon[DEFIV])
-                    jobject[string(b'sta')] = Json(<int>pokemon[STAIV])
-                    jobject[string(b'move1')] = Json(self.moves[move1])
-                    jobject[string(b'move2')] = Json(self.moves[move2])
-                    jobject[string(b'damage1')] = Json(self.damage[move1])
-                    jobject[string(b'damage2')] = Json(self.damage[move2])
-                elif not jobject[string(b'move1')].is_null():
-                    jobject[string(b'atk')] = null_json
-                    jobject[string(b'def')] = null_json
-                    jobject[string(b'sta')] = null_json
-                    jobject[string(b'move1')] = null_json
-                    jobject[string(b'move2')] = null_json
-                    jobject[string(b'damage1')] = null_json
-                    jobject[string(b'damage2')] = null_json
+            if self.extra and pokemon[MOVE1] is not None:
+                move1 = pokemon[MOVE1]
+                move2 = pokemon[MOVE2]
+                emplace_move(jobject, b'atk', <int>pokemon[ATKIV])
+                emplace_move(jobject, b'def', <int>pokemon[DEFIV])
+                emplace_move(jobject, b'sta', <int>pokemon[STAIV])
+                emplace(jobject, b'move1', self.moves[move1])
+                emplace(jobject, b'move2', self.moves[move2])
+                emplace(jobject, b'damage1', self.damage[move1])
+                emplace(jobject, b'damage2', self.damage[move2])
 
-            self.cache.push_back(Json(jobject))
+            push_back_move(self.cache, jobject)
 
     async def get_json(self, int last_id, bool gz=True):
         if int_time() > self.next_update:
@@ -158,7 +144,6 @@ cdef class AioLock:
 
     async def __aenter__(self):
         await self.acquire()
-        return None
 
     async def __aexit__(self, exc_type, exc, tb):
         self.release()
