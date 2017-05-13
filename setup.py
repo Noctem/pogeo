@@ -7,7 +7,7 @@ from setuptools import setup, Extension
 
 libraries = None
 macros = [('NDEBUG', None)]
-include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math', 'include']
+include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math', 'include', 'include/mcpp']
 MANY_LINUX = False
 
 if platform == 'win32':
