@@ -5,5 +5,6 @@
 using std::string;
 using json11::Json;
 
-string dump_after_id(const Json::array &arr, int index);
+void dump_after_id(const Json::array &arr, int id, string &output);
+string dump_after_id(const Json::array &arr, int id);
 void remove_expired(Json::array &arr, int now);

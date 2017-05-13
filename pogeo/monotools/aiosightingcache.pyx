@@ -7,8 +7,6 @@ from libcpp.string cimport string
 
 from cpython cimport bool as pybool
 
-from cython.operator cimport preincrement as incr, dereference as deref
-
 from ._gzip cimport compress
 from ._vectorutils cimport dump_after_id, remove_expired
 from .._json cimport Json
@@ -121,19 +119,19 @@ cdef class AioSightingCache:
             remove_expired(self.cache, now)
             self.next_clean = now + 35
 
-        cdef string compressed
+        cdef string jsonified
 
         if last_id == 0:
             if gz:
-                compress(Json(self.cache).dump(), compressed, COMPRESSION)
-                return compressed
+                compress(Json(self.cache).dump(), jsonified, COMPRESSION)
             else:
-                return Json(self.cache).dump()
+                return Json(self.cache).dump(jsonified)
         elif gz:
-            compress(dump_after_id(self.cache, last_id), compressed, COMPRESSION)
-            return compressed
+            compress(dump_after_id(self.cache, last_id), jsonified, COMPRESSION)
         else:
-            return dump_after_id(self.cache, last_id)
+            dump_after_id(self.cache, last_id, jsonified)
+
+        return jsonified
 
 
 cdef class AioLock:
