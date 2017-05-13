@@ -10,10 +10,17 @@ using std::remove_if;
 using std::string;
 using json11::Json;
 
-string dump_after_id(const Json::array &arr, int ind) {
+void dump_after_id(const Json::array &arr, int id, string &output) {
   Json::array jarray;
   copy_if(arr.begin(), arr.end(), back_inserter(jarray),
-          [ind](const Json &object) { return object["id"].int_value() > ind; });
+          [id](const Json &object) { return object["id"].int_value() > id; });
+  Json(jarray).dump(output);
+}
+
+string dump_after_id(const Json::array &arr, int id) {
+  Json::array jarray;
+  copy_if(arr.begin(), arr.end(), back_inserter(jarray),
+          [id](const Json &object) { return object["id"].int_value() > id; });
   return Json(jarray).dump();
 }
 
