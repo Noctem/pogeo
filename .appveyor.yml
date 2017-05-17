@@ -1,4 +1,4 @@
-version: 0.3.0-{build}
+version: 0.3.1-{build}
 clone_folder: C:\projects\pogeo
 pull_requests:
   do_not_increment_build_number: true
@@ -10,32 +10,24 @@ environment:
   TWINE_USERNAME: Noctem
   matrix:
   - PYTHON: C:\Python35
-    OPENSSL_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-openssl-x86.zip
     PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x86.zip
-    LIB: C:\projects\pogeo\OpenSSL-x86\lib;C:\projects\pogeo\pthreads-x86
-    INCLUDE: C:\projects\pogeo\OpenSSL-x86\include;C:\projects\pogeo\pthreads-x86
+    LIB: C:\projects\pogeo\pthreads-x86
+    INCLUDE: C:\projects\pogeo\pthreads-x86
   - PYTHON: C:\Python35-x64
-    OPENSSL_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-openssl-x64.zip
     PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x64.zip
-    LIB: C:\projects\pogeo\OpenSSL-x64\lib;C:\projects\pogeo\pthreads-x64
-    INCLUDE: C:\projects\pogeo\OpenSSL-x64\include;C:\projects\pogeo\pthreads-x64
+    LIB: C:\projects\pogeo\pthreads-x64
+    INCLUDE: C:\projects\pogeo\pthreads-x64
   - PYTHON: C:\Python36
-    OPENSSL_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-openssl-x86.zip
     PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x86.zip
-    LIB: C:\projects\pogeo\OpenSSL-x86\lib;C:\projects\pogeo\pthreads-x86
-    INCLUDE: C:\projects\pogeo\OpenSSL-x86\include;C:\projects\pogeo\pthreads-x86
+    LIB: C:\projects\pogeo\pthreads-x86
+    INCLUDE: C:\projects\pogeo\pthreads-x86
   - PYTHON: C:\Python36-x64
-    OPENSSL_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-openssl-x64.zip
     PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/1.0/windows-pthreads-x64.zip
-    LIB: C:\projects\pogeo\OpenSSL-x64\lib;C:\projects\pogeo\pthreads-x64
-    INCLUDE: C:\projects\pogeo\OpenSSL-x64\include;C:\projects\pogeo\pthreads-x64
+    LIB: C:\projects\pogeo\pthreads-x64
+    INCLUDE: C:\projects\pogeo\pthreads-x64
 before_build:
 - cmd: >-
-    curl -fsSL -o openssl.zip %OPENSSL_URL%
-
     curl -fsSL -o pthreads.zip %PTHREADS_URL%
-
-    7z x openssl.zip
 
     7z x pthreads.zip
 install:

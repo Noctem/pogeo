@@ -1,57 +1,29 @@
 #!/usr/bin/env python3
 
-from ctypes.util import find_library
-from os.path import isdir, join, dirname
 from os import environ
 from sys import platform
 
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 
-macros = [('S2_USE_EXACTFLOAT', None), ('ARCH_K8', None)]
+macros = [('NDEBUG', None)]
 include_dirs = ['geometry', 'geometry/s2', 'geometry/util/math']
 
 if platform == 'win32':
     extra_args = []
     macros.append(('PTW32_STATIC_LIB', None))
-    libraries = ['libeay32', 'pthreadVC2', 'Advapi32', 'User32']
-    ssl_name = 'ssleay32'
+    libraries = ['pthreadVC2']
 else:
+    extra_args = ['-std=c++11', '-O3']
+    libraries = None
+    if 'MANYLINUX' in environ:
+        extra_args.extend(['-static-libgcc', '-static-libstdc++'])
     if platform == 'darwin':
-        extra_args = ['-stdlib=libc++', '-Wno-unused-local-typedef', '-std=c++11']
-    else:
-        extra_args = ['-Wno-ignore-qualifiers', '-fpermissive', '-std=c++11']
-    libraries = ['crypto']
-    ssl_name = 'crypto'
+        extra_args.append('-stdlib=libc++')
 
-if 'OPENSSL_ROOT_DIR' in environ:
-    openssl_dir = environ['OPENSSL_ROOT_DIR']
-    openssl_libs = join(openssl_dir, 'lib')
-elif 'OPENSSL_LIBS' in environ:
-    openssl_libs = environ['OPENSSL_LIBS']
-    openssl_dir = dirname(openssl_libs)
-elif isdir('/usr/local/opt/openssl'):
-    openssl_dir = '/usr/local/opt/openssl'
-    openssl_libs = join(openssl_dir, 'lib')
-else:
-    openssl_lib = find_library(ssl_name)
-    if not openssl_lib:
-        if platform != 'win32':
-            raise OSError('Could not find OpenSSL, please set OPENSSL_ROOT_DIR environment variable.')
-        openssl_dir = None
-    else:
-        openssl_libs = dirname(openssl_lib)
-        openssl_dir = dirname(openssl_libs)
-
-if openssl_dir:
-    library_dirs = [openssl_libs]
-    include_dirs.append(join(openssl_dir, 'include'))
-else:
-    library_dirs = []
 
 pogeo = cythonize(Extension('pogeo',
                   define_macros = macros,
-                  library_dirs = library_dirs,
                   libraries = libraries,
                   extra_compile_args = extra_args,
                   extra_link_args = extra_args,
@@ -65,7 +37,6 @@ pogeo = cythonize(Extension('pogeo',
                       'geometry/strings/strutil.cc',
                       'geometry/util/coding/coder.cc',
                       'geometry/util/coding/varint.cc',
-                      'geometry/util/math/exactfloat/exactfloat.cc',
                       'geometry/util/math/mathlimits.cc',
                       'geometry/util/math/mathutil.cc',
                       'geometry/s1angle.cc',
@@ -95,7 +66,7 @@ pogeo = cythonize(Extension('pogeo',
                   language='c++'))
 
 setup (name='pogeo',
-       version='0.3.0',
+       version='0.3.1',
        description='Fast geography package.',
        long_description='A fast C++ extension for calculating cell IDs and distances.',
        url="https://github.com/Noctem/pogeo",
