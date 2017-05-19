@@ -7,6 +7,7 @@ from libcpp.set cimport set
 from libcpp.string cimport string
 from libcpp.map cimport map
 
+from .aiolock cimport AioLock
 from .._json cimport Json
 
 
@@ -27,11 +28,3 @@ cdef class AioSightingCache:
         AioLock lock
 
     cdef void process_results(self, list results)
-
-cdef class AioLock:
-    cdef:
-        list _waiters
-        object _loop
-        bool locked
-
-    cdef void release(self)

@@ -107,12 +107,9 @@ cdef class SightingCache:
 
             emplace_move(jobject, b'id', id_)
             emplace_move(jobject, b'pid', <int>pokemon[POKEMON_ID])
-            try:
-                point = (cellid_to_s2point(<uint64_t>pokemon[SPAWN_ID])
-                         if self.int_id else
-                         token_to_s2point(string(<char*>pokemon[SPAWN_ID])))
-            except OverflowError:
-                continue
+            point = (cellid_to_s2point(<uint64_t>pokemon[SPAWN_ID])
+                     if self.int_id else
+                     token_to_s2point(string(<char*>pokemon[SPAWN_ID])))
             emplace_move(jobject, b'lat', s2point_to_lat(point))
             emplace_move(jobject, b'lon', s2point_to_lon(point))
 
