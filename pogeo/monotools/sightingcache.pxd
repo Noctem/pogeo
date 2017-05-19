@@ -7,8 +7,6 @@ from libcpp.set cimport set
 from libcpp.string cimport string
 from libcpp.map cimport map
 
-from cpython.pythread cimport PyThread_type_lock
-
 from ._mutex cimport mutex
 from ._shared_mutex cimport shared_timed_mutex
 from .._json cimport Json
