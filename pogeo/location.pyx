@@ -5,6 +5,7 @@ from libc.math cimport atan2, sqrt
 from libc.stdint cimport int64_t, uint8_t
 
 from cpython.object cimport Py_EQ, Py_NE
+
 from cyrandom.cyrandom cimport uniform
 
 from ._cpython cimport _PyTime_GetSystemClock
@@ -14,14 +15,6 @@ from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2Point
 from .geo.s2latlng cimport S2LatLng
 from .utils cimport coords_to_s2point, get_distance, get_distance_unit, s2point_to_lat, s2point_to_lon
-
-try:
-    from shapely.geos import lgeos
-except ImportError:
-    class lgeos:
-        @classmethod
-        def GEOSCoordSeq_create(*args):
-            raise ImportError('You must have Shapely installed to use Location as a GEOS point.')
 
 
 cdef class Location:
@@ -118,24 +111,6 @@ cdef class Location:
             s2point_to_lon(p))
         loc.point = p
         return loc
-
-    @property
-    def _ndim(self):
-        return 2 if self.altitude == 0.0 else 3
-
-    @property
-    def _geom(self):
-        cdef uint8_t n = 2 if self.altitude == 0.0 else 3
-        cdef int64_t cs = lgeos.GEOSCoordSeq_create(1, n)
-        lgeos.GEOSCoordSeq_setX(cs, 0, self.longitude)
-        lgeos.GEOSCoordSeq_setY(cs, 0, self.latitude)
-        if n == 3:
-            lgeos.GEOSCoordSeq_setZ(cs, 0, self.altitude)
-        return lgeos.GEOSGeom_createPoint(cs)
-
-    @property
-    def type(self):
-        return 'Point'
 
     @property
     def coords(self):
