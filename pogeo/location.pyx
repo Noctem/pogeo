@@ -4,6 +4,7 @@
 from libc.math cimport atan2, sqrt
 from libc.stdint cimport int64_t, uint8_t
 
+from cpython.object cimport Py_EQ, Py_NE
 from cyrandom.cyrandom cimport uniform
 
 from ._cpython cimport _PyTime_GetSystemClock
@@ -31,6 +32,17 @@ cdef class Location:
 
     def __init__(self, double latitude, double longitude):
         self.point = coords_to_s2point(latitude, longitude)
+
+    def __richcmp__(Location x, Location y, int op):
+        if op == Py_EQ:
+            return x.latitude == y.latitude and x.longitude == y.longitude
+        elif op == Py_NE:
+            return x.latitude != y.latitude or x.longitude != y.longitude
+        else:
+            return False
+
+    def __contains__(self, Location loc):
+        return self.latitude == loc.latitude and self.longitude == loc.longitude
 
     def __getnewargs__(self):
         return self.latitude, self.longitude
@@ -142,3 +154,7 @@ cdef class Location:
     @location.setter
     def location(self, tuple location):
         self.latitude, self.longitude, self.altitude = location
+
+    @property
+    def area(self):
+        return 0

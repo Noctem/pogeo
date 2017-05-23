@@ -6,8 +6,11 @@ from libc.stdint cimport uint64_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
+from cython.operator cimport dereference as deref, postincrement as incr
+
 from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from ._json cimport Json
+from ._mcpp cimport push_back_move
 from .const cimport EARTH_RADIUS_METERS, EARTH_RADIUS_KILOMETERS
 from .geo.s2 cimport S2, S2Point
 from .geo.s2cellid cimport S2CellId
@@ -19,27 +22,17 @@ from .utils cimport coords_to_s2point, s2point_to_lat, s2point_to_lon
 
 
 cdef class Loop:
-    def __cinit__(self, tuple points):
+    def __init__(self, tuple coords):
         cdef:
-            double lat, lon
-            vector[S2Point] v
-            tuple coords
+            vector[S2Point] points
+            S2Point point
 
-        for coords in points:
-            lat, lon = coords
-            v.push_back(coords_to_s2point(lat, lon))
+        for p in coords:
+            point = coords_to_s2point(p[0], p[1])
+            push_back_move(points, point)
 
-        self.shape.Init(v)
-        # if loop covers more than half of the Earth's surface it was probably
-        # erroneously constructed clockwise
-        if self.shape.GetArea() > (M_PI * 2):
-            self.shape.Invert()
-
-        cdef S2LatLngRect rect = self.shape.GetRectBound()
-        self.south = rect.lat_lo().degrees()
-        self.east = rect.lng_hi().degrees()
-        self.north = rect.lat_hi().degrees()
-        self.west = rect.lng_lo().degrees()
+        self.shape.Init(points)
+        self._initialize()
 
     def __bool__(self):
         return True
@@ -59,6 +52,18 @@ cdef class Loop:
 
     def __contains__(self, Location loc):
         return self.shape.Contains(loc.point)
+
+    cdef void _initialize(self):
+        # if loop covers more than half of the Earth's surface it was probably
+        # erroneously constructed clockwise
+        if self.shape.GetArea() > (M_PI * 2):
+            self.shape.Invert()
+
+        cdef S2LatLngRect rect = self.shape.GetRectBound()
+        self.south = rect.lat_lo().degrees()
+        self.east = rect.lng_hi().degrees()
+        self.north = rect.lat_hi().degrees()
+        self.west = rect.lng_lo().degrees()
 
     def get_points(self, int level):
         cdef S2RegionCoverer coverer
@@ -82,6 +87,24 @@ cdef class Loop:
 
     def project(self, Location loc):
         return Location.from_point(self.shape.Project(loc.point))
+
+    @staticmethod
+    cdef Loop from_geojson(Json.array coords):
+        cdef:
+            vector[S2Point] points
+            Loop loop = Loop.__new__(Loop, None)
+            S2Point point
+
+        it = coords.begin()
+        while it != coords.end():
+            # GeoJSON orders coordinates: lon, lat
+            point = coords_to_s2point(deref(it)[1].number_value(), deref(it)[0].number_value())
+            push_back_move(points, point)
+            incr(it)
+
+        loop.shape.Init(points)
+        loop._initialize()
+        return loop
 
     @property
     def json(self):

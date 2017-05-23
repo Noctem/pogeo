@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from array import array
+from logging import getLogger
 from pickle import loads as pickle_loads, dumps as pickle_dumps
 from time import time
 from unittest import main, skip, TestCase
@@ -50,8 +51,10 @@ class TestCellCache(TestCase):
 class TestGeocoder(TestCase):
     @skip('relies on network connection and external service')
     def test_geocode(self):
-        place = geocode('Salt Lake Temple')
-        self.assertTrue(place['display_name'].startswith('Salt Lake Temple'))
+        log = getLogger('geocoder')
+        place = geocode('Salt Lake Temple', log)
+        self.assertAlmostEqual(place.area, 0.002, places=3)
+        self.assertEqual(place.center, Location(40.77046869463424, -111.89191200565921))
 
 
 class TestLocation(TestCase):

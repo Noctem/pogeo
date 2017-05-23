@@ -6,8 +6,11 @@ from libc.stdint cimport uint64_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
+from cython.operator cimport dereference as deref, postincrement as incr
+
 from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from ._json cimport Json
+from ._mcpp cimport push_back_move
 from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
@@ -21,43 +24,28 @@ from .utils cimport coords_to_s2point, s2point_to_lat, s2point_to_lon
 
 
 cdef class Polygon:
-    def __cinit__(self, tuple boundaries, tuple holes=None):
+    def __init__(self, tuple boundaries, tuple holes=None):
         cdef:
             tuple points
-            double lat, lon
-            vector[S2Point] pv
-            S2Point a, b, c
             S2PolygonBuilder builder
             S2PolygonBuilder.EdgeList edge_list
 
         for points in boundaries:
-            self.create_loop(points, &builder, 0)
+            Polygon.create_loop(points, builder, 0)
 
         if holes:
             for points in holes:
-                self.create_loop(points, &builder, 1)
+                Polygon.create_loop(points, builder, 1)
 
         builder.AssemblePolygon(&self.shape, &edge_list)
+        self._initialize()
+
+    cdef void _initialize(self):
         cdef S2LatLngRect rect = self.shape.GetRectBound()
         self.south = rect.lat_lo().degrees()
         self.east = rect.lng_hi().degrees()
         self.north = rect.lat_hi().degrees()
         self.west = rect.lng_lo().degrees()
-
-    cdef void create_loop(self, tuple points, S2PolygonBuilder* builder, int depth):
-        cdef:
-            vector[S2Point] v
-            S2Loop loop
-        for coords in points:
-            lat, lon = coords
-            v.push_back(coords_to_s2point(lat, lon))
-        loop.Init(v)
-        # if loop covers more than half of the Earth's surface it was probably
-        # erroneously constructed clockwise
-        if loop.GetArea() > (M_PI * 2):
-            loop.Invert()
-        loop.set_depth(depth)
-        builder.AddLoop(&loop)
 
     def __bool__(self):
         return True
@@ -100,6 +88,70 @@ cdef class Polygon:
 
     def project(self, Location loc):
         return Location.from_point(self.shape.Project(loc.point))
+
+    @staticmethod
+    cdef void create_loop(tuple points, S2PolygonBuilder &builder, int depth):
+        cdef:
+            vector[S2Point] v
+            S2Loop loop
+            S2Point point
+        for coords in points:
+            point = coords_to_s2point(coords[0], coords[1])
+            push_back_move(v, point)
+        loop.Init(v)
+        # if loop covers more than half of the Earth's surface it was probably
+        # erroneously constructed clockwise
+        if loop.GetArea() > (M_PI * 2):
+            loop.Invert()
+        loop.set_depth(depth)
+        builder.AddLoop(&loop)
+
+    @staticmethod
+    cdef void create_loop_from_geojson(Json.array points, S2PolygonBuilder &builder, int depth):
+        cdef:
+            vector[S2Point] v
+            S2Loop loop
+            S2Point point
+
+        it = points.begin()
+        while it != points.end():
+            # GeoJSON orders coordinates: lon, lat
+            point = coords_to_s2point(deref(it)[1].number_value(), deref(it)[0].number_value())
+            push_back_move(v, point)
+            incr(it)
+
+        loop.Init(v)
+        # if loop covers more than half of the Earth's surface it was probably
+        # erroneously constructed clockwise
+        if loop.GetArea() > (M_PI * 2):
+            loop.Invert()
+        loop.set_depth(depth)
+        builder.AddLoop(&loop)
+
+    @staticmethod
+    cdef Polygon from_geojson(Json.array polygons):
+        cdef:
+            vector[S2Point] points
+            S2PolygonBuilder builder
+            S2PolygonBuilder.EdgeList edge_list
+            Polygon polygon = Polygon.__new__(Polygon, None, None)
+
+        it = polygons.begin()
+        while it != polygons.end():
+            poly = deref(it).array_items()
+
+            it2 = poly.begin()
+            Polygon.create_loop_from_geojson(deref(it2).array_items(), builder, 0)
+            incr(it2)
+            while it2 != poly.end():
+                Polygon.create_loop_from_geojson(deref(it2).array_items(), builder, 1)
+                incr(it2)
+
+            incr(it)
+
+        builder.AssemblePolygon(&polygon.shape, &edge_list)
+        polygon._initialize()
+        return polygon
 
     @property
     def json(self):
