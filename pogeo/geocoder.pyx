@@ -1,8 +1,6 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True, c_string_type=unicode, c_string_encoding=utf-8
 
-from libc.stdint cimport uint16_t
-from libcpp.pair cimport pair
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
