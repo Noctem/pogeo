@@ -6,38 +6,48 @@ from libcpp.pair cimport pair
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
-from cython.operator cimport postincrement as incr, dereference as deref
+from cython.operator cimport dereference as deref, postincrement as incr
 
 from ._json cimport Json
 from ._urlencode cimport urlencode
+from .location cimport Location
+from .loop cimport Loop
+from .polygon cimport Polygon
 
 from urllib import request
 cdef urlopen = request.urlopen
 del request
 
-def geocode(unicode query, double timeout=3.0):
+
+def geocode(unicode query, object log, double timeout=3.0):
     cdef:
-        unicode url
-        string err
+        unicode url, display_name
+        string shape_type, err
         bytes page
         Json response
         Json.array coords
-        vector[pair[double, double]] pairs
-        dict place = {}
 
-    query = urlencode(query.encode('utf-8'))
-    url = f'https://nominatim.openstreetmap.org?format=json&polygon_geojson=1&q={query}'
+    url = f'https://nominatim.openstreetmap.org?format=json&polygon_geojson=1&q={urlencode(query.encode("utf-8"))}'
     page = urlopen(url, timeout=timeout).read()
 
     response = Json.parse(page, err)[0]
 
-    place['display_name'] = response[string(b'display_name')].string_value()
-    place['shape_type'] = response[string(b'geojson')][string(b'type')].string_value()
+    display_name = response[string(b'display_name')].string_value()
+    log.warning(f'Nominatim returned {display_name} for {query}')
 
-    coords = response[string(b'geojson')][string(b'coordinates')][0].array_items()
-    it = coords.begin()
-    while it != coords.end():
-        pairs.push_back(pair[double, double](deref(it)[1].number_value(), deref(it)[0].number_value()))
-        incr(it)
-    place['coords'] = pairs
-    return place
+    coords = response[string(b'geojson')][string(b'coordinates')].array_items()
+
+    shape_type = response[string(b'geojson')][string(b'type')].string_value()
+    if shape_type == string(b'Point'):
+        return Location(coords[1].number_value(), coords[0].number_value())
+    elif shape_type == string(b'Polygon'):
+        if coords.size() == 1:
+            # no holes provided, construct a Loop
+            return Loop.from_geojson(coords[0].array_items())
+        else:
+            # holes provided, construct a Polygon
+            return Polygon.from_geojson(coords)
+    elif shape_type == string(b'MultiPolygon'):
+        return Polygon.from_geojson(coords)
+    else:
+        raise NotImplementedError(f'{shape_type} is not currently supported')
