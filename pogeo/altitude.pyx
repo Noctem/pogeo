@@ -17,7 +17,7 @@ from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
 from .location cimport Location
-from .polyline cimport encode_s2points
+from .polyline_encoder cimport encode_s2points
 from .types cimport shape
 from .utils cimport coords_to_s2point, get_s2points, float_time
 
