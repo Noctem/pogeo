@@ -1,7 +1,8 @@
-from libcpp.string cimport string
-from libcpp.vector cimport vector
+from ._json cimport Json
+from .geo.s2polyline cimport S2Polyline
 
-from .geo.s2 cimport S2Point
+cdef class Polyline:
+    cdef S2Polyline line
 
-
-cdef string encode_s2points(vector[S2Point] &points, size_t start, size_t end)
+    @staticmethod
+    cdef Polyline from_geojson(Json.array coords)

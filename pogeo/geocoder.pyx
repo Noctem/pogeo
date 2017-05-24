@@ -11,6 +11,7 @@ from ._urlencode cimport urlencode
 from .location cimport Location
 from .loop cimport Loop
 from .polygon cimport Polygon
+from .polyline cimport Polyline
 
 from urllib import request
 cdef urlopen = request.urlopen
@@ -31,11 +32,12 @@ def geocode(unicode query, object log, double timeout=3.0):
     response = Json.parse(page, err)[0]
 
     display_name = response[string(b'display_name')].string_value()
-    log.warning(f'Nominatim returned {display_name} for {query}')
+    shape_type = response[string(b'geojson')][string(b'type')].string_value()
+
+    log.warning(f'Nominatim returned a {shape_type} of {display_name} for {query}')
 
     coords = response[string(b'geojson')][string(b'coordinates')].array_items()
 
-    shape_type = response[string(b'geojson')][string(b'type')].string_value()
     if shape_type == string(b'Point'):
         return Location(coords[1].number_value(), coords[0].number_value())
     elif shape_type == string(b'Polygon'):
@@ -47,5 +49,7 @@ def geocode(unicode query, object log, double timeout=3.0):
             return Polygon.from_geojson(coords)
     elif shape_type == string(b'MultiPolygon'):
         return Polygon.from_geojson(coords)
+    elif shape_type == string(b'LineString'):
+        return Polyline.from_geojson(coords)
     else:
         raise NotImplementedError(f'{shape_type} is not currently supported')
