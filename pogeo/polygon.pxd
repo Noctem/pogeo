@@ -8,6 +8,8 @@ cdef class Polygon:
     cdef readonly double south, east, north, west
     cdef void _initialize(self)
     @staticmethod
+    cdef void unpickle_loop(list points, S2PolygonBuilder &builder, int depth)
+    @staticmethod
     cdef void create_loop(tuple points, S2PolygonBuilder &builder, int depth)
     @staticmethod
     cdef void create_loop_from_geojson(Json.array &points, S2PolygonBuilder &builder, int depth)

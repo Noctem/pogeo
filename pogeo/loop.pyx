@@ -10,9 +10,9 @@ from cython.operator cimport dereference as deref, postincrement as incr
 
 from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from ._json cimport Json
-from ._mcpp cimport push_back_move
+from ._mcpp cimport emplace_move, push_back_move
 from .const cimport EARTH_RADIUS_METERS, EARTH_RADIUS_KILOMETERS
-from .geo.s2 cimport S2, S2Point
+from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
@@ -52,6 +52,33 @@ cdef class Loop:
 
     def __contains__(self, Location loc):
         return self.shape.Contains(loc.point)
+
+    def __getnewargs__(self):
+        return None,
+
+    def __getstate__(self):
+        cdef:
+            S2Point s2p
+            list vertices = []
+            int i, length = self.shape.num_vertices()
+
+        for i in range(length):
+            s2p = self.shape.vertex(i)
+            vertices.append((s2p[0], s2p[1], s2p[2]))
+        return vertices
+
+    def __setstate__(self, list state):
+        cdef:
+            tuple point
+            vector[S2Point] points
+            size_t i, length = len(state)
+
+        for i in range(length):
+            point = state[i]
+            emplace_move(points, <double>point[0], <double>point[1], <double>point[2])
+
+        self.shape.Init(points)
+        self._initialize()
 
     cdef void _initialize(self):
         # if loop covers more than half of the Earth's surface it was probably

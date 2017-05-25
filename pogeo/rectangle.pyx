@@ -18,10 +18,8 @@ from .location cimport Location
 
 
 cdef class Rectangle:
-    def __cinit__(self, tuple point1, tuple point2, bint bound=True):
-        cdef:
-            double lat1, lat2, lon1, lon2
-            S2LatLng lo, hi
+    def __init__(self, tuple point1, tuple point2, bint bound=True):
+        cdef double lat1, lat2, lon1, lon2
         lat1, lon1 = point1
         lat2, lon2 = point2
         if lat1 > lat2:
@@ -36,9 +34,9 @@ cdef class Rectangle:
         else:
             self.west = lon1
             self.east = lon2
-        lo = S2LatLng.FromDegrees(self.south, self.west)
-        hi = S2LatLng.FromDegrees(self.north, self.east)
-        self.shape = S2LatLngRect(lo, hi)
+        self.shape = S2LatLngRect(
+            S2LatLng.FromDegrees(self.south, self.west),
+            S2LatLng.FromDegrees(self.north, self.east))
         self.unbound = not bound
 
     def __bool__(self):
@@ -63,6 +61,19 @@ cdef class Rectangle:
             and loc.latitude <= self.north
             and loc.longitude >= self.west
             and loc.longitude <= self.east)
+
+    def __getnewargs__(self):
+        return None, None
+
+    def __getstate__(self):
+        return self.south, self.east, self.north, self.west
+
+    def __setstate__(self, tuple state):
+        self.south, self.east, self.north, self.west = state
+        self.shape = S2LatLngRect(
+            S2LatLng.FromDegrees(self.south, self.west),
+            S2LatLng.FromDegrees(self.north, self.east))
+        self.unbound = False
 
     def get_points(self, int level):
         cdef S2RegionCoverer coverer

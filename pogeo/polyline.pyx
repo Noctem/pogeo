@@ -6,7 +6,7 @@ from libcpp.vector cimport vector
 from cython.operator cimport dereference as deref, postincrement as incr
 
 from ._json cimport Json
-from ._mcpp cimport push_back_move
+from ._mcpp cimport emplace_move, push_back_move
 from .const cimport EARTH_RADIUS_METERS
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2Point
@@ -35,6 +35,29 @@ cdef class Polyline:
 
     def __contains__(self, loc):
         return False
+
+    def __getstate__(self):
+        cdef:
+            S2Point s2p
+            list vertices = []
+            int i, length = self.line.num_vertices()
+
+        for i in range(length):
+            s2p = self.line.vertex(i)
+            vertices.append((s2p[0], s2p[1], s2p[2]))
+        return vertices
+
+    def __setstate__(self, list state):
+        cdef:
+            tuple point
+            vector[S2Point] points
+            size_t i, length = len(state)
+
+        for i in range(length):
+            point = state[i]
+            emplace_move(points, <double>point[0], <double>point[1], <double>point[2])
+
+        self.line.Init(points)
 
     def distance(self, Location loc):
         cdef:
