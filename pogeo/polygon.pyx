@@ -10,7 +10,7 @@ from cython.operator cimport dereference as deref, postincrement as incr
 
 from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from ._json cimport Json
-from ._mcpp cimport push_back_move
+from ._mcpp cimport emplace_move, push_back_move
 from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
@@ -66,6 +66,47 @@ cdef class Polygon:
     def __contains__(self, Location loc):
         return self.shape.Contains(loc.point)
 
+    def __getnewargs__(self):
+        return None, None
+
+    def __getstate__(self):
+        cdef:
+            S2Point s2p
+            S2Loop* loop
+            list vertices, loops = []
+            list depths = []
+            int i, ii, num_vert, num_loop = self.shape.num_loops()
+
+        for i in range(num_loop):
+            vertices = []
+            loop = self.shape.loop(i)
+            num_vert = loop.num_vertices()
+            for ii in range(num_vert):
+                s2p = loop.vertex(ii)
+                vertices.append((s2p[0], s2p[1], s2p[2]))
+            loops.append(vertices)
+            depths.append(loop.depth())
+        return loops, depths
+
+    def __setstate__(self, tuple state):
+        cdef:
+            S2PolygonBuilder builder
+            S2PolygonBuilder.EdgeList edge_list
+            list vertices
+            list loops = state[0]
+            list depths = state[1]
+            tuple point
+            vector[S2Point] points
+            size_t i, length = len(loops)
+
+        for i in range(length):
+            vertices = loops[i]
+            depth = depths[i]
+            Polygon.unpickle_loop(vertices, builder, depth)
+
+        builder.AssemblePolygon(&self.shape, &edge_list)
+        self._initialize()
+
     def get_points(self, int level):
         cdef S2RegionCoverer coverer
         coverer.set_min_level(level)
@@ -88,6 +129,22 @@ cdef class Polygon:
 
     def project(self, Location loc):
         return Location.from_point(self.shape.Project(loc.point))
+
+    @staticmethod
+    cdef void unpickle_loop(list points, S2PolygonBuilder &builder, int depth):
+        cdef:
+            size_t i, length = len(points)
+            tuple point
+            vector[S2Point] vertices
+            S2Loop loop
+
+        for i in range(length):
+            point = points[i]
+            emplace_move(vertices, <double>point[0], <double>point[1], <double>point[2])
+
+        loop.Init(vertices)
+        loop.set_depth(depth)
+        builder.AddLoop(&loop)
 
     @staticmethod
     cdef void create_loop(tuple points, S2PolygonBuilder &builder, int depth):

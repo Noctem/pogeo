@@ -16,6 +16,7 @@ cdef extern from "s2polyline.h" nogil:
         @staticmethod
         bool IsValid(vector[S2Point] vertices)
         int num_vertices()
+        S2Point vertex(int k)
         S1Angle GetLength()
         S2Point GetCentroid()
         S2Point Interpolate(double fraction)

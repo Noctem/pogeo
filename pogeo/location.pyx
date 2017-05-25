@@ -70,10 +70,11 @@ cdef class Location:
             raise IndexError('Must be 0, 1, or 2.')
 
     def __repr__(self):
-        return "Location(%r, %r, %r)" % (self.latitude, self.longitude, self.altitude)
+        return "Location(%r, %r)" % (self.latitude, self.longitude)
 
     def __str__(self):
-        return "Location(%f, %f, %f)" % (self.latitude, self.longitude, self.altitude)
+        return ("Location(%f, %f, %f)" % (self.latitude, self.longitude, self.altitude)
+            if self.altitude else "Location(%f, %f)" % (self.latitude, self.longitude))
 
     def __len__(self):
         return 2 if self.altitude == 0.0 else 3
