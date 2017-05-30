@@ -1,5 +1,5 @@
 __title__ = 'pogeo'
-__version__ = '0.4.0'
+__version__ = '0.4.0b0'
 __author__ = 'David Christenson'
 __license__ = 'Apache License'
 __copyright__ = 'Copyright (c) 2017 David Christenson <https://github.com/Noctem>'

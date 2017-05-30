@@ -8,7 +8,7 @@ from libcpp.string cimport string
 from libcpp.vector cimport vector
 
 from ._array cimport array, clone
-from ._bitscan cimport leadingZeros
+from ._bitscan cimport leadingZeros, trailingZeros
 from ._cpython cimport _PyTime_GetSystemClock, _PyTime_GetMonotonicClock
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
 from .location cimport Location
@@ -122,8 +122,9 @@ def token_to_coords(unicode t):
     return s2point_to_lat(p), s2point_to_lon(p)
 
 
-def location_to_cellid(Location p, int level=S2_LEVEL):
-    return S2CellId.FromPoint(p.point).parent(level).id()
+def location_to_cellid(Location p, int level=S2_LEVEL, strip_trailing=True):
+    cdef uint64_t cellid = S2CellId.FromPoint(p.point).parent(level).id()
+    return cellid >> trailingZeros(cellid) if strip_trailing else cellid
 
 
 def location_to_token(Location p, int level=S2_LEVEL):
