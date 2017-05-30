@@ -9,14 +9,12 @@
 
 #if __GNUC__ >= 4 || HAS_BUILTIN(__builtin_clzll)
 #define leadingZeros(x) __builtin_clzll(x)
+#define trailingZeros(x) __builtin_ctzll(x)
 #endif
 
 #ifndef leadingZeros
 #ifdef _MSC_VER
 #include <intrin.h>
-#ifdef __LZCNT__ && !defined(DEPLOYMENT)
-#define leadingZeros(x) __lzcnt64(x)
-#else
 inline unsigned long leadingZeros(unsigned __int64 x) {
   unsigned long result;
 #ifdef _WIN64
@@ -31,12 +29,37 @@ inline unsigned long leadingZeros(unsigned __int64 x) {
 #endif  // _WIN64
   return 63 - result;
 }
-#endif  // __LZCNT__
+
+inline unsigned long trailingZeros(unsigned __int64 x) {
+  unsigned long result;
+#ifdef _WIN64
+  _BitScanForward64(&result, x);
+  return result;
+#else
+  // Scan the Low Word.
+  if (_BitScanForward(&result, static_cast<unsigned long>(x))) return result;
+
+  // Scan the High Word.
+  _BitScanForward(&result, static_cast<unsigned long>(x >> 32));
+  return result + 32;
+#endif  // _WIN64
+}
 #else
 inline unsigned long leadingZeros(unsigned long long x) {
   unsigned long r = 0;
   while (x >>= 1) r++;
   return 64 - r;
+}
+
+inline unsigned long trailingZeros(unsigned long long x) {
+  unsigned long r;
+  for (r = 0; x != 0; x >>= 1) {
+    if (x & 01)
+      break;
+    else
+      r++;
+  }
+  return r;
 }
 #endif  // _MSC_VER
 #endif  // leadingZeros

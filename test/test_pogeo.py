@@ -9,7 +9,7 @@ from unittest import main, skip, TestCase
 from pogeo import CellCache, Location, Loop, Polygon, Rectangle
 from pogeo.altitude import AltitudeCache
 from pogeo.geocoder import geocode
-from pogeo.polyline import encode_single, encode_multiple
+from pogeo.polyline_encoder import encode_single, encode_multiple
 from pogeo.utils import *
 
 
@@ -142,7 +142,7 @@ class TestPolygon(TestCase):
         self.assertEqual(polygon.json, expected)
 
 
-class TestPolyline(TestCase):
+class TestPolylineEncoder(TestCase):
     def test_single(self):
         self.assertEqual(encode_single(Location(40.761731, -111.901111)), 'ygxwF|t~iT')
 
@@ -215,6 +215,18 @@ class TestUtils(TestCase):
         self.assertAlmostEqual(loc[1], -111.93888, places=5)
         self.assertAlmostEqual(lat, 40.78931, places=5)
         self.assertAlmostEqual(lon, -111.93888, places=5)
+
+    def test_location_to_cellid(self):
+        loc = Location(40.2637, -111.639794)
+        raw = location_to_cellid(loc, 20, False)
+        stripped = location_to_cellid(loc, 20, True)
+        self.assertEqual(raw, 9749608109427392512)
+        self.assertEqual(stripped, 9297950848987)
+
+    def test_location_to_token(self):
+        loc = Location(40.2637, -111.639794)
+        token = location_to_token(loc, 20)
+        self.assertEqual(token, '874d90eb7db')
 
     def test_get_bearing(self):
         loc1 = Location(40.239416, -111.643654)

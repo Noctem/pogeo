@@ -13,8 +13,6 @@ MANY_LINUX = False
 if platform == 'win32':
     libraries = ['pthreadVC2']
     macros.append(('PTW32_STATIC_LIB', None))
-    if 'APPVEYOR' in environ:
-        macros.append(('DEPLOYMENT', None))
     c_args = cpp_args = None
 elif platform == 'darwin':
     c_args = ['-O3']
@@ -232,7 +230,7 @@ if file_ext == 'pyx':
     exts = cythonize(exts)
 
 setup(name='pogeo',
-      version='0.4.0',
+      version='0.4.0b0',
       description='Fast geography package.',
       long_description='A fast C++ extension for calculating cell IDs and distances.',
       url="https://github.com/Noctem/pogeo",
