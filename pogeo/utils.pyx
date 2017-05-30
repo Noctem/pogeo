@@ -49,7 +49,7 @@ def distance_to_latlon(Location loc, double distance):
 def diagonal_distance(Location loc, double distance):
     cdef:
         double lat_add, lon_add
-        S2Point s
+        S2Point point
 
     lat_add = 10.0 if loc.latitude < 80.0 else -10.0
     lon_add = 10.0 if loc.longitude < 180.0 else -10.0

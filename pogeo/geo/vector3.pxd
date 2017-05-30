@@ -22,6 +22,7 @@ cdef extern from "vector3.h" nogil:
         void z(VType &v)
         VType z()
         VType* Data()
+        Self Normalize()
         void Clear()
         bool IsNaN()
 

@@ -159,7 +159,7 @@ cdef class Loop:
 
     @property
     def center(self):
-        return Location.from_point(self.shape.GetCentroid())
+        return Location.from_point(self.shape.GetCentroid().Normalize())
 
     @property
     def bounds(self):

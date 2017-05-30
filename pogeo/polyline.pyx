@@ -73,7 +73,7 @@ cdef class Polyline:
 
     @property
     def center(self):
-        return Location.from_point(self.line.GetCentroid())
+        return Location.from_point(self.line.GetCentroid().Normalize())
 
     @property
     def area(self):
