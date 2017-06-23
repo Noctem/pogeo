@@ -613,7 +613,7 @@ inline void* aligned_malloc(size_t size, int minimum_alignment) {
 #elif defined(OS_CYGWIN)
   return memalign(minimum_alignment, size);
 #else  // !__APPLE__ && !OS_CYGWIN
-  void *ptr = NULL;
+  void* ptr = NULL;
   if (posix_memalign(&ptr, minimum_alignment, size) != 0)
     return NULL;
   else

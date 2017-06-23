@@ -438,7 +438,7 @@ inline int Varint::Length32(uint32 v) {
       : "=&r"(bits)         // Output spec, early clobber
       : "ro"(v), "r"(neg1)  // Input spec
       : "cc"                // Clobbers condition-codes
-      );
+  );
   return Varint::length32_bytes_required[bits + 1];
 }
 
