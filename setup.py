@@ -42,7 +42,6 @@ libs = [('gzip', {
         'include_dirs': include_dirs,
         'cflags': cpp_args,
         'sources': [
-            'geometry/base/int128.cc',
             'geometry/base/logging.cc',
             'geometry/base/stringprintf.cc',
             'geometry/base/strtoint.cc',
