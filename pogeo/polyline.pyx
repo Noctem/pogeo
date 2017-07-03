@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True, c_string_type=bytes, c_string_encoding=ascii
+# cython: language_level=3, cdivision=True, c_string_type=bytes, c_string_encoding=ascii, auto_pickle=False
 
 from libcpp.vector cimport vector
 

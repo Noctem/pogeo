@@ -3,7 +3,8 @@
 set -e
 
 macbuild() {
-	pip3 install -U setuptools wheel cython twine cyrandom
+	pip3 install -U setuptools wheel twine cyrandom
+	pip3 install -U https://github.com/cython/cython/archive/0.26b0.tar.gz --install-option="--no-cython-compile"
 	rm -rf dist build
 	if [[ "$1" = "sdist" && "$SOURCE" = TRUE ]]; then
 		python3 setup.py sdist bdist_wheel

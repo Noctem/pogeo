@@ -2,7 +2,8 @@ from libc.stdint cimport uint32_t, uint64_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
-from ._array cimport array
+from cpython.array cimport array
+
 from .geo.s2 cimport S2Point
 from .location cimport Location
 from .types cimport shape

@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True
+# cython: language_level=3, cdivision=True, auto_pickle=False
 
 from libc.math cimport atan2, sqrt
 from libc.stdint cimport int64_t, uint8_t
