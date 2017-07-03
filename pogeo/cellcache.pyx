@@ -1,5 +1,5 @@
 # distutils: language = c++
-# cython: language_level=3, cdivision=True
+# cython: language_level=3, cdivision=True, auto_pickle=False
 
 from libc.stdint cimport uint64_t
 from libc.string cimport memmove
@@ -7,7 +7,8 @@ from libcpp.vector cimport vector
 
 from cython.operator cimport postincrement as incr, dereference as deref
 
-from ._array cimport array, clone
+from cpython.array cimport array, clone
+
 from .const cimport AXIS_HEIGHT
 from .geo.s2cap cimport S2Cap
 from .geo.s2cellid cimport S2CellId
@@ -39,7 +40,7 @@ cdef class CellCache:
             cells = deref(it).second
 
             size = cells.size()
-            cell_array = clone(ARRAY_TEMPLATE, size)
+            cell_array = clone(ARRAY_TEMPLATE, size, 0)
             memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t) * size)
             state[cell] = cell_array
             incr(it)
@@ -63,7 +64,7 @@ cdef class CellCache:
         if it != self.cache.end():
             cells = deref(it).second
             size = cells.size()
-            cell_array = clone(ARRAY_TEMPLATE, size)
+            cell_array = clone(ARRAY_TEMPLATE, size, 0)
             memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t) * size)
             return cell_array
 
@@ -72,6 +73,6 @@ cdef class CellCache:
         self.cache[cell] = cells
 
         size = cells.size()
-        cell_array = clone(ARRAY_TEMPLATE, size)
+        cell_array = clone(ARRAY_TEMPLATE, size, 0)
         memmove(&cell_array.data.as_ulonglongs[0], &cells[0], sizeof(uint64_t) * size)
         return cell_array

@@ -7,7 +7,8 @@ from libc.stdint cimport uint32_t, uint64_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
 
-from ._array cimport array, clone
+from cpython.array cimport array, clone
+
 from ._bitscan cimport leadingZeros, trailingZeros
 from ._cpython cimport _PyTime_GetSystemClock, _PyTime_GetMonotonicClock
 from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
@@ -75,7 +76,7 @@ def get_cell_ids(Location p):
 
     coverer.GetCellIds(cap, &cells)
     size = cells.size()
-    cell_array = clone(ARRAY_TEMPLATE, size)
+    cell_array = clone(ARRAY_TEMPLATE, size, 0)
     memmove(&cell_array.data.as_ulonglongs[0], &cells[0], size * sizeof(uint64_t))
     return cell_array
 

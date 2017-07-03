@@ -101,7 +101,10 @@ libs = [('gzip', {
 
 try:
     from Cython.Build import cythonize
-    file_ext = 'pyx'
+    from Cython import __version__ as cython_version
+    from distutils.version import StrictVersion
+
+    file_ext = 'pyx' if StrictVersion(cython_version) >= StrictVersion('0.26b0') else 'cpp'
 except ImportError:
     file_ext = 'cpp'
 
