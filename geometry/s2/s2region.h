@@ -7,7 +7,6 @@
 
 class Decoder;
 class Encoder;
-
 class S2Cap;
 class S2Cell;
 class S2LatLngRect;

@@ -3,15 +3,16 @@
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
-
-#include <unordered_set>
-using std::unordered_set;
 
 #include <functional>
 using std::binary_function;
 using std::hash;
+
+#include <unordered_map>
+using std::unordered_map;
+
+#include <unordered_set>
+using std::unordered_set;
 
 #include <gtest/gtest.h>
 #include "base/logging.h"

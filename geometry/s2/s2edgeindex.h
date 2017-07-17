@@ -18,8 +18,8 @@ using std::vector;
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "s2.h"
 #include "s2cellid.h"
-#include "s2edgeutil.h"
 
 class S2Cell;
 

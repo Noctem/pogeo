@@ -26,6 +26,10 @@
 #ifndef UTIL_MATH_VECTOR2_INL_H__
 #define UTIL_MATH_VECTOR2_INL_H__
 
+#include <algorithm>
+using std::min;
+using std::max;
+
 #include "util/math/vector2.h"
 
 #include <cmath>

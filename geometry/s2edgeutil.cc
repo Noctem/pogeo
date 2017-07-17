@@ -1,14 +1,22 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
+
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
+
+#include <cmath>
+using std::cos;
+using std::sin;
 
 #include "s2edgeutil.h"
 
 #include "base/logging.h"
+#include "s1angle.h"
+#include "s2.h"
+#include "s2latlng.h"
+
+class S1Interval;
 
 bool S2EdgeUtil::SimpleCrossing(S2Point const& a, S2Point const& b,
                                 S2Point const& c, S2Point const& d) {

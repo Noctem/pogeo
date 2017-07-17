@@ -3,24 +3,26 @@
 #ifndef UTIL_GEOMETRY_S2REGION_COVERER_H_
 #define UTIL_GEOMETRY_S2REGION_COVERER_H_
 
-#include <queue>
-using std::priority_queue;
-
 #include <memory>
 using std::unique_ptr;
 
+#include <queue>
+using std::priority_queue;
+
 #include <utility>
-using std::pair;
 using std::make_pair;
+using std::pair;
 
 #include <vector>
 using std::vector;
 
 #include "base/macros.h"
+#include "s2.h"
 #include "s2cell.h"
-#include "s2cellid.h"
 
+class S2CellId;
 class S2CellUnion;
+class S2Region;
 
 // An S2RegionCoverer is a class that allows arbitrary regions to be
 // approximated as unions of cells (S2CellUnion).  This is useful for
@@ -196,6 +198,7 @@ class S2RegionCoverer {
   // the queue entries since for some reason priority_queue<> uses a deque by
   // default.
   struct CompareQueueEntries;
+
   typedef pair<int, Candidate*> QueueEntry;
   typedef priority_queue<QueueEntry, vector<QueueEntry>, CompareQueueEntries>
       CandidateQueue;

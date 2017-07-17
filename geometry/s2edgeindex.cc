@@ -49,30 +49,24 @@
 // will intersect one of the four edges of the cross that bounds a,b,c,d.
 // The same holds true if q passes through the cell center of x.
 
-#include "s2edgeindex.h"
-
 #include <algorithm>
 using std::min;
-using std::max;
-using std::swap;
-using std::reverse;
+
+#include <cmath>
+using std::fabs;
 
 #include <set>
 using std::set;
-using std::multiset;
 
 #include <utility>
 using std::pair;
 using std::make_pair;
 
-#include <memory>
-using std::unique_ptr;
+#include "s2edgeindex.h"
 
 #include "base/logging.h"
 #include "s2cell.h"
-#include "s2edgeutil.h"
-#include "s2polyline.h"
-#include "s2regioncoverer.h"
+#include "s2cellid.h"
 
 void S2EdgeIndex::Reset() {
   minimum_s2_level_used_ = S2CellId::kMaxLevel;

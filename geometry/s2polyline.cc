@@ -1,22 +1,30 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
+#include <cmath>
+using std::asin;
+using std::sin;
+
+#include <cstddef>
+#include <functional>
 #include <set>
 using std::set;
-using std::multiset;
 
 #include <vector>
 using std::vector;
 
+#include "s2polyline.h"
+
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include "s2polyline.h"
-#include "util/math/matrix3x3-inl.h"
-
+#include "s1angle.h"
+#include "s1interval.h"
+#include "s2.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2edgeutil.h"
-#include "s2latlng.h"
+#include "s2latlngrect.h"
 #include "util/coding/coder.h"
+#include "util/math/matrix3x3-inl.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 

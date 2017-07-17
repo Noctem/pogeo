@@ -5,8 +5,6 @@
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
 
 #include <vector>
 using std::vector;

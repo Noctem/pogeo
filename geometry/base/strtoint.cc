@@ -4,10 +4,10 @@
 // See strtoint.h for details on how to use this component.
 //
 
+#include <cerrno>
+#include <climits>
+
 #include "base/strtoint.h"
-#include <errno.h>
-#include "base/basictypes.h"
-#include "base/port.h"
 
 // Replacement strto[u]l functions that have identical overflow and underflow
 // characteristics for both ILP-32 and LP-64 platforms, including errno

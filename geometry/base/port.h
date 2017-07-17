@@ -8,9 +8,13 @@
 #ifndef BASE_PORT_H_
 #define BASE_PORT_H_
 
-#include <limits.h>  // So we can set the bounds of our types
-#include <stdlib.h>  // for free()
-#include <string.h>  // for memcpy()
+#include <climits>  // So we can set the bounds of our types
+#include <cstddef>  // For _GLIBCXX macros
+#include <cstdlib>
+using std::free;
+
+#include <cstring>
+using std::memcpy;
 
 #if defined(__APPLE__)
 #include <unistd.h>  // for getpagesize() on mac
@@ -60,10 +64,6 @@ typedef unsigned long ulong;
 #endif
 #endif
 
-#if defined(__cplusplus)
-#include <cstddef>  // For _GLIBCXX macros
-#endif
-
 #if !defined(HAVE_TLS) && defined(_GLIBCXX_HAVE_TLS)
 #define HAVE_TLS 1
 #endif
@@ -103,7 +103,6 @@ typedef uint16_t u_int16_t;
 // The following guarenty declaration of the byte swap functions, and
 // define __BYTE_ORDER for MSVC
 #if defined(COMPILER_MSVC) || defined(_WIN32)
-#include <stdlib.h>
 #define __BYTE_ORDER __LITTLE_ENDIAN
 #define bswap_16(x) _byteswap_ushort(x)
 #define bswap_32(x) _byteswap_ulong(x)
@@ -837,7 +836,6 @@ typedef void (*sig_t)(int);
 
 #include <utility>
 using std::pair;
-using std::make_pair;
 
 #include <vector>
 using std::vector;
@@ -867,9 +865,7 @@ typedef short int16_t;
 
 #endif  // COMPILER_MSVC
 
-#ifdef STL_MSVC  // not always the same as COMPILER_MSVC
-#include "base/port_hash.h"
-#else
+#ifndef STL_MSVC  // not always the same as COMPILER_MSVC
 struct PortableHashBase {};
 #endif
 

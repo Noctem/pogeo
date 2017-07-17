@@ -3,12 +3,17 @@
 #ifndef UTIL_GEOMETRY_S2CELL_H_
 #define UTIL_GEOMETRY_S2CELL_H_
 
-#include "base/basictypes.h"
+#include "base/integral_types.h"
 #include "base/logging.h"
 #include "s2.h"
+#include "s2cap.h"
 #include "s2cellid.h"
+#include "s2latlng.h"
+#include "s2latlngrect.h"
 #include "s2region.h"
-#include "util/math/vector2.h"
+
+class Decoder;
+class Encoder;
 
 // An S2Cell is an S2Region object that represents a cell.  Unlike S2CellIds,
 // it supports efficient containment and intersection tests.  However, it is

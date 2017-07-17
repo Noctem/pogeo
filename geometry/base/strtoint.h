@@ -30,12 +30,16 @@
 #ifndef BASE_STRTOINT_H_
 #define BASE_STRTOINT_H_
 
-#include <stdlib.h>  // For strtol* functions.
+#include <cstdlib>
+using std::strtol;
+using std::strtoll;
+using std::strtoul;
+using std::strtoull;
+
 #include <string>
 using std::string;
 
-#include "base/basictypes.h"
-#include "base/port.h"
+#include "base/integral_types.h"
 
 // Adapter functions for handling overflow and errno.
 int32 strto32_adapter(const char *nptr, char **endptr, int base);

@@ -3,29 +3,35 @@
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
 using std::reverse;
 
+#include <cstddef>
+#include <cmath>
 #include <set>
 using std::set;
-using std::multiset;
-
-#include <vector>
-using std::vector;
 
 #include <unordered_map>
 using std::unordered_map;
 
 #include <utility>
-using std::pair;
 using std::make_pair;
+using std::pair;
+
+#include <vector>
+using std::vector;
 
 #include "s2loop.h"
 
 #include "base/logging.h"
+#include "r1interval.h"
+#include "s1angle.h"
+#include "s1interval.h"
+#include "s2.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2edgeindex.h"
+#include "s2edgeutil.h"
+#include "s2latlngrect.h"
 #include "util/coding/coder.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;

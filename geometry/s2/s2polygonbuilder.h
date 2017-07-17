@@ -3,18 +3,18 @@
 #ifndef UTIL_GEOMETRY_S2POLYGONBUILDER_H__
 #define UTIL_GEOMETRY_S2POLYGONBUILDER_H__
 
-#include <unordered_map>
-using std::unordered_map;
-
-#include <unordered_set>
-using std::unordered_set;
-
 #include <memory>
 using std::unique_ptr;
 
 #include <set>
 using std::set;
 using std::multiset;
+
+#include <unordered_map>
+using std::unordered_map;
+
+#include <unordered_set>
+using std::unordered_set;
 
 #include <utility>
 using std::pair;
@@ -23,7 +23,6 @@ using std::make_pair;
 #include <vector>
 using std::vector;
 
-#include "base/basictypes.h"
 #include "s1angle.h"
 #include "s2.h"
 #include "util/math/matrix3x3.h"
@@ -268,6 +267,7 @@ class S2PolygonBuilder {
   // current position to a new position, and also returns a spatial index
   // containing all of the vertices that do not need to be moved.
   class PointIndex;
+
   typedef unordered_map<S2Point, S2Point> MergeMap;
   void BuildMergeMap(PointIndex* index, MergeMap* merge_map);
 

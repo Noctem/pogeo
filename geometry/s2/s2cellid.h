@@ -3,13 +3,14 @@
 #ifndef UTIL_GEOMETRY_S2CELLID_H_
 #define UTIL_GEOMETRY_S2CELLID_H_
 
+#include <cstddef>
+#include <functional>
+using std::hash;
+
 #include <iostream>
 using std::ostream;
 using std::cout;
 using std::endl;
-
-#include <functional>
-using std::hash;
 
 #include <string>
 using std::string;
@@ -17,8 +18,10 @@ using std::string;
 #include <vector>
 using std::vector;
 
-#include "base/basictypes.h"
+#include "base/integral_types.h"
 #include "base/logging.h"
+#include "base/macros.h"
+#include "base/port.h"
 #include "s2.h"
 #include "util/math/vector2.h"
 

@@ -3,6 +3,8 @@
 //
 //
 
+#include <cmath>
+
 #include "util/math/mathlimits.h"
 
 #include "base/integral_types.h"

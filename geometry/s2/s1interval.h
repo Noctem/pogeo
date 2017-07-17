@@ -3,14 +3,17 @@
 #ifndef UTIL_GEOMETRY_S1INTERVAL_H_
 #define UTIL_GEOMETRY_S1INTERVAL_H_
 
+#include <algorithm>
+using std::max;
+
+#include <cmath>
 #include <iostream>
 using std::ostream;
 using std::cout;
 using std::endl;
 
-#include <cmath>
-#include "base/basictypes.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "util/math/vector2-inl.h"
 
 // An S1Interval represents a closed interval on a unit circle (also known

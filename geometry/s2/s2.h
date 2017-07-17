@@ -6,14 +6,15 @@
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
 using std::reverse;
+using std::swap;
 
+#include <cmath>
+#include <cstddef>
+#include <functional>  // To have template struct hash<T> defined
 #include <unordered_map>
 using std::unordered_map;
 
-// To have template struct hash<T> defined
-#include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "util/math/matrix3x3.h"
@@ -25,8 +26,6 @@ using std::unordered_map;
 // things, there are overloaded operators that make it convenient to write
 // arithmetic expressions (e.g. (1-x)*p1 + x*p2).
 typedef Vector3_d S2Point;
-
-#include <unordered_set>
 
 namespace std {
 
