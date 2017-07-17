@@ -25,10 +25,6 @@ using std::string;
 using std::vector;
 
 #include "base/logging.h"
-//#include "strutil-inl.h"
-//#include "third_party/utf/utf.h"  // for runetochar
-//#include "util/gtl/stl_util-inl.h"  // for string_as_array
-//#include "util/hash/hash.h"
 #include "split.h"
 
 #ifdef _WIN32
@@ -84,11 +80,9 @@ string UInt64ToString(uint64 ui64) {
 // FastHexToBuffer()
 // FastHex64ToBuffer()
 // FastHex32ToBuffer()
-// FastTimeToBuffer()
 //    These are intended for speed.  FastHexToBuffer() assumes the
 //    integer is non-negative.  FastHexToBuffer() puts output in
-//    hex rather than decimal.  FastTimeToBuffer() puts the output
-//    into RFC822 format.  If time is 0, uses the current time.
+//    hex rather than decimal.
 //
 //    FastHex64ToBuffer() puts a 64-bit unsigned value in hex-format,
 //    padded to exactly 16 bytes (plus one byte for '\0')
@@ -96,11 +90,9 @@ string UInt64ToString(uint64 ui64) {
 //    FastHex32ToBuffer() puts a 32-bit unsigned value in hex-format,
 //    padded to exactly 8 bytes (plus one byte for '\0')
 //
-//       All functions take the output buffer as an arg.  FastInt()
-//    uses at most 22 bytes, FastTime() uses exactly 30 bytes.
-//    They all return a pointer to the beginning of the output,
-//    which may not be the beginning of the input buffer.  (Though
-//    for FastTimeToBuffer(), we guarantee that it is.)
+//    All functions take the output buffer as an arg.  FastInt() uses at
+//    most 22 bytes.  They all return a pointer to the beginning of the
+//    output, which may not be the beginning of the input buffer.
 // ----------------------------------------------------------------------
 
 char* FastInt64ToBuffer(int64 i, char* buffer) {
@@ -328,136 +320,6 @@ char* FastInt64ToBufferLeft(int64 i, char* buffer) {
     u = 0 - u;
   }
   return FastUInt64ToBufferLeft(u, buffer);
-}
-
-static inline void PutTwoDigits(int i, char* p) {
-  DCHECK_GE(i, 0);
-  DCHECK_LT(i, 100);
-  p[0] = two_ASCII_digits[i][0];
-  p[1] = two_ASCII_digits[i][1];
-}
-
-char* FastTimeToBuffer(time_t s, char* buffer) {
-#ifndef _WIN32
-  if (s == 0) {
-    time(&s);
-  }
-#endif
-
-  struct tm tm;
-#ifndef _WIN32
-  if (gmtime_r(&s, &tm) == NULL) {
-    // Error message must fit in 30-char buffer.
-    memcpy(buffer, "Invalid:", sizeof("Invalid:"));
-    FastInt64ToBufferLeft(s, buffer + strlen(buffer));
-    return buffer;
-  }
-#endif
-
-  // strftime format: "%a, %d %b %Y %H:%M:%S GMT",
-  // but strftime does locale stuff which we do not want
-  // plus strftime takes > 10x the time of hard code
-
-  const char* weekday_name = "Xxx";
-#ifndef _WIN32
-  switch (tm.tm_wday) {
-    default: { DCHECK(false); } break;
-    case 0:
-      weekday_name = "Sun";
-      break;
-    case 1:
-      weekday_name = "Mon";
-      break;
-    case 2:
-      weekday_name = "Tue";
-      break;
-    case 3:
-      weekday_name = "Wed";
-      break;
-    case 4:
-      weekday_name = "Thu";
-      break;
-    case 5:
-      weekday_name = "Fri";
-      break;
-    case 6:
-      weekday_name = "Sat";
-      break;
-  }
-#endif
-
-  const char* month_name = "Xxx";
-#ifndef _WIN32
-  switch (tm.tm_mon) {
-    default: { DCHECK(false); } break;
-    case 0:
-      month_name = "Jan";
-      break;
-    case 1:
-      month_name = "Feb";
-      break;
-    case 2:
-      month_name = "Mar";
-      break;
-    case 3:
-      month_name = "Apr";
-      break;
-    case 4:
-      month_name = "May";
-      break;
-    case 5:
-      month_name = "Jun";
-      break;
-    case 6:
-      month_name = "Jul";
-      break;
-    case 7:
-      month_name = "Aug";
-      break;
-    case 8:
-      month_name = "Sep";
-      break;
-    case 9:
-      month_name = "Oct";
-      break;
-    case 10:
-      month_name = "Nov";
-      break;
-    case 11:
-      month_name = "Dec";
-      break;
-  }
-#endif
-
-  // Write out the buffer.
-
-  memcpy(buffer + 0, weekday_name, 3);
-  buffer[3] = ',';
-  buffer[4] = ' ';
-
-  PutTwoDigits(tm.tm_mday, buffer + 5);
-  buffer[7] = ' ';
-
-  memcpy(buffer + 8, month_name, 3);
-  buffer[11] = ' ';
-
-  int32 year = tm.tm_year + 1900;
-  PutTwoDigits(year / 100, buffer + 12);
-  PutTwoDigits(year % 100, buffer + 14);
-  buffer[16] = ' ';
-
-  PutTwoDigits(tm.tm_hour, buffer + 17);
-  buffer[19] = ':';
-
-  PutTwoDigits(tm.tm_min, buffer + 20);
-  buffer[22] = ':';
-
-  PutTwoDigits(tm.tm_sec, buffer + 23);
-
-  // includes ending NUL
-  memcpy(buffer + 25, " GMT", 5);
-
-  return buffer;
 }
 
 // ----------------------------------------------------------------------

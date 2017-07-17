@@ -301,8 +301,6 @@ struct stack_t {
 };
 inline int sigaltstack(stack_t* ss, stack_t* oss) { return 0; }
 
-#define PTHREAD_STACK_MIN 0  // Not provided by cygwin
-
 // Scans memory for a character.
 // memrchr is used in a few places, but it's linux-specific.
 inline void* memrchr(const void* bytes, int find_char, size_t len) {
@@ -460,13 +458,6 @@ inline void* memrchr(const void* bytes, int find_char, size_t len) {
 // a trampoline function which aligns the stack prior to calling your code,
 // or as of crosstool v10 with gcc 4.2.0 there is an attribute which asks
 // gcc to do this for you.
-//
-// It has also been discovered that crosstool up to and including v10 does not
-// provide proper alignment for pthread_once() functions in x86-64 code either.
-// Unfortunately gcc does not provide force_align_arg_pointer as an option in
-// x86-64 code, so this requires us to always have a trampoline.
-//
-// For an example of using this see util/hash/adler32*
 
 #if defined(__i386__) && \
     (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
@@ -840,9 +831,6 @@ typedef void (*sig_t)(int);
 // if'd out under NT. We need this subset at minimum.
 #define EXFULL ENOMEM  // not really that great a translation...
 #define EWOULDBLOCK WSAEWOULDBLOCK
-#ifndef PTHREADS_REDHAT_WIN32
-#define ETIMEDOUT WSAETIMEDOUT
-#endif
 #define ENOTSOCK WSAENOTSOCK
 #define EINPROGRESS WSAEINPROGRESS
 #define ECONNRESET WSAECONNRESET
@@ -951,27 +939,10 @@ struct PortableHashBase {};
 #define PRIXS __PRIS_PREFIX "X"
 #define PRIoS __PRIS_PREFIX "o"
 
-#define GPRIuPTHREAD "lu"
-#define GPRIxPTHREAD "lx"
-#ifdef OS_CYGWIN
-#define PRINTABLE_PTHREAD(pthreadt) reinterpret_cast<uintptr_t>(pthreadt)
-#else
-#define PRINTABLE_PTHREAD(pthreadt) pthreadt
-#endif
-
 #define SIZEOF_MEMBER(t, f) sizeof(((t*)4096)->f)
 
 #define OFFSETOF_MEMBER(t, f)                              \
   (reinterpret_cast<char*>(&reinterpret_cast<t*>(16)->f) - \
    reinterpret_cast<char*>(16))
-
-#ifdef PTHREADS_REDHAT_WIN32
-#include <iosfwd>
-using std::ostream;
-
-#include <pthread.h>
-// pthread_t is not a simple integer or pointer on Win32
-std::ostream& operator<<(std::ostream& out, const pthread_t& thread_id);
-#endif
 
 #endif  // BASE_PORT_H_

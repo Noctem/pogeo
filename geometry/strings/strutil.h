@@ -57,8 +57,8 @@ static const int kFastToBufferSize = 32;
 // IntToString()
 // Int64ToString()
 // UInt64ToString()
-//    Convert various types to their string representation, possibly padded
-//    with spaces, using snprintf format specifiers.
+//    Convert various types to their string representation, possibly
+//    padded with spaces, using snprintf format specifiers.
 //    "Fp" here stands for fingerprint: a 64-bit entity
 //    represented in 16 hex digits.
 // ----------------------------------------------------------------------
@@ -79,11 +79,9 @@ string UInt64ToString(uint64 ui64);
 // FastHexToBuffer()
 // FastHex64ToBuffer()
 // FastHex32ToBuffer()
-// FastTimeToBuffer()
 //    These are intended for speed.  FastIntToBuffer() assumes the
 //    integer is non-negative.  FastHexToBuffer() puts output in
-//    hex rather than decimal.  FastTimeToBuffer() puts the output
-//    into RFC822 format.
+//    hex rather than decimal.
 //
 //    FastHex64ToBuffer() puts a 64-bit unsigned value in hex-format,
 //    padded to exactly 16 bytes (plus one byte for '\0')
@@ -92,22 +90,14 @@ string UInt64ToString(uint64 ui64);
 //    padded to exactly 8 bytes (plus one byte for '\0')
 //
 //       All functions take the output buffer as an arg.  FastInt()
-//    uses at most 22 bytes, FastTime() uses exactly 30 bytes.
-//    They all return a pointer to the beginning of the output,
-//    which may not be the beginning of the input buffer.  (Though
-//    for FastTimeToBuffer(), we guarantee that it is.)
-//
-//    NOTE: In 64-bit land, sizeof(time_t) is 8, so it is possible
-//    to pass to FastTimeToBuffer() a time whose year cannot be
-//    represented in 4 digits. In this case, the output buffer
-//    will contain the string "Invalid:<value>"
+//    uses at most 22 bytes.  They all return a pointer to the beginning
+//    of the output, which may not be the beginning of the input buffer.
 // ----------------------------------------------------------------------
 
 // Previously documented minimums -- the buffers provided must be at least this
 // long, though these numbers are subject to change:
 //     Int32, UInt32:        12 bytes
 //     Int64, UInt64, Hex:   22 bytes
-//     Time:                 30 bytes
 //     Hex32:                 9 bytes
 //     Hex64:                17 bytes
 // Use kFastToBufferSize rather than hardcoding constants.
@@ -117,7 +107,6 @@ char* FastInt64ToBuffer(int64 i, char* buffer);
 char* FastUInt32ToBuffer(uint32 i, char* buffer);
 char* FastUInt64ToBuffer(uint64 i, char* buffer);
 char* FastHexToBuffer(int i, char* buffer);
-char* FastTimeToBuffer(time_t t, char* buffer);
 char* FastHex64ToBuffer(uint64 i, char* buffer);
 char* FastHex32ToBuffer(uint32 i, char* buffer);
 
