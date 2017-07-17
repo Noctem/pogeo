@@ -10,11 +10,13 @@
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
-// for min
+
+#include <cstring>
+using std::memcpy;
+
+#include "base/integral_types.h"
 #include "base/logging.h"
-#include "base/port.h"
+#include "base/macros.h"
 #include "util/coding/varint.h"
 #include "util/endian/endian.h"
 

@@ -3,10 +3,19 @@
 #ifndef UTIL_GEOMETRY_S2CAP_H_
 #define UTIL_GEOMETRY_S2CAP_H_
 
-#include "base/basictypes.h"
+#include <cmath>
+#include <ostream>
+using std::ostream;
+
 #include "base/logging.h"
 #include "s1angle.h"
+#include "s2.h"
+#include "s2latlngrect.h"
 #include "s2region.h"
+
+class Decoder;
+class Encoder;
+class S2Cell;
 
 // This class represents a spherical cap, i.e. a portion of a sphere cut off
 // by a plane.  The cap is defined by its axis and height.  This

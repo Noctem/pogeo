@@ -1,19 +1,19 @@
 // Copyright 2009 Google Inc. All Rights Reserved.
 
-#include "util/math/exactfloat/exactfloat.h"
-#include <cmath>
-#include <cstring>
-
 #include <algorithm>
-
 using std::min;
 using std::max;
 using std::swap;
-using std::reverse;
+
+#include <cmath>
 using std::signbit;
+
+#include <cstring>
 
 #include <limits>
 using std::numeric_limits;
+
+#include "util/math/exactfloat/exactfloat.h"
 
 #include "base/integral_types.h"
 #include "base/logging.h"

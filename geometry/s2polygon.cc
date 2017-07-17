@@ -1,34 +1,33 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
-#include <algorithm>
-using std::min;
-using std::max;
-using std::swap;
-using std::reverse;
+#include <cstddef>
+using std::size_t;
 
 #include <functional>
-using std::hash;
+#include <set>
+using std::set;
 
 #include <unordered_map>
 using std::unordered_map;
 
-#include <set>
-using std::set;
-using std::multiset;
-
-#include <memory>
-using std::unique_ptr;
+#include <utility>
+using std::make_pair;
+using std::pair;
 
 #include <vector>
 using std::vector;
 
 #include "s2polygon.h"
 
+#include "base/logging.h"
+#include "s1angle.h"
+#include "s2.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2cellunion.h"
 #include "s2edgeindex.h"
-#include "s2latlngrect.h"
+#include "s2edgeutil.h"
+#include "s2loop.h"
 #include "s2polygonbuilder.h"
 #include "s2polyline.h"
 #include "util/coding/coder.h"

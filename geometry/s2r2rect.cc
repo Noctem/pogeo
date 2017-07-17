@@ -7,6 +7,7 @@
 #include "s2.h"
 #include "s2cap.h"
 #include "s2cell.h"
+#include "s2cellid.h"
 #include "s2latlngrect.h"
 
 S2R2Rect S2R2Rect::FromCell(S2Cell const& cell) {

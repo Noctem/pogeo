@@ -1,36 +1,34 @@
 // Copyright 2006 Google Inc. All Rights Reserved.
 
-#include "s2polygonbuilder.h"
-
 #include <algorithm>
 using std::min;
-using std::max;
-using std::swap;
-using std::reverse;
 
+#include <cmath>
+using std::sqrt;
+
+#include <cstddef>
 #include <iomanip>
 using std::setprecision;
 
 #include <iostream>
-using std::ostream;
 using std::cout;
-using std::endl;
 
 #include <map>
-using std::map;
 using std::multimap;
 
-#include <set>
-using std::set;
-using std::multiset;
+#include <unordered_set>
+using std::unordered_set;
 
 #include <vector>
 using std::vector;
+
+#include "s2polygonbuilder.h"
 
 #include "base/logging.h"
 #include "base/macros.h"
 #include "s2.h"
 #include "s2cellid.h"
+#include "s2loop.h"
 #include "s2polygon.h"
 #include "util/math/matrix3x3-inl.h"
 

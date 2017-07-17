@@ -3,14 +3,21 @@
 #ifndef UTIL_GEOMETRY_S2R2RECT_H_
 #define UTIL_GEOMETRY_S2R2RECT_H_
 
-#include "base/basictypes.h"
+#include <ostream>
+using std::ostream;
+
 #include "base/logging.h"
 #include "r1interval.h"
+#include "s2.h"
+#include "s2cap.h"
+#include "s2latlngrect.h"
 #include "s2region.h"
 #include "util/math/vector2-inl.h"
 
-class S2CellId;
+class Decoder;
+class Encoder;
 class S2Cell;
+class S2CellId;
 
 // TODO: Create an r2.h and move this definition into it.
 typedef Vector2_d R2Point;

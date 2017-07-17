@@ -14,8 +14,6 @@
 #define UTIL_MATH_MATHLIMITS_H__
 
 #include <cfloat>
-#include <cmath>
-#include "base/basictypes.h"
 
 // ========================================================================= //
 

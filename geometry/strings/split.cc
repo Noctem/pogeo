@@ -1,18 +1,27 @@
 // Copyright 2008 and onwards Google Inc.  All rights reserved.
 
-#include <limits>
-using std::numeric_limits;
-#include <stdint.h>
+#include <cassert>
 
+#ifdef _LP64
+#include <cstdint>
+using std::intptr_t;
+#endif
+
+#include <cstdlib>
+using std::size_t;
+
+#include <cstring>
+using std::strchr;
+
+#include <functional>
 #include <iterator>
 using std::back_insert_iterator;
 
-#include "base/integral_types.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/strtoint.h"
 #include "split.h"
-#include "strutil.h"
+
+#include "base/basictypes.h"
+#include "base/integral_types.h"
+#include "base/strtoint.h"
 #include "util/hash/hash_jenkins_lookup2.h"
 
 static const uint32 MIX32 = 0x12b9b0a1UL;  // pi; an arbitrary number

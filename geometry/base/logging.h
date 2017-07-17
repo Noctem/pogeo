@@ -14,11 +14,11 @@
 #ifndef BASE_LOGGING_H
 #define BASE_LOGGING_H
 
-#include <stdlib.h>
+#include <cstdlib>
+
 #include <iostream>
+using std::cerr;
 using std::ostream;
-using std::cout;
-using std::endl;
 
 #include "base/macros.h"
 
@@ -90,11 +90,11 @@ class DateLogger {
 class LogMessage {
  public:
   LogMessage(const char* file, int line) {
-    std::cerr << "[" << pretty_date_.HumanDate() << "] " << file << ":" << line
+    cerr << "[" << pretty_date_.HumanDate() << "] " << file << ":" << line
               << ": ";
   }
-  ~LogMessage() { std::cerr << "\n"; }
-  std::ostream& stream() { return std::cerr; }
+  ~LogMessage() { cerr << "\n"; }
+  ostream& stream() { return cerr; }
 
  private:
   google_base::DateLogger pretty_date_;
@@ -105,7 +105,7 @@ class LogMessageFatal : public LogMessage {
  public:
   LogMessageFatal(const char* file, int line) : LogMessage(file, line) {}
   ~LogMessageFatal() {
-    std::cerr << "\n";
+    cerr << "\n";
     abort();
   }
 

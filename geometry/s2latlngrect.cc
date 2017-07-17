@@ -3,17 +3,28 @@
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
+
+#include <cmath>
+using std::atan2;
+using std::fabs;
+using std::remainder;
+using std::sin;
+
+#include <ostream>
+using std::ostream;
 
 #include "s2latlngrect.h"
 
 #include "base/logging.h"
+#include "r1interval.h"
+#include "s1angle.h"
+#include "s1interval.h"
+#include "s2.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2edgeutil.h"
+#include "s2latlng.h"
 #include "util/coding/coder.h"
-#include "util/math/mathutil.h"
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 

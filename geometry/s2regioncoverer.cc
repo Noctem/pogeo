@@ -1,29 +1,27 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
-#include "s2regioncoverer.h"
-
-#include <mutex>
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
 
+#include <cstddef>
 #include <functional>
 using std::less;
+
+#include <mutex>
+using std::call_once;
+using std::once_flag;
 
 #include <unordered_set>
 using std::unordered_set;
 
-#include <queue>
-using std::priority_queue;
-
 #include <vector>
 using std::vector;
 
+#include "s2regioncoverer.h"
+
 #include "base/logging.h"
-#include "s2.h"
-#include "s2cap.h"
+#include "s2cellid.h"
 #include "s2cellunion.h"
 
 // Define storage for header file constants (the values are not needed here).
@@ -48,8 +46,8 @@ void Init() {
   }
 }
 
-static std::once_flag init_once;
-inline static void MaybeInit() { std::call_once(init_once, Init); }
+static once_flag init_once;
+inline static void MaybeInit() { call_once(init_once, Init); }
 
 S2RegionCoverer::S2RegionCoverer()
     : min_level_(0),

@@ -2,21 +2,12 @@
 // Copyright (C) 1999-2005 Google, Inc.
 //
 
-#include "strutil.h"
+#include <cstdio>
+using std::snprintf;
 
-#include <algorithm>
-using std::min;
-using std::max;
-using std::swap;
-using std::reverse;
-
-#include <iterator>
-#include <limits>
-using std::numeric_limits;
-
-#include <set>
-using std::set;
-using std::multiset;
+#include <cstdlib>
+using std::strtoll;
+using std::strtoull;
 
 #include <string>
 using std::string;
@@ -24,14 +15,10 @@ using std::string;
 #include <vector>
 using std::vector;
 
+#include "strutil.h"
+
 #include "base/logging.h"
 #include "split.h"
-
-#ifdef _WIN32
-#ifdef min  // windows.h defines this to something silly
-#undef min
-#endif
-#endif
 
 // ----------------------------------------------------------------------
 // FloatToString()

@@ -3,7 +3,10 @@
 //
 //
 
+#include <cassert>
+
 #include "util/coding/coder.h"
+
 #include "base/logging.h"
 
 // An initialization value used when we are allowed to

@@ -3,11 +3,17 @@
 #ifndef UTIL_GEOMETRY_S2LATLNG_H__
 #define UTIL_GEOMETRY_S2LATLNG_H__
 
+#include <cmath>
+using std::fabs;
+
+#include <ostream>
+using std::ostream;
+
 #include <string>
 using std::string;
 
-#include <ostream>
-#include "base/basictypes.h"
+#include "base/integral_types.h"
+#include "base/macros.h"
 #include "s1angle.h"
 #include "s2.h"
 #include "util/math/vector2-inl.h"

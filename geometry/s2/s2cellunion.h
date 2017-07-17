@@ -10,11 +10,15 @@ using std::vector;
 #include "base/logging.h"
 #include "base/macros.h"
 #include "s2.h"
-#include "s2cellid.h"
+#include "s2cap.h"
+#include "s2latlngrect.h"
 #include "s2region.h"
 
+class Decoder;
+class Encoder;
 class S1Angle;
 class S2Cell;
+class S2CellId;
 
 // An S2CellUnion is a region consisting of cells of various sizes.  Typically
 // a cell union is used to approximate some other shape.  There is a tradeoff

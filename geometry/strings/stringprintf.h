@@ -17,7 +17,6 @@ using std::string;
 #include <vector>
 using std::vector;
 
-#include "base/port.h"
 #include "base/stringprintf.h"
 
 // This file formerly contained

@@ -12,45 +12,21 @@
 #ifndef STRINGS_STRUTIL_H_
 #define STRINGS_STRUTIL_H_
 
-#include <functional>
-using std::less;
-
-#include <set>
-using std::set;
-using std::multiset;
-
 #include <string>
 using std::string;
 
 #include <utility>
 using std::pair;
-using std::make_pair;
 
 #include <vector>
 using std::vector;
 
-#include <stdlib.h>
-#include <string.h>
-
-// for strcasecmp (check SuSv3 -- this is the only header it's in!)
-// MSVC doesn't have <strings.h>. Luckily, it defines equivalent
-// functions (see port.h)
-#ifndef _WIN32
-#include <strings.h>
-#endif
-#include <ctype.h>  // not needed, but removing it will break the build
+#include "base/integral_types.h"
 
 // A buffer size which is large enough for all the FastToBuffer functions, as
 // well as DoubleToBuffer and FloatToBuffer.  We define this here in case other
 // string headers depend on it.
 static const int kFastToBufferSize = 32;
-
-#include "base/basictypes.h"
-#include "base/int128.h"
-#include "base/logging.h"  // for CHECK
-#include "base/port.h"
-#include "base/strtoint.h"
-#include "stringprintf.h"
 
 // ----------------------------------------------------------------------
 // FloatToString()

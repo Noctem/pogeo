@@ -2,25 +2,26 @@
 
 #include "s2cellid.h"
 
-#include <mutex>
+
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
 
-#include <iomanip>
-using std::setprecision;
+#include <cstddef>
+#include <mutex>
+using std::call_once;
+using std::once_flag;
 
 #include <vector>
 using std::vector;
 
+
 #include "base/integral_types.h"
 #include "base/logging.h"
+#include "base/stringprintf.h"
 #include "s2.h"
 #include "s2latlng.h"
 #include "strings/strutil.h"
-#include "util/math/mathutil.h"
 #include "util/math/vector2-inl.h"
 
 // The following lookup tables are used to convert efficiently between an
@@ -57,7 +58,7 @@ static int const kInvertMask = 0x02;
 static uint16 lookup_pos[1 << (2 * kLookupBits + 2)];
 static uint16 lookup_ij[1 << (2 * kLookupBits + 2)];
 
-std::once_flag init_once;
+once_flag init_once;
 
 static void InitLookupCell(int level, int i, int j, int orig_orientation,
                            int pos, int orientation) {
@@ -89,7 +90,7 @@ static void Init() {
   InitLookupCell(0, 0, 0, kSwapMask | kInvertMask, 0, kSwapMask | kInvertMask);
 }
 
-inline static void MaybeInit() { std::call_once(init_once, Init); }
+inline static void MaybeInit() { call_once(init_once, Init); }
 
 int S2CellId::level() const {
   // Fast path for leaf cells.

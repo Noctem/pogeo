@@ -16,10 +16,12 @@
 #ifndef _VARINT_H
 #define _VARINT_H
 
+#include <cassert>
+#include <cstddef>
 #include <string>
 using std::string;
 
-#include "base/basictypes.h"
+#include "base/integral_types.h"
 
 // Just a namespace, not a real class
 class Varint {

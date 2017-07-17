@@ -1,8 +1,13 @@
 // Copyright 2008 Google Inc. All Rights Reserved.
 
-#include "util/math/mathutil.h"
+#include <cstdlib>
+using std::div;
+using std::div_t;
+
 #include <vector>
 using std::vector;
+
+#include "util/math/mathutil.h"
 
 #include "base/integral_types.h"
 #include "base/logging.h"

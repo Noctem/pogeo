@@ -5,7 +5,6 @@
 #include <vector>
 using std::vector;
 
-#include "base/logging.h"
 #include "base/stringprintf.h"
 
 void StringAppendV(string* dst, const char* format, va_list ap) {

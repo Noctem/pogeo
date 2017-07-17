@@ -6,7 +6,13 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "s2.h"
+#include "s2cap.h"
+#include "s2latlngrect.h"
 #include "s2region.h"
+
+class Decoder;
+class Encoder;
+class S2Cell;
 
 // An S2PointRegion is a region that contains a single point.  It is more
 // expensive than the raw S2Point type and is useful mainly for completeness.

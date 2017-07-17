@@ -6,25 +6,22 @@
 #ifndef STRINGS_SPLIT_H_
 #define STRINGS_SPLIT_H_
 
-#include <string>
-using std::string;
-
-#include <vector>
-using std::vector;
-
 #include <set>
 using std::set;
-using std::multiset;
 
-#include <utility>
-using std::pair;
-using std::make_pair;
+#include <string>
+using std::string;
 
 #include <unordered_map>
 using std::unordered_map;
 
 #include <unordered_set>
 using std::unordered_set;
+
+#include <vector>
+using std::vector;
+
+#include "base/integral_types.h"
 
 // ----------------------------------------------------------------------
 // SplitStringAllowEmpty()

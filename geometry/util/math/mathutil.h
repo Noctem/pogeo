@@ -7,19 +7,22 @@
 #ifndef UTIL_MATH_MATHUTIL_H__
 #define UTIL_MATH_MATHUTIL_H__
 
-#include <cmath>
-using std::abs;
-
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
+
+#include <cmath>
+using std::abs;
+using std::exp;
+using std::log;
+using std::sin;
+using std::sqrt;
 
 #include <vector>
 using std::vector;
 
-#include "base/basictypes.h"
+#include "base/casts.h"
+#include "base/integral_types.h"
 #include "base/logging.h"
 #include "util/math/mathlimits.h"
 
@@ -644,7 +647,7 @@ class MathUtil {
   // Returns the clamped value to be between low and high inclusively.
   template <typename T>
   static const T& Clamp(const T& low, const T& high, const T& value) {
-    return std::max(low, std::min(value, high));
+    return max(low, min(value, high));
   }
 
   // Clamps value to be between min and max inclusively.

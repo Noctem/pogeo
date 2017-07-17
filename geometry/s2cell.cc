@@ -1,9 +1,15 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
+#include <cmath>
+using std::asin;
+using std::sqrt;
+
 #include "s2cell.h"
 
 #include "base/integral_types.h"
 #include "base/logging.h"
+#include "r1interval.h"
+#include "s1interval.h"
 #include "s2.h"
 #include "s2cap.h"
 #include "s2latlngrect.h"
