@@ -2,8 +2,7 @@
 
 #include "s2cellid.h"
 
-#include <pthread.h>
-
+#include <mutex>
 #include <algorithm>
 using std::min;
 using std::max;
@@ -58,6 +57,8 @@ static int const kInvertMask = 0x02;
 static uint16 lookup_pos[1 << (2 * kLookupBits + 2)];
 static uint16 lookup_ij[1 << (2 * kLookupBits + 2)];
 
+std::once_flag init_once;
+
 static void InitLookupCell(int level, int i, int j, int orig_orientation,
                            int pos, int orientation) {
   if (level == kLookupBits) {
@@ -88,8 +89,7 @@ static void Init() {
   InitLookupCell(0, 0, 0, kSwapMask | kInvertMask, 0, kSwapMask | kInvertMask);
 }
 
-static pthread_once_t init_once = PTHREAD_ONCE_INIT;
-inline static void MaybeInit() { pthread_once(&init_once, Init); }
+inline static void MaybeInit() { std::call_once(init_once, Init); }
 
 int S2CellId::level() const {
   // Fast path for leaf cells.

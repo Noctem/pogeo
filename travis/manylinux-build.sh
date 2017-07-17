@@ -22,7 +22,7 @@ export CXXFLAGS="-I/toolchain/include ${MFLAG}"
 
 # Compile wheels
 for PIP in /opt/python/cp3[56789]*/bin/pip; do
-	"$PIP" install -U https://github.com/cython/cython/archive/0.26b0.tar.gz --install-option="--no-cython-compile"
+	"$PIP" install -U https://github.com/cython/cython/archive/0.26rc1.tar.gz --install-option="--no-cython-compile"
 	"$PIP" install -U cyrandom
 	"$PIP" wheel -v /io/ -w wheelhouse/
 done

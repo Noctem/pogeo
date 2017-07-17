@@ -2,8 +2,7 @@
 
 #include "s2regioncoverer.h"
 
-#include <pthread.h>
-
+#include <mutex>
 #include <algorithm>
 using std::min;
 using std::max;
@@ -49,8 +48,8 @@ void Init() {
   }
 }
 
-static pthread_once_t init_once = PTHREAD_ONCE_INIT;
-inline static void MaybeInit() { pthread_once(&init_once, Init); }
+static std::once_flag init_once;
+inline static void MaybeInit() { std::call_once(init_once, Init); }
 
 S2RegionCoverer::S2RegionCoverer()
     : min_level_(0),

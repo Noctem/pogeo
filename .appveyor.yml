@@ -10,26 +10,9 @@ environment:
   TWINE_USERNAME: Noctem
   matrix:
   - PYTHON: C:\Python35
-    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/windows-pthreads-x86.zip
-    LIB: C:\projects\pogeo\pthreads-x86
-    INCLUDE: C:\projects\pogeo\pthreads-x86
   - PYTHON: C:\Python35-x64
-    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/windows-pthreads-x64.zip
-    LIB: C:\projects\pogeo\pthreads-x64
-    INCLUDE: C:\projects\pogeo\pthreads-x64
   - PYTHON: C:\Python36
-    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/windows-pthreads-x86.zip
-    LIB: C:\projects\pogeo\pthreads-x86
-    INCLUDE: C:\projects\pogeo\pthreads-x86
   - PYTHON: C:\Python36-x64
-    PTHREADS_URL: https://github.com/Noctem/pogeo-toolchain/releases/download/v1.1/windows-pthreads-x64.zip
-    LIB: C:\projects\pogeo\pthreads-x64
-    INCLUDE: C:\projects\pogeo\pthreads-x64
-before_build:
-- cmd: >-
-    curl -fsSL -o pthreads.zip %PTHREADS_URL%
-
-    7z x pthreads.zip
 install:
 - cmd: >-
     %PYTHON%\\python.exe -m pip install -U pip
