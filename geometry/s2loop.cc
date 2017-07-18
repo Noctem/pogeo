@@ -48,7 +48,7 @@ int S2LoopIndex::num_edges() const { return loop_->num_vertices(); }
 
 S2Loop::S2Loop()
     : num_vertices_(0),
-      vertices_(NULL),
+      vertices_(nullptr),
       owns_vertices_(false),
       bound_(S2LatLngRect::Empty()),
       depth_(0),
@@ -57,7 +57,7 @@ S2Loop::S2Loop()
 
 S2Loop::S2Loop(vector<S2Point> const& vertices)
     : num_vertices_(0),
-      vertices_(NULL),
+      vertices_(nullptr),
       owns_vertices_(false),
       bound_(S2LatLngRect::Full()),
       depth_(0),
@@ -78,7 +78,7 @@ void S2Loop::Init(vector<S2Point> const& vertices) {
   if (owns_vertices_) delete[] vertices_;
   num_vertices_ = vertices.size();
   if (vertices.empty()) {
-    vertices_ = NULL;
+    vertices_ = nullptr;
   } else {
     vertices_ = new S2Point[num_vertices_];
     memcpy(vertices_, &vertices[0], num_vertices_ * sizeof(vertices_[0]));

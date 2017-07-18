@@ -166,7 +166,7 @@ static const char two_ASCII_digits[100][2] = {
 
 char* FastUInt32ToBufferLeft(uint32 u, char* buffer) {
   int digits;
-  const char* ASCII_digits = NULL;
+  const char* ASCII_digits = nullptr;
   // The idea of this implementation is to trim the number of divides to as few
   // as possible by using multiplication and subtraction rather than mod (%),
   // and by outputting two digits at a time rather than one.
@@ -260,7 +260,7 @@ char* FastInt32ToBufferLeft(int32 i, char* buffer) {
 
 char* FastUInt64ToBufferLeft(uint64 u64, char* buffer) {
   int digits;
-  const char* ASCII_digits = NULL;
+  const char* ASCII_digits = nullptr;
 
   uint32 u = static_cast<uint32>(u64);
   if (u == u64) return FastUInt32ToBufferLeft(u, buffer);
@@ -318,19 +318,19 @@ char* FastInt64ToBufferLeft(int64 i, char* buffer) {
 //    UInt64 and Int64 cannot handle decimal numbers with leading 0s.
 // --------------------------------------------------------------------
 uint64 ParseLeadingUInt64Value(const char* str, uint64 deflt) {
-  char* error = NULL;
+  char* error = nullptr;
   const uint64 value = strtoull(str, &error, 0);
   return (error == str) ? deflt : value;
 }
 
 int64 ParseLeadingInt64Value(const char* str, int64 deflt) {
-  char* error = NULL;
+  char* error = nullptr;
   const int64 value = strtoll(str, &error, 0);
   return (error == str) ? deflt : value;
 }
 
 uint64 ParseLeadingHex64Value(const char* str, uint64 deflt) {
-  char* error = NULL;
+  char* error = nullptr;
   const uint64 value = strtoull(str, &error, 16);
   return (error == str) ? deflt : value;
 }
@@ -345,13 +345,13 @@ uint64 ParseLeadingHex64Value(const char* str, uint64 deflt) {
 // --------------------------------------------------------------------
 
 int64 ParseLeadingDec64Value(const char* str, int64 deflt) {
-  char* error = NULL;
+  char* error = nullptr;
   const int64 value = strtoll(str, &error, 10);
   return (error == str) ? deflt : value;
 }
 
 uint64 ParseLeadingUDec64Value(const char* str, uint64 deflt) {
-  char* error = NULL;
+  char* error = nullptr;
   const uint64 value = strtoull(str, &error, 10);
   return (error == str) ? deflt : value;
 }
