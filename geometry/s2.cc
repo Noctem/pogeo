@@ -181,7 +181,6 @@ int S2::RobustCCW(S2Point const& a, S2Point const& b, S2Point const& c) {
 // that we can verify that certain tests actually require the more advanced
 // techniques implemented by the first version.
 
-#undef SIMULATION_OF_SIMPLICITY
 #ifdef SIMULATION_OF_SIMPLICITY
 
 // Below we define a floating-point type with enough precision so that it can
@@ -189,10 +188,8 @@ int S2::RobustCCW(S2Point const& a, S2Point const& b, S2Point const& c) {
 // numbers.  ExactFloat is based on the OpenSSL Bignum library and therefore
 // has a permissive BSD-style license.
 
-#ifdef S2_USE_EXACTFLOAT
 // ExactFloat only supports exact calculations with floating-point numbers.
 #include "util/math/exactfloat/exactfloat.h"
-#endif  // S2_USE_EXACTFLOAT
 
 typedef Vector3<ExactFloat> Vector3_xf;
 
