@@ -7,3 +7,13 @@ pogeo/monotools/*.cpp
 pogeo/monotools/*.html
 pogeo.egg-info/
 .DS_STORE
+compile_commands*.json
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+geometry/libs2.dylib
+*.a
+iwyu.out
+run-clang-tidy.py
+*.dylib
