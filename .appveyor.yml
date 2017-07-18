@@ -17,7 +17,7 @@ install:
 - cmd: >-
     %PYTHON%\\python.exe -m pip install -U pip
 
-    %PYTHON%\\python.exe -m pip install -U https://github.com/cython/cython/archive/0.26rc1.tar.gz --install-option="--no-cython-compile"
+    %PYTHON%\\python.exe -m pip install -U https://github.com/cython/cython/archive/0.26rc2.tar.gz --install-option="--no-cython-compile"
 
     %PYTHON%\\python.exe -m pip install -U setuptools wheel cyrandom
 build_script:
