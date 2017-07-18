@@ -116,11 +116,11 @@ class Vector4 {
   const VType *Data() const;
   // Return the squared Euclidean norm of the vector.  Be aware that if VType
   // is an integer type, the high bits of the result are silently discarded.
-  VType Norm2(void) const;
+  VType Norm2() const;
   // Return the Euclidean norm of the vector.  Note that if VType is an
   // integer type, the return value is correct only if the *squared* norm does
   // not overflow VType.
-  FloatType Norm(void) const;
+  FloatType Norm() const;
   // Return a normalized version of the vector if the norm of the
   // vector is not 0.  Not to be used with integer types.
   Self Normalize() const;
