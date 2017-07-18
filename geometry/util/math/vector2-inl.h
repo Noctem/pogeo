@@ -213,12 +213,12 @@ const VType *Vector2<VType>::Data() const {
 }
 
 template <typename VType>
-VType Vector2<VType>::Norm2(void) const {
+VType Vector2<VType>::Norm2() const {
   return c_[0] * c_[0] + c_[1] * c_[1];
 }
 
 template <typename VType>
-typename Vector2<VType>::FloatType Vector2<VType>::Norm(void) const {
+typename Vector2<VType>::FloatType Vector2<VType>::Norm() const {
   return sqrt(Norm2());
 }
 

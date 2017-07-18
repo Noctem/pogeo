@@ -273,7 +273,7 @@ class Matrix3x3 {
   }
 
   // Return the transposed matrix
-  inline Self Transpose(void) const {
+  inline Self Transpose() const {
     return Self(m_[0][0], m_[1][0], m_[2][0], m_[0][1], m_[1][1], m_[2][1],
                 m_[0][2], m_[1][2], m_[2][2]);
   }
