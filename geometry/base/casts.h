@@ -10,9 +10,11 @@
 #ifndef BASE_CASTS_H_
 #define BASE_CASTS_H_
 
-#include <assert.h>  // for use with down_cast<>
-#include <limits.h>  // for enumeration casts and tests
-#include <string.h>  // for memcpy
+#include <cassert>  // for use with down_cast<>
+#include <climits>  // for enumeration casts and tests
+#include <cstring>
+using std::memcpy;
+
 #include <typeinfo>  // for enumeration casts and tests
 
 #include "base/macros.h"

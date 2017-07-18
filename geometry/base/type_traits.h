@@ -30,10 +30,9 @@
 #define BASE_TYPE_TRAITS_H_
 
 #include <utility>
-#include "base/template_util.h"  // For true_type and false_type
 using std::pair;
-using std::make_pair;
-// For pair
+
+#include "base/template_util.h"  // For true_type and false_type
 
 namespace base {
 
@@ -196,7 +195,7 @@ struct is_reference<T&> : true_type {};
 
 // We can't get is_pod right without compiler help, so fail conservatively.
 // We will assume it's false except for arithmetic types, enumerations,
-// pointers and const versions thereof. Note that std::pair is not a POD.
+// pointers and const versions thereof. Note that pair is not a POD.
 template <class T>
 struct is_pod : integral_constant<bool, (is_integral<T>::value ||
                                          is_floating_point<T>::value ||
@@ -211,13 +210,13 @@ struct is_pod<const T> : is_pod<T> {};
 
 // We can't get has_trivial_constructor right without compiler help, so
 // fail conservatively. We will assume it's false except for: (1) types
-// for which is_pod is true. (2) std::pair of types with trivial
+// for which is_pod is true. (2) pair of types with trivial
 // constructors. (3) array of a type with a trivial constructor.
 // (4) const versions thereof.
 template <class T>
 struct has_trivial_constructor : is_pod<T> {};
 template <class T, class U>
-struct has_trivial_constructor<std::pair<T, U> >
+struct has_trivial_constructor<pair<T, U> >
     : integral_constant<bool, (has_trivial_constructor<T>::value &&
                                has_trivial_constructor<U>::value)> {};
 template <class A, int N>
@@ -227,13 +226,13 @@ struct has_trivial_constructor<const T> : has_trivial_constructor<T> {};
 
 // We can't get has_trivial_copy right without compiler help, so fail
 // conservatively. We will assume it's false except for: (1) types
-// for which is_pod is true. (2) std::pair of types with trivial copy
+// for which is_pod is true. (2) pair of types with trivial copy
 // constructors. (3) array of a type with a trivial copy constructor.
 // (4) const versions thereof.
 template <class T>
 struct has_trivial_copy : is_pod<T> {};
 template <class T, class U>
-struct has_trivial_copy<std::pair<T, U> >
+struct has_trivial_copy<pair<T, U> >
     : integral_constant<bool, (has_trivial_copy<T>::value &&
                                has_trivial_copy<U>::value)> {};
 template <class A, int N>
@@ -243,12 +242,12 @@ struct has_trivial_copy<const T> : has_trivial_copy<T> {};
 
 // We can't get has_trivial_assign right without compiler help, so fail
 // conservatively. We will assume it's false except for: (1) types
-// for which is_pod is true. (2) std::pair of types with trivial copy
+// for which is_pod is true. (2) pair of types with trivial copy
 // constructors. (3) array of a type with a trivial assign constructor.
 template <class T>
 struct has_trivial_assign : is_pod<T> {};
 template <class T, class U>
-struct has_trivial_assign<std::pair<T, U> >
+struct has_trivial_assign<pair<T, U> >
     : integral_constant<bool, (has_trivial_assign<T>::value &&
                                has_trivial_assign<U>::value)> {};
 template <class A, int N>
@@ -256,13 +255,13 @@ struct has_trivial_assign<A[N]> : has_trivial_assign<A> {};
 
 // We can't get has_trivial_destructor right without compiler help, so
 // fail conservatively. We will assume it's false except for: (1) types
-// for which is_pod is true. (2) std::pair of types with trivial
+// for which is_pod is true. (2) pair of types with trivial
 // destructors. (3) array of a type with a trivial destructor.
 // (4) const versions thereof.
 template <class T>
 struct has_trivial_destructor : is_pod<T> {};
 template <class T, class U>
-struct has_trivial_destructor<std::pair<T, U> >
+struct has_trivial_destructor<pair<T, U> >
     : integral_constant<bool, (has_trivial_destructor<T>::value &&
                                has_trivial_destructor<U>::value)> {};
 template <class A, int N>

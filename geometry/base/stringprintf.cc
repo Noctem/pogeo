@@ -1,9 +1,9 @@
 // Copyright 2002 and onwards Google Inc.
 
-#include <stdarg.h>  // For va_list and related operations
-#include <stdio.h>   // MSVC requires this for _vsnprintf
-#include <vector>
-using std::vector;
+#include <cstdarg>
+using std::va_list;
+
+#include <cstdio>  // MSVC requires this for _vsnprintf
 
 #include "base/stringprintf.h"
 

@@ -10,7 +10,8 @@
 #ifndef BASE_MACROS_H_
 #define BASE_MACROS_H_
 
-#include <stddef.h>  // For size_t
+#include <cstddef>
+using std::size_t;
 
 // We use our own  local  version of type traits while we're waiting
 // for TR1 type traits to be standardized. Define some macros so that

@@ -32,11 +32,17 @@
 using std::min;
 using std::max;
 using std::swap;
-using std::reverse;
-
-using std::abs;
 
 #include <cmath>
+using std::abs;
+using std::atan2;
+using std::ceil;
+using std::floor;
+using std::isnan;
+using std::lrint;
+using std::rint;
+using std::sqrt;
+
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/template_util.h"

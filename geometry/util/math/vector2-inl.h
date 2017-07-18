@@ -30,9 +30,19 @@
 using std::min;
 using std::max;
 
+#include <cmath>
+using std::abs;
+using std::atan2;
+using std::ceil;
+using std::fabs;
+using std::floor;
+using std::isnan;
+using std::lrint;
+using std::rint;
+using std::sqrt;
+
 #include "util/math/vector2.h"
 
-#include <cmath>
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/template_util.h"

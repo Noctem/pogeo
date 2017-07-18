@@ -8,11 +8,9 @@
 #ifndef UTIL_MATH_VECTOR2_H__
 #define UTIL_MATH_VECTOR2_H__
 
-#include <iostream>
+#include <ostream>
 using std::ostream;
-using std::cout;
-using std::endl;
-// NOLINT(readability/streams)
+
 #include "base/basictypes.h"
 
 template <typename VType>
@@ -180,8 +178,8 @@ template <typename VType2>
 Vector2<VType2> Min(const Vector2<VType2> &v1, const Vector2<VType2> &v2);
 // debug printing
 template <typename VType2>
-std::ostream &operator<<(std::ostream &out,  // NOLINT
-                         const Vector2<VType2> &va);
+ostream &operator<<(ostream &out,  // NOLINT
+                    const Vector2<VType2> &va);
 
 // TODO(user): Declare extern templates for these types.
 typedef Vector2<uint8> Vector2_b;

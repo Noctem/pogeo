@@ -7,10 +7,10 @@
 using std::max;
 
 #include <cmath>
-#include <iostream>
+using std::fabs;
+
+#include <ostream>
 using std::ostream;
-using std::cout;
-using std::endl;
 
 #include "base/logging.h"
 #include "base/macros.h"
