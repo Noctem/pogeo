@@ -84,7 +84,7 @@ S2Polygon* S2Polygon::Clone() const {
 }
 
 void S2Polygon::Release(vector<S2Loop*>* loops) {
-  if (loops != NULL) {
+  if (loops != nullptr) {
     loops->insert(loops->end(), loops_.begin(), loops_.end());
   }
   loops_.clear();
@@ -231,11 +231,11 @@ void S2Polygon::Init(vector<S2Loop*>* loops) {
 
   LoopMap loop_map;
   for (int i = 0; i < num_loops(); ++i) {
-    InsertLoop(loop(i), NULL, &loop_map);
+    InsertLoop(loop(i), nullptr, &loop_map);
   }
   // Reorder the loops in depth-first traversal order.
   loops_.clear();
-  InitLoop(NULL, -1, &loop_map);
+  InitLoop(nullptr, -1, &loop_map);
 
   // Compute the bounding rectangle of the entire polygon.
   has_holes_ = false;
@@ -697,7 +697,7 @@ static void ClipEdge(S2Point const& a0, S2Point const& a1,
   it.GetCandidates(a0, a1);
   S2EdgeUtil::EdgeCrosser crosser(&a0, &a1, &a0);
   S2Point const* from;
-  S2Point const* to = NULL;
+  S2Point const* to = nullptr;
   for (; !it.Done(); it.Next()) {
     S2Point const* const previous_to = to;
     b_index->EdgeFromTo(it.Index(), &from, &to);
@@ -767,7 +767,7 @@ void S2Polygon::InitToIntersectionSloppy(S2Polygon const* a, S2Polygon const* b,
   S2PolygonBuilder builder(options);
   ClipBoundary(a, false, b, false, false, true, &builder);
   ClipBoundary(b, false, a, false, false, false, &builder);
-  if (!builder.AssemblePolygon(this, NULL)) {
+  if (!builder.AssemblePolygon(this, nullptr)) {
     LOG(DFATAL) << "Bad directed edges in InitToIntersection";
   }
 }
@@ -789,7 +789,7 @@ void S2Polygon::InitToUnionSloppy(S2Polygon const* a, S2Polygon const* b,
   S2PolygonBuilder builder(options);
   ClipBoundary(a, false, b, false, true, true, &builder);
   ClipBoundary(b, false, a, false, true, false, &builder);
-  if (!builder.AssemblePolygon(this, NULL)) {
+  if (!builder.AssemblePolygon(this, nullptr)) {
     LOG(DFATAL) << "Bad directed edges";
   }
 }
@@ -811,7 +811,7 @@ void S2Polygon::InitToDifferenceSloppy(S2Polygon const* a, S2Polygon const* b,
   S2PolygonBuilder builder(options);
   ClipBoundary(a, false, b, true, true, true, &builder);
   ClipBoundary(b, true, a, false, false, false, &builder);
-  if (!builder.AssemblePolygon(this, NULL)) {
+  if (!builder.AssemblePolygon(this, nullptr)) {
     LOG(DFATAL) << "Bad directed edges in InitToDifference";
   }
 }
@@ -827,7 +827,7 @@ vector<S2Point>* SimplifyLoopAsPolyline(S2Loop const* loop, S1Angle tolerance) {
   S2Polyline line(points);
   vector<int> indices;
   line.SubsampleVertices(tolerance, &indices);
-  if (indices.size() <= 2) return NULL;
+  if (indices.size() <= 2) return nullptr;
   // Add them all except the last: it is the same as the first.
   vector<S2Point>* simplified_line = new vector<S2Point>(indices.size() - 1);
   VLOG(4) << "Now simplified to: ";
@@ -889,14 +889,14 @@ void S2Polygon::InitToSimplified(S2Polygon const* a, S1Angle tolerance) {
   vector<vector<S2Point>*> simplified_loops;
   for (int i = 0; i < a->num_loops(); ++i) {
     vector<S2Point>* simpler = SimplifyLoopAsPolyline(a->loop(i), tolerance);
-    if (NULL == simpler) continue;
+    if (nullptr == simpler) continue;
     simplified_loops.push_back(simpler);
     index.AddVector(simpler);
   }
   if (0 != index.num_edges()) {
     BreakEdgesAndAddToBuilder(&index, &builder);
 
-    if (!builder.AssemblePolygon(this, NULL)) {
+    if (!builder.AssemblePolygon(this, nullptr)) {
       LOG(DFATAL) << "Bad edges in InitToSimplified.";
     }
   }
@@ -1049,14 +1049,14 @@ void S2Polygon::InitToCellUnionBorder(S2CellUnion const& cells) {
     S2Loop cell_loop(S2Cell(cells.cell_id(i)));
     builder.AddLoop(&cell_loop);
   }
-  if (!builder.AssemblePolygon(this, NULL)) {
+  if (!builder.AssemblePolygon(this, nullptr)) {
     LOG(DFATAL) << "AssemblePolygon failed in InitToCellUnionBorder";
   }
 }
 
 bool S2Polygon::IsNormalized() const {
   set<S2Point> vertices;
-  S2Loop* last_parent = NULL;
+  S2Loop* last_parent = nullptr;
   for (int i = 0; i < num_loops(); ++i) {
     S2Loop* child = loop(i);
     if (child->depth() == 0) continue;

@@ -599,7 +599,7 @@ inline void* aligned_malloc(size_t size, int minimum_alignment) {
   // next, try to return page-aligned memory. perhaps overkill
   if (minimum_alignment <= getpagesize()) return valloc(size);
   // give up
-  return NULL;
+  return nullptr;
 #elif defined(OS_CYGWIN)
   return memalign(minimum_alignment, size);
 #else  // !__APPLE__ && !OS_CYGWIN
