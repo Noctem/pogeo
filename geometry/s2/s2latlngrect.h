@@ -220,11 +220,11 @@ class S2LatLngRect : public S2Region {
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2LatLngRect* Clone() const;
-  virtual S2Cap GetCapBound() const;
-  virtual S2LatLngRect GetRectBound() const;
-  virtual bool Contains(S2Cell const& cell) const;
-  virtual bool VirtualContainsPoint(S2Point const& p) const {
+  S2LatLngRect* Clone() const override;
+  S2Cap GetCapBound() const override;
+  S2LatLngRect GetRectBound() const override;
+  bool Contains(S2Cell const& cell) const override;
+  bool VirtualContainsPoint(S2Point const& p) const override {
     return Contains(p);  // The same as Contains() below, just virtual.
   }
 
@@ -233,13 +233,13 @@ class S2LatLngRect : public S2Region {
   // an S2RegionCoverer, the accuracy isn't all that important since if a cell
   // may intersect the region then it is subdivided, and the accuracy of this
   // method goes up as the cells get smaller.
-  virtual bool MayIntersect(S2Cell const& cell) const;
+  bool MayIntersect(S2Cell const& cell) const override;
 
   // The point 'p' does not need to be normalized.
   bool Contains(S2Point const& p) const;
 
-  virtual void Encode(Encoder* const encoder) const;
-  virtual bool Decode(Decoder* const decoder);
+  void Encode(Encoder* const encoder) const override;
+  bool Decode(Decoder* const decoder) override;
 
  private:
   // Return true if the edge AB intersects the given edge of constant

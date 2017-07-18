@@ -160,19 +160,19 @@ class S2R2Rect : public S2Region {
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2R2Rect* Clone() const;
-  virtual S2Cap GetCapBound() const;
-  virtual S2LatLngRect GetRectBound() const;
-  virtual bool VirtualContainsPoint(S2Point const& p) const {
+  S2R2Rect* Clone() const override;
+  S2Cap GetCapBound() const override;
+  S2LatLngRect GetRectBound() const override;
+  bool VirtualContainsPoint(S2Point const& p) const override {
     return Contains(p);  // The same as Contains() below, just virtual.
   }
   bool Contains(S2Point const& p) const;
-  virtual bool Contains(S2Cell const& cell) const;
-  virtual bool MayIntersect(S2Cell const& cell) const;
-  virtual void Encode(Encoder* const encoder) const {
+  bool Contains(S2Cell const& cell) const override;
+  bool MayIntersect(S2Cell const& cell) const override;
+  void Encode(Encoder* const encoder) const override {
     LOG(FATAL) << "Unimplemented";
   }
-  virtual bool Decode(Decoder* const decoder) { return false; }
+  bool Decode(Decoder* const decoder) override { return false; }
 
  private:
   R1Interval x_;

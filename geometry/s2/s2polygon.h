@@ -70,7 +70,7 @@ class S2Polygon : public S2Region {
   void Copy(S2Polygon const* src);
 
   // Destroys the polygon and frees its loops.
-  ~S2Polygon();
+  ~S2Polygon() override;
 
   // Return true if the given loops form a valid polygon.  Assumes that
   // all of the given loops have already been validated.
@@ -251,20 +251,20 @@ class S2Polygon : public S2Region {
 
   // GetRectBound() guarantees that it will return exact bounds. GetCapBound()
   // does not.
-  virtual S2Polygon* Clone() const;
-  virtual S2Cap GetCapBound() const;  // Cap surrounding rect bound.
-  virtual S2LatLngRect GetRectBound() const { return bound_; }
+  S2Polygon* Clone() const override;
+  S2Cap GetCapBound() const override;  // Cap surrounding rect bound.
+  S2LatLngRect GetRectBound() const override { return bound_; }
 
-  virtual bool Contains(S2Cell const& cell) const;
-  virtual bool MayIntersect(S2Cell const& cell) const;
-  virtual bool VirtualContainsPoint(S2Point const& p) const;
+  bool Contains(S2Cell const& cell) const override;
+  bool MayIntersect(S2Cell const& cell) const override;
+  bool VirtualContainsPoint(S2Point const& p) const override;
 
   // The point 'p' does not need to be normalized.
   bool Contains(S2Point const& p) const;
 
-  virtual void Encode(Encoder* const encoder) const;
-  virtual bool Decode(Decoder* const decoder);
-  virtual bool DecodeWithinScope(Decoder* const decoder);
+  void Encode(Encoder* const encoder) const override;
+  bool Decode(Decoder* const decoder) override;
+  bool DecodeWithinScope(Decoder* const decoder) override;
 
  private:
   // Internal constructor that does *not* take ownership of its argument.

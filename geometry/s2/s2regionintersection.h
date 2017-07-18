@@ -30,7 +30,7 @@ class S2RegionIntersection : public S2Region {
   // Takes ownership of all regions and clears the given vector.
   S2RegionIntersection(vector<S2Region*>* regions);
 
-  virtual ~S2RegionIntersection();
+  ~S2RegionIntersection() override;
 
   // Initialize region by taking ownership of the given regions.
   void Init(vector<S2Region*>* regions);
@@ -46,17 +46,17 @@ class S2RegionIntersection : public S2Region {
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2RegionIntersection* Clone() const;
-  virtual S2Cap GetCapBound() const;
-  virtual S2LatLngRect GetRectBound() const;
-  virtual bool VirtualContainsPoint(S2Point const& p) const;
+  S2RegionIntersection* Clone() const override;
+  S2Cap GetCapBound() const override;
+  S2LatLngRect GetRectBound() const override;
+  bool VirtualContainsPoint(S2Point const& p) const override;
   bool Contains(S2Point const& p) const;
-  virtual bool Contains(S2Cell const& cell) const;
-  virtual bool MayIntersect(S2Cell const& cell) const;
-  virtual void Encode(Encoder* const encoder) const {
+  bool Contains(S2Cell const& cell) const override;
+  bool MayIntersect(S2Cell const& cell) const override;
+  void Encode(Encoder* const encoder) const override {
     LOG(FATAL) << "Unimplemented";
   }
-  virtual bool Decode(Decoder* const decoder) { return false; }
+  bool Decode(Decoder* const decoder) override { return false; }
 
  private:
   // Internal constructor used only by Clone() that makes a deep copy of
