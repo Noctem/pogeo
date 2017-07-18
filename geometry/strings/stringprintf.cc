@@ -1,15 +1,15 @@
 // Copyright 2002 and onwards Google Inc.
 
-#include <stdarg.h>  // For va_list and related operations
 #include <string>
 using std::string;
 
 #include <vector>
 using std::vector;
 
+#include "stringprintf.h"
+
 #include "base/logging.h"
 #include "base/macros.h"
-#include "stringprintf.h"
 
 // Max arguments supported by StringPrintVector
 const int kStringPrintfVectorMaxArgs = 32;

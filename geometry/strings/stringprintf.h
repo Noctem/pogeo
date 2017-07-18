@@ -10,7 +10,6 @@
 #ifndef _STRINGS_STRINGPRINTF_H
 #define _STRINGS_STRINGPRINTF_H
 
-#include <stdarg.h>
 #include <string>
 using std::string;
 

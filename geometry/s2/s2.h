@@ -6,14 +6,15 @@
 #include <algorithm>
 using std::min;
 using std::max;
-using std::reverse;
-using std::swap;
 
 #include <cmath>
+using std::abs;
+using std::atan;
+using std::sqrt;
+using std::tan;
+
 #include <cstddef>
 #include <functional>  // To have template struct hash<T> defined
-#include <unordered_map>
-using std::unordered_map;
 
 #include "base/logging.h"
 #include "base/macros.h"
