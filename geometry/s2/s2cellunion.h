@@ -180,24 +180,24 @@ class S2CellUnion : public S2Region {
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2CellUnion* Clone() const;
-  virtual S2Cap GetCapBound() const;
-  virtual S2LatLngRect GetRectBound() const;
+  S2CellUnion* Clone() const override;
+  S2Cap GetCapBound() const override;
+  S2LatLngRect GetRectBound() const override;
 
   // This is a fast operation (logarithmic in the size of the cell union).
-  virtual bool Contains(S2Cell const& cell) const;
+  bool Contains(S2Cell const& cell) const override;
 
   // This is a fast operation (logarithmic in the size of the cell union).
-  virtual bool MayIntersect(S2Cell const& cell) const;
+  bool MayIntersect(S2Cell const& cell) const override;
 
-  virtual bool VirtualContainsPoint(S2Point const& p) const {
+  bool VirtualContainsPoint(S2Point const& p) const override {
     return Contains(p);  // The same as Contains() below, just virtual.
   }
 
-  virtual void Encode(Encoder* const encoder) const {
+  void Encode(Encoder* const encoder) const override {
     LOG(FATAL) << "Unimplemented";
   }
-  virtual bool Decode(Decoder* const decoder) { return false; }
+  bool Decode(Decoder* const decoder) override { return false; }
 
   // The point 'p' does not need to be normalized.
   // This is a fast operation (logarithmic in the size of the cell union).

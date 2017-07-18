@@ -36,7 +36,7 @@ class S2Polyline : public S2Region {
   // coordinates rather than S2Points.
   void Init(vector<S2LatLng> const& vertices);
 
-  ~S2Polyline();
+  ~S2Polyline() override;
 
   // Return true if the given vertices form a valid polyline.
   static bool IsValid(vector<S2Point> const& vertices);
@@ -164,18 +164,18 @@ class S2Polyline : public S2Region {
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2Polyline* Clone() const;
-  virtual S2Cap GetCapBound() const;
-  virtual S2LatLngRect GetRectBound() const;
-  virtual bool Contains(S2Cell const& cell) const { return false; }
-  virtual bool MayIntersect(S2Cell const& cell) const;
+  S2Polyline* Clone() const override;
+  S2Cap GetCapBound() const override;
+  S2LatLngRect GetRectBound() const override;
+  bool Contains(S2Cell const& cell) const override { return false; }
+  bool MayIntersect(S2Cell const& cell) const override;
 
   // Polylines do not have a Contains(S2Point) method, because "containment"
   // is not numerically well-defined except at the polyline vertices.
-  virtual bool VirtualContainsPoint(S2Point const& p) const { return false; }
+  bool VirtualContainsPoint(S2Point const& p) const override { return false; }
 
-  virtual void Encode(Encoder* const encoder) const;
-  virtual bool Decode(Decoder* const decoder);
+  void Encode(Encoder* const encoder) const override;
+  bool Decode(Decoder* const decoder) override;
 
  private:
   // Internal constructor used only by Clone() that makes a deep copy of

@@ -507,9 +507,9 @@ class ContainsWedgeProcessor : public WedgeProcessor {
   bool DoesntContain() { return doesnt_contain_; }
 
  protected:
-  virtual bool ProcessWedge(S2Point const& a0, S2Point const& ab1,
+  bool ProcessWedge(S2Point const& a0, S2Point const& ab1,
                             S2Point const& a2, S2Point const& b0,
-                            S2Point const& b2) {
+                            S2Point const& b2) override {
     doesnt_contain_ = !S2EdgeUtil::WedgeContains(a0, ab1, a2, b0, b2);
     return doesnt_contain_;
   }
@@ -568,9 +568,9 @@ class IntersectsWedgeProcessor : public WedgeProcessor {
   bool Intersects() { return intersects_; }
 
  protected:
-  virtual bool ProcessWedge(S2Point const& a0, S2Point const& ab1,
+  bool ProcessWedge(S2Point const& a0, S2Point const& ab1,
                             S2Point const& a2, S2Point const& b0,
-                            S2Point const& b2) {
+                            S2Point const& b2) override {
     intersects_ = S2EdgeUtil::WedgeIntersects(a0, ab1, a2, b0, b2);
     return intersects_;
   }
@@ -632,9 +632,9 @@ class ContainsOrCrossesProcessor : public WedgeProcessor {
   }
 
  protected:
-  virtual bool ProcessWedge(S2Point const& a0, S2Point const& ab1,
+  bool ProcessWedge(S2Point const& a0, S2Point const& ab1,
                             S2Point const& a2, S2Point const& b0,
-                            S2Point const& b2) {
+                            S2Point const& b2) override {
     const S2EdgeUtil::WedgeRelation wedge_relation =
         S2EdgeUtil::GetWedgeRelation(a0, ab1, a2, b0, b2);
     if (wedge_relation == S2EdgeUtil::WEDGE_PROPERLY_OVERLAPS) {

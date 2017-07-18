@@ -25,15 +25,15 @@ class WedgeProcessor;
 class S2LoopIndex : public S2EdgeIndex {
  public:
   explicit S2LoopIndex(S2Loop const* loop) : loop_(loop) {}
-  virtual ~S2LoopIndex() {}
+  ~S2LoopIndex() override {}
 
   // There is no need to overwrite Reset(), as the only data that's
   // used to implement this class is all contained in the loop data.
   // void Reset();
 
-  virtual S2Point const* edge_from(int index) const;
-  virtual S2Point const* edge_to(int index) const;
-  virtual int num_edges() const;
+  S2Point const* edge_from(int index) const override;
+  S2Point const* edge_to(int index) const override;
+  int num_edges() const override;
 
  private:
   S2Loop const* loop_;
@@ -89,7 +89,7 @@ class S2Loop : public S2Region {
   // Initialize a loop corresponding to the given cell.
   explicit S2Loop(S2Cell const& cell);
 
-  ~S2Loop();
+  ~S2Loop() override;
 
   // The depth of a loop is defined as its nesting level within its containing
   // polygon.  "Outer shell" loops have depth 0, holes within those loops have
@@ -245,22 +245,22 @@ class S2Loop : public S2Region {
 
   // GetRectBound() is guaranteed to return exact results, while GetCapBound()
   // is conservative.
-  virtual S2Loop* Clone() const;
-  virtual S2Cap GetCapBound() const;
-  virtual S2LatLngRect GetRectBound() const { return bound_; }
+  S2Loop* Clone() const override;
+  S2Cap GetCapBound() const override;
+  S2LatLngRect GetRectBound() const override { return bound_; }
 
-  virtual bool Contains(S2Cell const& cell) const;
-  virtual bool MayIntersect(S2Cell const& cell) const;
-  virtual bool VirtualContainsPoint(S2Point const& p) const {
+  bool Contains(S2Cell const& cell) const override;
+  bool MayIntersect(S2Cell const& cell) const override;
+  bool VirtualContainsPoint(S2Point const& p) const override {
     return Contains(p);  // The same as Contains() below, just virtual.
   }
 
   // The point 'p' does not need to be normalized.
   bool Contains(S2Point const& p) const;
 
-  virtual void Encode(Encoder* const encoder) const;
-  virtual bool Decode(Decoder* const decoder);
-  virtual bool DecodeWithinScope(Decoder* const decoder);
+  void Encode(Encoder* const encoder) const override;
+  bool Decode(Decoder* const decoder) override;
+  bool DecodeWithinScope(Decoder* const decoder) override;
 
  private:
   // Internal constructor used only by Clone() that makes a deep copy of

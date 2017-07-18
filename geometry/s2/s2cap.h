@@ -65,7 +65,7 @@ class S2Cap : public S2Region {
   // Return a full cap, i.e. a cap that contains all points.
   static S2Cap Full() { return S2Cap(S2Point(1, 0, 0), 2); }
 
-  ~S2Cap() {}
+  ~S2Cap() override {}
 
   // Accessor methods.
   S2Point const& axis() const { return axis_; }
@@ -127,22 +127,22 @@ class S2Cap : public S2Region {
   ////////////////////////////////////////////////////////////////////////
   // S2Region interface (see s2region.h for details):
 
-  virtual S2Cap* Clone() const;
-  virtual S2Cap GetCapBound() const;
-  virtual S2LatLngRect GetRectBound() const;
-  virtual bool Contains(S2Cell const& cell) const;
-  virtual bool MayIntersect(S2Cell const& cell) const;
-  virtual bool VirtualContainsPoint(S2Point const& p) const {
+  S2Cap* Clone() const override;
+  S2Cap GetCapBound() const override;
+  S2LatLngRect GetRectBound() const override;
+  bool Contains(S2Cell const& cell) const override;
+  bool MayIntersect(S2Cell const& cell) const override;
+  bool VirtualContainsPoint(S2Point const& p) const override {
     return Contains(p);  // The same as Contains() below, just virtual.
   }
 
   // The point 'p' should be a unit-length vector.
   bool Contains(S2Point const& p) const;
 
-  virtual void Encode(Encoder* const encoder) const {
+  void Encode(Encoder* const encoder) const override {
     LOG(FATAL) << "Unimplemented";
   }
-  virtual bool Decode(Decoder* const decoder) { return false; }
+  bool Decode(Decoder* const decoder) override { return false; }
 
   ///////////////////////////////////////////////////////////////////////
   // The following static methods are convenience functions for assertions

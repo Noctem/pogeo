@@ -535,7 +535,7 @@ bool S2Polygon::DecodeInternal(Decoder* const decoder, bool within_scope) {
 class S2LoopSequenceIndex : public S2EdgeIndex {
  public:
   S2LoopSequenceIndex() : num_edges_(0), num_loops_(0) {}
-  ~S2LoopSequenceIndex() {}
+  ~S2LoopSequenceIndex() override {}
 
   void AddLoop(int num_vertices) {
     int vertices_so_far = num_edges_;
@@ -560,16 +560,16 @@ class S2LoopSequenceIndex : public S2EdgeIndex {
   virtual void EdgeFromTo(int index, S2Point const** from,
                           S2Point const** to) const = 0;
 
-  int num_edges() const { return num_edges_; }
+  int num_edges() const override { return num_edges_; }
 
-  virtual S2Point const* edge_from(int index) const {
+  S2Point const* edge_from(int index) const override {
     S2Point const* from;
     S2Point const* to;
     EdgeFromTo(index, &from, &to);
     return from;
   }
 
-  virtual S2Point const* edge_to(int index) const {
+  S2Point const* edge_to(int index) const override {
     S2Point const* from;
     S2Point const* to;
     EdgeFromTo(index, &from, &to);
@@ -602,10 +602,10 @@ class S2PolygonIndex : public S2LoopSequenceIndex {
     }
   }
 
-  virtual ~S2PolygonIndex() {}
+  ~S2PolygonIndex() override {}
 
-  virtual void EdgeFromTo(int index, S2Point const** from,
-                          S2Point const** to) const {
+  void EdgeFromTo(int index, S2Point const** from,
+                          S2Point const** to) const override {
     int loop_index;
     int vertex_in_loop;
     DecodeIndex(index, &loop_index, &vertex_in_loop);
@@ -635,15 +635,15 @@ class S2PolygonIndex : public S2LoopSequenceIndex {
 class S2LoopsAsVectorsIndex : public S2LoopSequenceIndex {
  public:
   S2LoopsAsVectorsIndex() {}
-  ~S2LoopsAsVectorsIndex() {}
+  ~S2LoopsAsVectorsIndex() override {}
 
   void AddVector(vector<S2Point> const* v) {
     loops_.push_back(v);
     AddLoop(v->size());
   }
 
-  virtual void EdgeFromTo(int index, S2Point const** from,
-                          S2Point const** to) const {
+  void EdgeFromTo(int index, S2Point const** from,
+                          S2Point const** to) const override {
     int loop_index;
     int vertex_in_loop;
     DecodeIndex(index, &loop_index, &vertex_in_loop);
