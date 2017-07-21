@@ -1,6 +1,5 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
-
 #include <algorithm>
 using std::min;
 using std::max;

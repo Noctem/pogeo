@@ -605,7 +605,7 @@ class S2PolygonIndex : public S2LoopSequenceIndex {
   ~S2PolygonIndex() override {}
 
   void EdgeFromTo(int index, S2Point const** from,
-                          S2Point const** to) const override {
+                  S2Point const** to) const override {
     int loop_index;
     int vertex_in_loop;
     DecodeIndex(index, &loop_index, &vertex_in_loop);
@@ -643,7 +643,7 @@ class S2LoopsAsVectorsIndex : public S2LoopSequenceIndex {
   }
 
   void EdgeFromTo(int index, S2Point const** from,
-                          S2Point const** to) const override {
+                  S2Point const** to) const override {
     int loop_index;
     int vertex_in_loop;
     DecodeIndex(index, &loop_index, &vertex_in_loop);

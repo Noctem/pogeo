@@ -1,6 +1,9 @@
-recursive-include . *.h
-recursive-include lib *.cpp
-recursive-include lib/zlib *.c
+global-include *.h
+
 recursive-include include *.hpp
 recursive-include pogeo *.pxd
 recursive-include pogeo *.pyx
+
+global-exclude *.html
+
+prune geometry/tests

@@ -91,7 +91,7 @@ class LogMessage {
  public:
   LogMessage(const char* file, int line) {
     cerr << "[" << pretty_date_.HumanDate() << "] " << file << ":" << line
-              << ": ";
+         << ": ";
   }
   ~LogMessage() { cerr << "\n"; }
   ostream& stream() { return cerr; }

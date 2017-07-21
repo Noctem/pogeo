@@ -1,4 +1,4 @@
 Pogeo
 =====
 
-A fast Cython extension for calculating cell IDs, bearings, and distances.
+A Cython extension for geographic computation using Google's S2 library.

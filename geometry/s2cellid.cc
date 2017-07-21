@@ -2,7 +2,6 @@
 
 #include "s2cellid.h"
 
-
 #include <algorithm>
 using std::min;
 using std::max;
@@ -14,7 +13,6 @@ using std::once_flag;
 
 #include <vector>
 using std::vector;
-
 
 #include "base/integral_types.h"
 #include "base/logging.h"
