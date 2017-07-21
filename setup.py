@@ -99,9 +99,16 @@ try:
     from Cython import __version__ as cython_version
     from distutils.version import LooseVersion
 
-    file_ext = 'pyx' if LooseVersion(cython_version) >= LooseVersion('0.26b0') else 'cpp'
+    file_ext = 'pyx' if LooseVersion(cython_version) >= LooseVersion('0.26') else 'cpp'
 except ImportError:
     file_ext = 'cpp'
+
+if file_ext == 'cpp':
+    from os.path import exists, join
+
+    if not exists(join('pogeo', 'utils.cpp')):
+        raise ImportError("You must have Cython to build from source."
+                          "Install Cython or install pogeo from PyPi: `pip install pogeo`")
 
 exts = [Extension('pogeo.altitude',
                   define_macros=macros,
