@@ -90,6 +90,4 @@ deploy:
 env:
   global:
     - secure: iJ/9icCGWr5lgu6EBg8fModQqVyN0Rn4NS39yXdq02pFH4na71kk9tI2aQUWyVHHVPYURWpLlFY0uFG/vX5DA5JyZG7zcqXfkN7eKiqBnQpAsrnen6s0sEx0KMb54YIMVW8N660t/xVIk4LVlvSMCZOEwXy1CZEfYnXntdGVcn1VdKr/bS4aXQ+xq2zYsMAIeSTkNVPfdmQ4aY4avMuSEBnc/Am59clAZYIj5aQuUmUDwQIBlLktla77aKMjbaCG/C+E5fKHk+J0AC4C4b9Rugew0AqIXcIQN7tmsCbwco3YZ+jNSWzntDYb9EclPvlqrxHI+L/2fPqZLdbaMHpGJ8j4hxczr819EbjCMBWX5Ed65gxutAEv9vyEvxIFXAY8dmX3oOq2G/Hfeg4BBK/Lw9ue9KHQ0YygIVCGBYMR/T47cUeD4G+sJcMhBZAwIHBGX1HN9h9qNubcYMyRD/dWw1Odu/ZarVwHf0E/M6YDXbyJ+N5hrHAbA1QMWooqJFNxeSbCDiyUi23pPjJVdsV6X0tavtykTcu3lNQTAmOk3tydJRSvrznY5v3GsVNMRmZlVgEHipTb6w4Gqx6onknsjHMCPpLB258GBfHvEXeuyyFKIj39xy9WMsIjKNjK7zL53V86+3n9ymza+yWygCU2otvjJ/soxTxiJMzLbsa7Meg=
-    - TWINE_REPOSITORY: https://pypi.python.org/pypi
-    - TWINE_REPOSITORY_URL: https://pypi.python.org/pypi
     - TWINE_USERNAME: Noctem
