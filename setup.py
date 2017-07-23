@@ -17,6 +17,18 @@ elif platform == 'darwin':
         c_args.append('-march=native')
     cpp_args = c_args + ['-std=c++14', '-stdlib=libc++']
 else:
+    try:
+        from os import name as os_name
+        if os_name == 'posix':
+            # workaround for extraneous warnings caused by this bug:
+            # https://bugs.python.org/issue1222585
+            from distutils import sysconfig
+
+            sysconfig._init_posix()
+            sysconfig._config_vars['OPT'] = sysconfig._config_vars['OPT'].replace(' -Wstrict-prototypes', '')
+    except Exception:
+            pass
+
     c_args = ['-O3']
 
     if 'MANYLINUX' in environ:
