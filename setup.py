@@ -33,7 +33,7 @@ else:
 
     if 'MANYLINUX' in environ:
         MANY_LINUX = True
-        c_args.extend(['-static-libgcc', '-static-libstdc++'])
+        c_args.extend(['-s', '-static-libgcc', '-static-libstdc++'])
     elif 'TRAVIS' not in environ:
         c_args.append('-march=native')
     cpp_args = c_args + ['-std=c++14']
