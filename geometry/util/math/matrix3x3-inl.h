@@ -18,9 +18,9 @@
 
 #ifndef UTIL_MATH_MATRIX3X3_INL_H__
 #define UTIL_MATH_MATRIX3X3_INL_H__
+
 #include <iostream>
 using std::ostream;
-using std::cout;
 using std::endl;
 
 #include "base/basictypes.h"
@@ -512,7 +512,7 @@ class Matrix3x3 {
     return false;
   }
 
-  friend std::ostream &operator<<(std::ostream &out, const Self &mb) {
+  friend ostream &operator<<(ostream &out, const Self &mb) {
     int i, j;
     for (i = 0; i < 3; i++) {
       if (i == 0) {
@@ -532,10 +532,5 @@ class Matrix3x3 {
     return out;
   }
 };
-
-// TODO(user): Matrix3x3<T> does not actually satisfy the definition of a
-// POD type even when T is a POD. Pretending that Matrix3x3<T> is a POD
-// probably won't cause immediate problems, but eventually this should be fixed.
-PROPAGATE_POD_FROM_TEMPLATE_ARGUMENT(Matrix3x3);
 
 #endif  // UTIL_MATH_MATRIX3X3_INL_H__

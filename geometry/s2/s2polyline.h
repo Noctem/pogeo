@@ -19,8 +19,7 @@ class S1Angle;
 // allowed, i.e. adjacent vertices should not be identical or antipodal.
 class S2Polyline : public S2Region {
  public:
-  // Creates an empty S2Polyline that should be initialized by calling Init()
-  // or Decode().
+  // Creates an empty S2Polyline that should be initialized by calling Init().
   S2Polyline();
 
   // Convenience constructors that call Init() with the given vertices.

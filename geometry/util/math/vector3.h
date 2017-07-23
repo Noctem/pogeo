@@ -8,11 +8,13 @@
 #ifndef UTIL_MATH_VECTOR3_H__
 #define UTIL_MATH_VECTOR3_H__
 
-#include <iostream>
+#include <ostream>
 using std::ostream;
-using std::cout;
-using std::endl;
-// NOLINT(readability/streams)
+
+#include <type_traits>
+using std::conditional;
+using std::is_integral;
+
 #include "base/basictypes.h"
 
 template <typename VType>
@@ -37,7 +39,7 @@ class Vector3 {
   // special because they return floating-point values even when VType is an
   // integer.
   typedef
-      typename base::if_<base::is_integral<VType>::value, double, VType>::type
+      typename conditional<is_integral<VType>::value, double, VType>::type
           FloatType;
 
  public:
@@ -180,8 +182,8 @@ template <typename VType>
 Vector3<VType> Min(const Vector3<VType> &v1, const Vector3<VType> &v2);
 // debug printing
 template <typename VType>
-std::ostream &operator<<(std::ostream &out,  // NOLINT
-                         const Vector3<VType> &va);
+ostream &operator<<(ostream &out,
+                    const Vector3<VType> &va);
 
 // TODO(user): Declare extern templates for these types.
 typedef Vector3<uint8> Vector3_b;

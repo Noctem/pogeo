@@ -13,8 +13,6 @@ using std::ostream;
 #include "s2latlngrect.h"
 #include "s2region.h"
 
-class Decoder;
-class Encoder;
 class S2Cell;
 
 // This class represents a spherical cap, i.e. a portion of a sphere cut off
@@ -138,11 +136,6 @@ class S2Cap : public S2Region {
 
   // The point 'p' should be a unit-length vector.
   bool Contains(S2Point const& p) const;
-
-  void Encode(Encoder* const encoder) const override {
-    LOG(FATAL) << "Unimplemented";
-  }
-  bool Decode(Decoder* const decoder) override { return false; }
 
   ///////////////////////////////////////////////////////////////////////
   // The following static methods are convenience functions for assertions

@@ -5,7 +5,6 @@
 
 #include <map>
 using std::map;
-using std::multimap;
 
 #include <vector>
 using std::vector;
@@ -59,8 +58,7 @@ class S2LoopIndex : public S2EdgeIndex {
 // edgeindex for the bigger of the two.  Same for polygons.
 class S2Loop : public S2Region {
  public:
-  // Create an empty S2Loop that should be initialized by calling Init() or
-  // Decode().
+  // Create an empty S2Loop that should be initialized by calling Init().
   S2Loop();
 
   // Convenience constructor that calls Init() with the given vertices.

@@ -2,13 +2,9 @@
 //
 // To run the benchmarks, use:
 
-#include "s2polygon.h"
-
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
 
 #include <cstdio>
 #include <string>
@@ -16,6 +12,8 @@ using std::string;
 
 #include <vector>
 using std::vector;
+
+#include "s2polygon.h"
 
 #include <gtest/gtest.h>
 #include "base/commandlineflags.h"

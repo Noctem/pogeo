@@ -14,8 +14,6 @@ using std::ostream;
 #include "s2region.h"
 #include "util/math/vector2-inl.h"
 
-class Decoder;
-class Encoder;
 class S2Cell;
 class S2CellId;
 
@@ -169,10 +167,6 @@ class S2R2Rect : public S2Region {
   bool Contains(S2Point const& p) const;
   bool Contains(S2Cell const& cell) const override;
   bool MayIntersect(S2Cell const& cell) const override;
-  void Encode(Encoder* const encoder) const override {
-    LOG(FATAL) << "Unimplemented";
-  }
-  bool Decode(Decoder* const decoder) override { return false; }
 
  private:
   R1Interval x_;

@@ -1,20 +1,18 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
-#include <stdio.h>
-
 #include <algorithm>
 using std::min;
 using std::max;
 using std::swap;
 using std::reverse;
 
+#include <cstdio>
+
 #include <map>
 using std::map;
-using std::multimap;
 
 #include <set>
 using std::set;
-using std::multiset;
 
 #include <vector>
 using std::vector;

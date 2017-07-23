@@ -87,8 +87,6 @@ set(s2includes_base
 	base/logging.h
 	base/macros.h
 	base/port.h
-	base/template_util.h
-	base/type_traits.h
 )
 
 set(s2includes_strings

@@ -869,9 +869,6 @@ typedef short int16_t;
 struct PortableHashBase {};
 #endif
 
-// This location is deprecated, the new preferred location is in base/macros.h.
-#define ABSTRACT = 0
-
 #if defined(OS_WINDOWS) || defined(__APPLE__)
 // gethostbyname() *is* thread-safe for Windows native threads. It is also
 // safe on Mac OS X, where it uses thread-local storage, even though the

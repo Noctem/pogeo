@@ -5,7 +5,6 @@
 
 #include <map>
 using std::map;
-using std::multimap;
 
 #include <vector>
 using std::vector;
@@ -42,8 +41,7 @@ class S2CellUnion;
 // loop (see s2loop.h).
 class S2Polygon : public S2Region {
  public:
-  // Creates an empty polygon that should be initialized by calling Init() or
-  // Decode().
+  // Creates an empty polygon that should be initialized by calling Init().
   S2Polygon();
 
   // Convenience constructor that calls Init() with the given loops.  Takes

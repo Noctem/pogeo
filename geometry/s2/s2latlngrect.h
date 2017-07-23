@@ -3,10 +3,8 @@
 #ifndef UTIL_GEOMETRY_S2LATLNGRECT_H_
 #define UTIL_GEOMETRY_S2LATLNGRECT_H_
 
-#include <iostream>
+#include <ostream>
 using std::ostream;
-using std::cout;
-using std::endl;
 
 #include "base/basictypes.h"
 #include "base/logging.h"

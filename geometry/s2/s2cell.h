@@ -12,9 +12,6 @@
 #include "s2latlngrect.h"
 #include "s2region.h"
 
-class Decoder;
-class Encoder;
-
 // An S2Cell is an S2Region object that represents a cell.  Unlike S2CellIds,
 // it supports efficient containment and intersection tests.  However, it is
 // also a more expensive representation (currently 48 bytes rather than 8).
@@ -114,11 +111,6 @@ class S2Cell : public S2Region {
 
   // The point 'p' does not need to be normalized.
   bool Contains(S2Point const& p) const;
-
-  void Encode(Encoder* const encoder) const override {
-    LOG(FATAL) << "Unimplemented";
-  }
-  bool Decode(Decoder* const decoder) override { return false; }
 
  private:
   // Internal method that does the actual work in the constructors.

@@ -10,8 +10,6 @@
 #include "s2latlngrect.h"
 #include "s2region.h"
 
-class Decoder;
-class Encoder;
 class S2Cell;
 
 // An S2PointRegion is a region that contains a single point.  It is more
