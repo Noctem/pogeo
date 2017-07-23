@@ -32,9 +32,6 @@ using std::vector;
 #include "s2edgeindex.h"
 #include "s2edgeutil.h"
 #include "s2latlngrect.h"
-#include "util/coding/coder.h"
-
-static const unsigned char kCurrentEncodingVersionNumber = 1;
 
 S2Point const* S2LoopIndex::edge_from(int index) const {
   return &loop_->vertex(index);
@@ -399,52 +396,6 @@ bool S2Loop::Contains(S2Point const& p) const {
     inside ^= crosser.EdgeOrVertexCrossing(&vertex(ai + 1));
   }
   return inside;
-}
-
-void S2Loop::Encode(Encoder* const encoder) const {
-  encoder->Ensure(num_vertices_ * sizeof(*vertices_) + 20);  // sufficient
-
-  encoder->put8(kCurrentEncodingVersionNumber);
-  encoder->put32(num_vertices_);
-  encoder->putn(vertices_, sizeof(*vertices_) * num_vertices_);
-  encoder->put8(origin_inside_);
-  encoder->put32(depth_);
-  DCHECK_GE(encoder->avail(), 0);
-
-  bound_.Encode(encoder);
-}
-
-bool S2Loop::Decode(Decoder* const decoder) {
-  return DecodeInternal(decoder, false);
-}
-
-bool S2Loop::DecodeWithinScope(Decoder* const decoder) {
-  return DecodeInternal(decoder, true);
-}
-
-bool S2Loop::DecodeInternal(Decoder* const decoder, bool within_scope) {
-  unsigned char version = decoder->get8();
-  if (version > kCurrentEncodingVersionNumber) return false;
-
-  num_vertices_ = decoder->get32();
-  if (owns_vertices_) delete[] vertices_;
-  if (within_scope) {
-    vertices_ =
-        const_cast<S2Point*>(reinterpret_cast<S2Point const*>(decoder->ptr()));
-    decoder->skip(num_vertices_ * sizeof(*vertices_));
-    owns_vertices_ = false;
-  } else {
-    vertices_ = new S2Point[num_vertices_];
-    decoder->getn(vertices_, num_vertices_ * sizeof(*vertices_));
-    owns_vertices_ = true;
-  }
-  origin_inside_ = decoder->get8();
-  depth_ = decoder->get32();
-  if (!bound_.Decode(decoder)) return false;
-
-  DCHECK(IsValid());
-
-  return decoder->avail() >= 0;
 }
 
 // This is a helper class for the AreBoundariesCrossing function.

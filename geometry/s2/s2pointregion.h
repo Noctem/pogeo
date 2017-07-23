@@ -10,8 +10,6 @@
 #include "s2latlngrect.h"
 #include "s2region.h"
 
-class Decoder;
-class Encoder;
 class S2Cell;
 
 // An S2PointRegion is a region that contains a single point.  It is more
@@ -37,8 +35,6 @@ class S2PointRegion : public S2Region {
     return Contains(p);
   }
   bool Contains(S2Point const& p) const { return (point_ == p); }
-  void Encode(Encoder* const encoder) const override;
-  bool Decode(Decoder* const decoder) override;
 
  private:
   S2Point point_;

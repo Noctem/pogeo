@@ -14,8 +14,6 @@ using std::vector;
 #include "s2latlngrect.h"
 #include "s2region.h"
 
-class Decoder;
-class Encoder;
 class S1Angle;
 class S2Cell;
 class S2CellId;
@@ -193,11 +191,6 @@ class S2CellUnion : public S2Region {
   bool VirtualContainsPoint(S2Point const& p) const override {
     return Contains(p);  // The same as Contains() below, just virtual.
   }
-
-  void Encode(Encoder* const encoder) const override {
-    LOG(FATAL) << "Unimplemented";
-  }
-  bool Decode(Decoder* const decoder) override { return false; }
 
   // The point 'p' does not need to be normalized.
   // This is a fast operation (logarithmic in the size of the cell union).

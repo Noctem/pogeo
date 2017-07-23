@@ -3,10 +3,8 @@
 #ifndef UTIL_GEOMETRY_S2LATLNGRECT_H_
 #define UTIL_GEOMETRY_S2LATLNGRECT_H_
 
-#include <iostream>
+#include <ostream>
 using std::ostream;
-using std::cout;
-using std::endl;
 
 #include "base/basictypes.h"
 #include "base/logging.h"
@@ -237,9 +235,6 @@ class S2LatLngRect : public S2Region {
 
   // The point 'p' does not need to be normalized.
   bool Contains(S2Point const& p) const;
-
-  void Encode(Encoder* const encoder) const override;
-  bool Decode(Decoder* const decoder) override;
 
  private:
   // Return true if the edge AB intersects the given edge of constant

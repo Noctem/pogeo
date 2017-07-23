@@ -10,7 +10,6 @@
 #include "s2cell.h"
 #include "s2edgeutil.h"
 #include "s2testing.h"
-#include "util/coding/coder.h"
 
 static S2LatLngRect RectFromDegrees(double lat_lo, double lng_lo, double lat_hi,
                                     double lng_hi) {
@@ -329,16 +328,6 @@ TEST(S2LatLngRect, CellOps) {
                               bound202.hi().lat().degrees() - 3,
                               bound202.hi().lng().degrees() - 3),
               cell202, 2);
-}
-
-TEST(S2LatLngRect, EncodeDecode) {
-  S2LatLngRect r = RectFromDegrees(-20, -80, 10, 20);
-  Encoder encoder;
-  r.Encode(&encoder);
-  Decoder decoder(encoder.base(), encoder.length());
-  S2LatLngRect decoded_rect = S2LatLngRect::Empty();
-  EXPECT_TRUE(decoded_rect.Decode(&decoder));
-  EXPECT_EQ(r, decoded_rect);
 }
 
 TEST(S2LatLngRect, Area) {

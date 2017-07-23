@@ -11,19 +11,8 @@ using std::vector;
 #include "s2latlng.h"
 #include "s2testing.h"
 #include "strings/stringprintf.h"
-#include "util/coding/coder.h"
 
 namespace {
-
-S2Polyline* MakePolyline(string const& str) {
-  unique_ptr<S2Polyline> polyline(S2Testing::MakePolyline(str));
-  Encoder encoder;
-  polyline->Encode(&encoder);
-  Decoder decoder(encoder.base(), encoder.length());
-  unique_ptr<S2Polyline> decoded_polyline(new S2Polyline);
-  decoded_polyline->Decode(&decoder);
-  return decoded_polyline.release();
-}
 
 TEST(S2Polyline, Basic) {
   vector<S2Point> vertices;
@@ -351,16 +340,6 @@ TEST(S2Polyline, ApproxEquals) {
 
   // Same vertices, in different order.
   EXPECT_FALSE(TestEquals("0:0, 5:5, 0:10", "5:5, 0:10, 0:0", 0.1 * degree));
-}
-
-TEST(S2Polyline, EncodeDecode) {
-  unique_ptr<S2Polyline> polyline(MakePolyline("0:0, 0:10, 10:20, 20:30"));
-  Encoder encoder;
-  polyline->Encode(&encoder);
-  Decoder decoder(encoder.base(), encoder.length());
-  S2Polyline decoded_polyline;
-  EXPECT_TRUE(decoded_polyline.Decode(&decoder));
-  EXPECT_TRUE(decoded_polyline.ApproxEquals(polyline.get(), 0));
 }
 
 void TestNearlyCovers(string const& a_str, string const& b_str,

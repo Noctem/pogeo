@@ -11,6 +11,10 @@
 #include <ostream>
 using std::ostream;
 
+#include <type_traits>
+using std::conditional;
+using std::is_integral;
+
 #include "base/basictypes.h"
 
 template <typename VType>
@@ -36,7 +40,7 @@ class Vector2 {
   // special because they return floating-point values even when VType is an
   // integer.
   typedef
-      typename base::if_<base::is_integral<VType>::value, double, VType>::type
+      typename conditional<is_integral<VType>::value, double, VType>::type
           FloatType;
 
  public:

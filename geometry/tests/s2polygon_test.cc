@@ -2,13 +2,9 @@
 //
 // To run the benchmarks, use:
 
-#include "s2polygon.h"
-
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
 
 #include <cstdio>
 #include <string>
@@ -16,6 +12,8 @@ using std::string;
 
 #include <vector>
 using std::vector;
+
+#include "s2polygon.h"
 
 #include <gtest/gtest.h>
 #include "base/commandlineflags.h"
@@ -31,13 +29,8 @@ using std::vector;
 #include "s2regioncoverer.h"
 #include "s2testing.h"
 #include "strings/stringprintf.h"
-#include "util/coding/coder.h"
 #include "util/math/matrix3x3-inl.h"
 #include "util/math/matrix3x3.h"
-
-#define FLAGS_num_loops_per_polygon_for_bm 10
-//             "Number of loops per polygon to use for an s2polygon "
-//             "encode/decode benchmark. Can be a maximum of 90.");
 
 // A set of nested loops around the point 0:0 (lat:lng).
 // Every vertex of kNear0 is a vertex of kNear1.
@@ -150,16 +143,6 @@ class S2PolygonTestBase : public testing::Test {
   S2Polygon const* const south_H;
   S2Polygon const* const far_H_south_H;
 };
-
-static S2Polygon* MakePolygon(string const& str) {
-  unique_ptr<S2Polygon> polygon(S2Testing::MakePolygon(str));
-  Encoder encoder;
-  polygon->Encode(&encoder);
-  Decoder decoder(encoder.base(), encoder.length());
-  unique_ptr<S2Polygon> decoded_polygon(new S2Polygon);
-  decoded_polygon->Decode(&decoder);
-  return decoded_polygon.release();
-}
 
 static void CheckContains(string const& a_str, string const& b_str) {
   S2Polygon* a = MakePolygon(a_str);
@@ -853,16 +836,6 @@ TEST(S2Polygon, InitToCellUnionBorder) {
   }
 }
 
-TEST_F(S2PolygonTestBase, TestEncodeDecode) {
-  Encoder encoder;
-  cross1->Encode(&encoder);
-  Decoder decoder(encoder.base(), encoder.length());
-  S2Polygon decoded_polygon;
-  ASSERT_TRUE(decoded_polygon.Decode(&decoder));
-  EXPECT_TRUE(cross1->BoundaryEquals(&decoded_polygon));
-  EXPECT_EQ(cross1->GetRectBound(), decoded_polygon.GetRectBound());
-}
-
 // This test checks that S2Polygons created directly from S2Cells behave
 // identically to S2Polygons created from the vertices of those cells; this
 // previously was not the case, because S2Cells calculate their bounding
@@ -1088,59 +1061,8 @@ TEST_F(S2PolygonSimplifierTest, LargeRegularPolygon) {
   EXPECT_LE(200, simplified->num_vertices());
 }
 
-string GenerateInputForBenchmark(int num_vertices_per_loop_for_bm) {
-  CHECK_LE(FLAGS_num_loops_per_polygon_for_bm, 90);
-  vector<S2Loop*> loops;
-  for (int li = 0; li < FLAGS_num_loops_per_polygon_for_bm; ++li) {
-    vector<S2Point> vertices;
-    double radius_degrees =
-        1.0 + (50.0 * li) / FLAGS_num_loops_per_polygon_for_bm;
-    for (int vi = 0; vi < num_vertices_per_loop_for_bm; ++vi) {
-      double angle_radians = (2 * M_PI * vi) / num_vertices_per_loop_for_bm;
-      double lat = radius_degrees * cos(angle_radians);
-      double lng = radius_degrees * sin(angle_radians);
-      vertices.push_back(S2LatLng::FromDegrees(lat, lng).ToPoint());
-    }
-    loops.push_back(new S2Loop(vertices));
-  }
-  S2Polygon polygon_to_encode(&loops);
-
-  Encoder encoder;
-  polygon_to_encode.Encode(&encoder);
-  string encoded(encoder.base(), encoder.length());
-
-  return encoded;
-}
-
 // This isn't available in googletest
 #if 0
-
-static void BM_S2Decoding(int iters, int num_vertices_per_loop_for_bm) {
-  StopBenchmarkTiming();
-  string encoded = GenerateInputForBenchmark(num_vertices_per_loop_for_bm);
-  StartBenchmarkTiming();
-  for (int i = 0; i < iters; ++i) {
-    Decoder decoder(encoded.data(), encoded.size());
-    S2Polygon decoded_polygon;
-    decoded_polygon.Decode(&decoder);
-  }
-}
-BENCHMARK_RANGE(BM_S2Decoding, 8, 131072);
-
-static void BM_S2DecodingWithinScope(int iters,
-                                     int num_vertices_per_loop_for_bm) {
-  StopBenchmarkTiming();
-  string encoded = GenerateInputForBenchmark(num_vertices_per_loop_for_bm);
-  StartBenchmarkTiming();
-  for (int i = 0; i < iters; ++i) {
-    Decoder decoder(encoded.data(), encoded.size());
-    S2Polygon decoded_polygon;
-    decoded_polygon.DecodeWithinScope(&decoder);
-  }
-}
-BENCHMARK_RANGE(BM_S2DecodingWithinScope, 8, 131072);
-
-
 void ConcentricLoops(S2Point center,
                      int num_loops,
                      int num_vertices_per_loop,

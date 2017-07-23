@@ -9,13 +9,9 @@
 #include "base/integral_types.h"
 #include "base/port.h"
 
-//
-// Google-specific types
-//
-
-// In contrast to Fingerprints, we *do* expect Hash<i> values to collide
-// from time to time (although we obviously prefer them not to).  Also
-// note that there is an illegal hash value for each size hash.
+// We *do* expect Hash<i> values to collide from time to time
+// (although we obviously prefer them not to).  Also note that
+// there is an illegal hash value for each size hash.
 typedef uint32 Hash32;
 typedef uint16 Hash16;
 typedef unsigned char Hash8;

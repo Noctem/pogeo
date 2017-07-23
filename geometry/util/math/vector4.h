@@ -8,11 +8,13 @@
 #ifndef UTIL_MATH_VECTOR4_H__
 #define UTIL_MATH_VECTOR4_H__
 
-#include <iostream>
+#include <ostream>
 using std::ostream;
-using std::cout;
-using std::endl;
-// NOLINT(readability/streams)
+
+#include <type_traits>
+using std::conditional;
+using std::is_integral;
+
 #include "base/basictypes.h"
 
 template <typename VType>
@@ -33,7 +35,7 @@ class Vector4 {
   // FloatType is the type returned by Norm().  This method is special because
   // it returns floating-point values even when VType is an integer.
   typedef
-      typename base::if_<base::is_integral<VType>::value, double, VType>::type
+      typename conditional<is_integral<VType>::value, double, VType>::type
           FloatType;
 
  public:

@@ -16,6 +16,9 @@
 using std::memcpy;
 
 #include <typeinfo>  // for enumeration casts and tests
+#include <type_traits>
+using std::is_reference;
+using std::remove_reference;
 
 #include "base/macros.h"
 
@@ -86,8 +89,8 @@ inline To down_cast(From* f) {         // so we only accept pointers
 // compiler will just bind From to const T.
 template <typename To, typename From>
 inline To down_cast(From& f) {
-  static_assert(base::is_reference<To>::value, "target_type_not_a_reference");
-  typedef typename base::remove_reference<To>::type* ToAsPointer;
+  static_assert(is_reference<To>::value, "target_type_not_a_reference");
+  typedef typename remove_reference<To>::type* ToAsPointer;
   if (false) {
     // Compile-time check that To inherits from From. See above for details.
     implicit_cast<From*, ToAsPointer>(0);
@@ -160,7 +163,8 @@ template <class Dest, class Source>
 inline Dest bit_cast(const Source& source) {
   // Compile time assertion: sizeof(Dest) == sizeof(Source)
   // A compile error here means your Dest and Source have different sizes.
-  static_assert(sizeof(Dest) == sizeof(Source), "source_dest_mismatch");
+  static_assert(sizeof(Dest) == sizeof(Source),
+                "Source and Dest have different sizes");
 
   Dest dest;
   memcpy(&dest, &source, sizeof(dest));

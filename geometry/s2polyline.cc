@@ -23,10 +23,7 @@ using std::vector;
 #include "s2cell.h"
 #include "s2edgeutil.h"
 #include "s2latlngrect.h"
-#include "util/coding/coder.h"
 #include "util/math/matrix3x3-inl.h"
-
-static const unsigned char kCurrentEncodingVersionNumber = 1;
 
 S2Polyline::S2Polyline() : num_vertices_(0), vertices_(nullptr) {}
 
@@ -293,33 +290,6 @@ bool S2Polyline::MayIntersect(S2Cell const& cell) const {
     }
   }
   return false;
-}
-
-void S2Polyline::Encode(Encoder* const encoder) const {
-  encoder->Ensure(num_vertices_ * sizeof(*vertices_) + 10);  // sufficient
-
-  encoder->put8(kCurrentEncodingVersionNumber);
-  encoder->put32(num_vertices_);
-  encoder->putn(vertices_, sizeof(*vertices_) * num_vertices_);
-
-  DCHECK_GE(encoder->avail(), 0);
-}
-
-bool S2Polyline::Decode(Decoder* const decoder) {
-  unsigned char version = decoder->get8();
-  if (version > kCurrentEncodingVersionNumber) return false;
-
-  num_vertices_ = decoder->get32();
-  delete[] vertices_;
-  vertices_ = new S2Point[num_vertices_];
-  decoder->getn(vertices_, num_vertices_ * sizeof(*vertices_));
-
-  if (FLAGS_s2debug) {
-    vector<S2Point> vertex_vector(vertices_, vertices_ + num_vertices_);
-    CHECK(IsValid(vertex_vector));
-  }
-
-  return decoder->avail() >= 0;
 }
 
 namespace {
