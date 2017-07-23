@@ -1,7 +1,7 @@
 # distutils: language = c++
 # cython: language_level=3, cdivision=True, c_string_type=bytes, c_string_encoding=ascii, auto_pickle=False
 
-from libc.math cimport log2, M_PI, pow
+from libc.math cimport log2, pow
 from libc.stdint cimport uint64_t
 from libcpp.string cimport string
 from libcpp.vector cimport vector
@@ -11,7 +11,6 @@ from cython.operator cimport dereference as deref, postincrement as incr
 from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from ._json cimport Json
 from ._mcpp cimport emplace_move, push_back_move
-from .const cimport EARTH_RADIUS_METERS, EARTH_RADIUS_KILOMETERS
 from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
@@ -19,6 +18,9 @@ from .geo.s2latlngrect cimport S2LatLngRect
 from .geo.s2regioncoverer cimport S2RegionCoverer
 from .location cimport Location
 from .utils cimport coords_to_s2point, s2point_to_lat, s2point_to_lon
+
+
+include "const.pxi"
 
 
 cdef class Loop:
@@ -83,7 +85,7 @@ cdef class Loop:
     cdef void _initialize(self):
         # if loop covers more than half of the Earth's surface it was probably
         # erroneously constructed clockwise
-        if self.shape.GetArea() > (M_PI * 2):
+        if self.shape.GetArea() > (PI * 2):
             self.shape.Invert()
 
         cdef S2LatLngRect rect = self.shape.GetRectBound()

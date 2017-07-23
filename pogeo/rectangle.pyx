@@ -8,13 +8,15 @@ from libcpp.vector cimport vector
 
 from ._cpython cimport _Py_HashDouble, Py_hash_t, Py_uhash_t
 from ._json cimport Json
-from .const cimport EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS
 from .geo.s2 cimport S2Point
 from .geo.s2cellid cimport S2CellId
 from .geo.s2latlng cimport S2LatLng
 from .geo.s2latlngrect cimport S2LatLngRect
 from .geo.s2regioncoverer cimport S2RegionCoverer
 from .location cimport Location
+
+
+include "const.pxi"
 
 
 cdef class Rectangle:

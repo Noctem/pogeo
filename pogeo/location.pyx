@@ -10,11 +10,13 @@ from cyrandom.cyrandom cimport uniform
 
 from ._cpython cimport _PyTime_GetSystemClock
 from ._libcpp cimport max
-from .const cimport DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2Point
 from .geo.s2latlng cimport S2LatLng
 from .utils cimport coords_to_s2point, get_distance, get_distance_unit, s2point_to_lat, s2point_to_lon
+
+
+include "const.pxi"
 
 
 cdef class Location:

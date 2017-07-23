@@ -11,7 +11,6 @@ from cpython.array cimport array, clone
 
 from ._bitscan cimport leadingZeros, trailingZeros
 from ._cpython cimport _PyTime_GetSystemClock, _PyTime_GetMonotonicClock
-from .const cimport AXIS_HEIGHT, DEG_TO_RAD, EARTH_RADIUS_KILOMETERS, EARTH_RADIUS_METERS, EARTH_RADIUS_MILES, RAD_TO_DEG
 from .location cimport Location
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2, S2Point
@@ -20,6 +19,9 @@ from .geo.s2cellid cimport S2CellId
 from .geo.s2edgeutil cimport S2EdgeUtil
 from .geo.s2regioncoverer cimport S2RegionCoverer
 from .types cimport shape
+
+
+include "const.pxi"
 
 
 DEF S2_LEVEL = 15

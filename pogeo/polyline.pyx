@@ -7,12 +7,14 @@ from cython.operator cimport dereference as deref, postincrement as incr
 
 from ._json cimport Json
 from ._mcpp cimport emplace_move, push_back_move
-from .const cimport EARTH_RADIUS_METERS
 from .geo.s1angle cimport S1Angle
 from .geo.s2 cimport S2Point
 from .geo.s2polyline cimport S2Polyline
 from .location cimport Location
 from .utils cimport coords_to_s2point
+
+
+include "const.pxi"
 
 
 cdef class Polyline:

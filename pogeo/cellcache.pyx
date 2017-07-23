@@ -9,13 +9,15 @@ from cython.operator cimport postincrement as incr, dereference as deref
 
 from cpython.array cimport array, clone
 
-from .const cimport AXIS_HEIGHT
 from .geo.s2cap cimport S2Cap
 from .geo.s2cellid cimport S2CellId
 from .location cimport Location
 from .utils cimport ARRAY_TEMPLATE
 
 DEF S2_LEVEL = 15
+
+
+include "const.pxi"
 
 
 cdef class CellCache:
