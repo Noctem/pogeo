@@ -16,10 +16,9 @@ include_directories(
 
 set(s2util_files
 	base/logging.cc
-	base/stringprintf.cc
-	base/strtoint.cc
 	strings/split.cc
 	strings/stringprintf.cc
+	strings/strtoint.cc
 	strings/strutil.cc
 	util/coding/coder.cc
 	util/coding/varint.cc
@@ -84,17 +83,10 @@ set(s2includes_base
 	base/basictypes.h
 	base/casts.h
 	base/commandlineflags.h
-	base/int128.h
 	base/integral_types.h
 	base/logging.h
 	base/macros.h
 	base/port.h
-	base/scoped_ptr.h
-	base/stl_decl.h
-	base/stl_decl_msvc.h
-	base/stl_decl_osx.h
-	base/stringprintf.h
-	base/strtoint.h
 	base/template_util.h
 	base/type_traits.h
 )
@@ -102,6 +94,7 @@ set(s2includes_base
 set(s2includes_strings
 	strings/split.h
 	strings/stringprintf.h
+	strings/strtoint.h
 	strings/strutil.h
 )
 

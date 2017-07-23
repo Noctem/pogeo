@@ -1,7 +1,5 @@
 // Copyright 2009 Google Inc. All Rights Reserved.
 
-#include "s2edgeindex.h"
-
 #include <set>
 using std::set;
 using std::multiset;
@@ -12,16 +10,18 @@ using std::string;
 #include <vector>
 using std::vector;
 
+#include "s2edgeindex.h"
+
 #include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include "base/stringprintf.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2cellid.h"
 #include "s2edgeutil.h"
 #include "s2loop.h"
 #include "s2testing.h"
+#include "strings/stringprintf.h"
 #include "util/math/matrix3x3-inl.h"
 #include "util/math/vector3-inl.h"
 

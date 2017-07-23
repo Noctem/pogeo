@@ -1,7 +1,7 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
-#include <limits.h>
-#include <stdlib.h>
+#include <climits>
+#include <cstdlib>
 #include <sys/resource.h>  // for rusage, RUSAGE_SELF
 
 #include <vector>
@@ -9,7 +9,6 @@ using std::vector;
 
 #include "base/integral_types.h"
 #include "base/logging.h"
-#include "base/stringprintf.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2cellunion.h"
@@ -20,6 +19,7 @@ using std::vector;
 #include "s2polyline.h"
 #include "s2testing.h"
 #include "strings/split.h"
+#include "strings/stringprintf.h"
 #include "strings/strutil.h"
 #include "util/math/matrix3x3-inl.h"
 

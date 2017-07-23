@@ -1,7 +1,5 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
-#include "s2cellid.h"
-
 #include <algorithm>
 using std::min;
 using std::max;
@@ -14,11 +12,13 @@ using std::once_flag;
 #include <vector>
 using std::vector;
 
+#include "s2cellid.h"
+
 #include "base/integral_types.h"
 #include "base/logging.h"
-#include "base/stringprintf.h"
 #include "s2.h"
 #include "s2latlng.h"
+#include "strings/stringprintf.h"
 #include "strings/strutil.h"
 #include "util/math/vector2-inl.h"
 

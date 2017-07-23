@@ -7,10 +7,10 @@ using std::vector;
 
 #include <gtest/gtest.h>
 #include "base/commandlineflags.h"
-#include "base/stringprintf.h"
 #include "s2cell.h"
 #include "s2latlng.h"
 #include "s2testing.h"
+#include "strings/stringprintf.h"
 #include "util/coding/coder.h"
 
 namespace {

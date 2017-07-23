@@ -21,7 +21,7 @@ using std::back_insert_iterator;
 
 #include "base/basictypes.h"
 #include "base/integral_types.h"
-#include "base/strtoint.h"
+#include "strings/strtoint.h"
 #include "util/hash/hash_jenkins_lookup2.h"
 
 static const uint32 MIX32 = 0x12b9b0a1UL;  // pi; an arbitrary number

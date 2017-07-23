@@ -55,10 +55,9 @@ libs = [('gzip', {
         'cflags': cpp_args,
         'sources': [
             'geometry/base/logging.cc',
-            'geometry/base/stringprintf.cc',
-            'geometry/base/strtoint.cc',
             'geometry/strings/split.cc',
             'geometry/strings/stringprintf.cc',
+            'geometry/strings/strtoint.cc',
             'geometry/strings/strutil.cc',
             'geometry/util/coding/coder.cc',
             'geometry/util/coding/varint.cc',

@@ -1,17 +1,10 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
-#include "s2regioncoverer.h"
-
-#include <stdio.h>
-
 #include <algorithm>
 using std::min;
 using std::max;
-using std::swap;
-using std::reverse;
 
-#include <unordered_map>
-using std::unordered_map;
+#include <cstdio>
 
 #include <queue>
 using std::priority_queue;
@@ -19,13 +12,15 @@ using std::priority_queue;
 #include <string>
 using std::string;
 
+#include <unordered_map>
+using std::unordered_map;
+
 #include <vector>
 using std::vector;
 
 #include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/logging.h"
-#include "base/strtoint.h"
 #include "s2cap.h"
 #include "s2cell.h"
 #include "s2cellid.h"
@@ -35,6 +30,7 @@ using std::vector;
 #include "s2testing.h"
 #include "strings/split.h"
 #include "strings/stringprintf.h"
+#include "strings/strtoint.h"
 
 #define FLAGS_max_cells "4,8"
 //              "Comma-separated list of values to use for 'max_cells'");

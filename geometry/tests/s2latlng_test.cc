@@ -3,9 +3,9 @@
 #include "s2latlng.h"
 #include <gtest/gtest.h>
 #include "base/macros.h"
-#include "base/stringprintf.h"
 #include "s2testing.h"
 #include "strings/split.h"
+#include "strings/stringprintf.h"
 
 TEST(S2LatLng, TestBasic) {
   S2LatLng ll_rad = S2LatLng::FromRadians(M_PI_4, M_PI_2);
