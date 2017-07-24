@@ -230,14 +230,14 @@ class Matrix3x3 {
   }
 
   // Return the determinant of the matrix
-  inline VType Det(void) const {
+  inline VType Det() const {
     return m_[0][0] * m_[1][1] * m_[2][2] + m_[0][1] * m_[1][2] * m_[2][0] +
            m_[0][2] * m_[1][0] * m_[2][1] - m_[2][0] * m_[1][1] * m_[0][2] -
            m_[2][1] * m_[1][2] * m_[0][0] - m_[2][2] * m_[1][0] * m_[0][1];
   }
 
   // Return the trace of the matrix
-  inline VType Trace(void) const { return m_[0][0] + m_[1][1] + m_[2][2]; }
+  inline VType Trace() const { return m_[0][0] + m_[1][1] + m_[2][2]; }
 
   // Return a pointer to the data array for interface with other libraries
   // like opencv
@@ -280,7 +280,7 @@ class Matrix3x3 {
 
   // Return the transposed of the matrix of the cofactors
   // (Useful for inversion for example)
-  inline Self ComatrixTransposed(void) const {
+  inline Self ComatrixTransposed() const {
     return Self(m_[1][1] * m_[2][2] - m_[2][1] * m_[1][2],
                 m_[2][1] * m_[0][2] - m_[0][1] * m_[2][2],
                 m_[0][1] * m_[1][2] - m_[1][1] * m_[0][2],
@@ -294,7 +294,7 @@ class Matrix3x3 {
                 m_[0][0] * m_[1][1] - m_[1][0] * m_[0][1]);
   }
   // Matrix inversion
-  inline Self Inverse(void) const {
+  inline Self Inverse() const {
     VType det = Det();
     CHECK(det != 0) << " Can't inverse. Determinant = 0.";
     return (1 / det) * ComatrixTransposed();
@@ -359,14 +359,14 @@ class Matrix3x3 {
   }
 
   // Return the identity matrix
-  static inline Self Identity(void) {
+  static inline Self Identity() {
     Self temp;
     temp.Set(1, 0, 0, 0, 1, 0, 0, 0, 1);
     return temp;
   }
 
   // Return a matrix full of zeros
-  static inline Self Zero(void) { return Self(); }
+  static inline Self Zero() { return Self(); }
 
   // Return a diagonal matrix with the coefficients in v
   static inline Self Diagonal(const MVector &v) {
