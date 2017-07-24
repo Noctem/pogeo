@@ -35,8 +35,8 @@ class Matrix3x3 {
   VType m_[3][3];
 
  public:
-  typedef Matrix3x3<VType> Self;
-  typedef Vector3<VType> MVector;
+  using Self = Matrix3x3<VType>;
+  using MVector = Vector3<VType>;
   // Initialize the matrix to 0
   Matrix3x3() {
     m_[0][2] = m_[0][1] = m_[0][0] = VType();

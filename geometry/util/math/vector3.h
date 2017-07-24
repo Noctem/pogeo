@@ -42,8 +42,8 @@ class Vector3 {
       FloatType;
 
  public:
-  typedef Vector3<VType> Self;
-  typedef VType BaseType;
+  using Self = Vector3<VType>;
+  using BaseType = VType;
   // Create a new vector (0,0,0)
   Vector3();
   // Create a new vector (x,y,z)
@@ -184,9 +184,9 @@ template <typename VType>
 ostream &operator<<(ostream &out, const Vector3<VType> &va);
 
 // TODO(user): Declare extern templates for these types.
-typedef Vector3<uint8> Vector3_b;
-typedef Vector3<int> Vector3_i;
-typedef Vector3<float> Vector3_f;
-typedef Vector3<double> Vector3_d;
+using Vector3_b = Vector3<uint8>;
+using Vector3_i = Vector3<int>;
+using Vector3_f = Vector3<float>;
+using Vector3_d = Vector3<double>;
 
 #endif  // UTIL_MATH_VECTOR3_H__

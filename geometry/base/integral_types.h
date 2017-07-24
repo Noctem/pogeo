@@ -13,14 +13,14 @@
 // Standard typedefs
 // All Google2 code is compiled with -funsigned-char to make "char"
 // unsigned.  Google2 code therefore doesn't need a "uchar" type.
-typedef signed char schar;
-typedef signed char int8;
-typedef short int16;
-typedef int int32;
+using schar = signed char;
+using int8 = signed char;
+using int16 = short;
+using int32 = int;
 #ifdef COMPILER_MSVC
 typedef __int64 int64;
 #else
-typedef long long int64;
+using int64 = long long;
 #endif /* COMPILER_MSVC */
 
 // NOTE: unsigned types are DANGEROUS in loops and other arithmetical
@@ -29,20 +29,20 @@ typedef long long int64;
 // use 'unsigned' to express "this value should always be positive";
 // use assertions for this.
 
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
+using uint8 = unsigned char;
+using uint16 = unsigned short;
+using uint32 = unsigned int;
 #ifdef COMPILER_MSVC
 typedef unsigned __int64 uint64;
 #else
-typedef unsigned long long uint64;
+using uint64 = unsigned long long;
 #endif /* COMPILER_MSVC */
 
 // A type to represent a Unicode code-point value. As of Unicode 4.0,
 // such values require up to 21 bits.
 // (For type-checking on pointers, make this explicitly signed,
 // and it should always be the signed version of whatever int32 is.)
-typedef signed int char32;
+using char32 = int;
 
 //  A type to represent a natural machine word (for e.g. efficiently
 // scanning through memory for checksums or index searching). Don't use
@@ -51,11 +51,11 @@ typedef signed int char32;
 // (http://www.opengroup.org/public/tech/aspen/lp64_wp.htm), hence
 // their ints are only 32 bits. We want to use the same fundamental
 // type on all archs if possible to preserve *printf() compatability.
-typedef unsigned long uword_t;
+using uword_t = unsigned long;
 
 // A signed natural machine word. In general you want to use "int"
 // rather than "sword_t"
-typedef long sword_t;
+using sword_t = long;
 
 // long long macros to be used because gcc and vc++ use different suffixes,
 // and different size specifiers in format strings

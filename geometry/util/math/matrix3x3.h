@@ -19,8 +19,8 @@
 template <class VType>
 class Matrix3x3;
 
-typedef Matrix3x3<int> Matrix3x3_i;
-typedef Matrix3x3<float> Matrix3x3_f;
-typedef Matrix3x3<double> Matrix3x3_d;
+using Matrix3x3_i = Matrix3x3<int>;
+using Matrix3x3_f = Matrix3x3<float>;
+using Matrix3x3_d = Matrix3x3<double>;
 
 #endif  // UTIL_MATH_MATRIX3X3_H__

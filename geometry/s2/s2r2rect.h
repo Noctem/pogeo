@@ -21,7 +21,7 @@ class S2Cell;
 class S2CellId;
 
 // TODO: Create an r2.h and move this definition into it.
-typedef Vector2_d R2Point;
+using R2Point = Vector2_d;
 
 // This class is a stopgap measure that allows some of the S2 spherical
 // geometry machinery to be applied to planar geometry.  An S2R2Rect

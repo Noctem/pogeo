@@ -38,8 +38,8 @@ class Vector4 {
       FloatType;
 
  public:
-  typedef Vector4<VType> Self;
-  typedef VType BaseType;
+  using Self = Vector4<VType>;
+  using BaseType = VType;
   // Create a new vector (0,0)
   Vector4();
   // Create a new vector (x,y,z,w)
@@ -174,9 +174,9 @@ template <typename VType>
 std::ostream &operator<<(std::ostream &out,  // NOLINT
                          const Vector4<VType> &va);
 
-typedef Vector4<uint8> Vector4_b;
-typedef Vector4<int> Vector4_i;
-typedef Vector4<float> Vector4_f;
-typedef Vector4<double> Vector4_d;
+using Vector4_b = Vector4<uint8>;
+using Vector4_i = Vector4<int>;
+using Vector4_f = Vector4<float>;
+using Vector4_d = Vector4<double>;
 
 #endif  // UTIL_MATH_VECTOR4_H__

@@ -26,7 +26,7 @@ using std::tan;
 // this.  See util/math/vector3-inl.h for the methods available.  Among other
 // things, there are overloaded operators that make it convenient to write
 // arithmetic expressions (e.g. (1-x)*p1 + x*p2).
-typedef Vector3_d S2Point;
+using S2Point = Vector3_d;
 
 namespace std {
 
@@ -474,8 +474,8 @@ class S2 {
     double const deriv_;
     DISALLOW_EVIL_CONSTRUCTORS(Metric);
   };
-  typedef Metric<1> LengthMetric;
-  typedef Metric<2> AreaMetric;
+  using LengthMetric = Metric<1>;
+  using AreaMetric = Metric<2>;
 
   // Each cell is bounded by four planes passing through its four edges and
   // the center of the sphere.  These metrics relate to the angle between each

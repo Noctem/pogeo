@@ -282,7 +282,7 @@ class S2PolygonBuilder {
   // vertices is a multiset so that the same edge can be present more than
   // once.  We could have also used a multiset<pair<S2Point, S2Point> >,
   // but this representation is a bit more convenient.
-  typedef multiset<S2Point> VertexSet;
+  using VertexSet = multiset<S2Point>;
   typedef unordered_map<S2Point, VertexSet> EdgeSet;
   unique_ptr<EdgeSet> edges_;
 
