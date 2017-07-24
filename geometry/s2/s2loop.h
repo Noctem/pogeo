@@ -24,7 +24,7 @@ class WedgeProcessor;
 class S2LoopIndex : public S2EdgeIndex {
  public:
   explicit S2LoopIndex(S2Loop const* loop) : loop_(loop) {}
-  ~S2LoopIndex() override {}
+  ~S2LoopIndex() override = default;
 
   // There is no need to overwrite Reset(), as the only data that's
   // used to implement this class is all contained in the loop data.

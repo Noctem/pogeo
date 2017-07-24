@@ -28,7 +28,7 @@ using std::vector;
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 
-S2Polyline::S2Polyline() {}
+S2Polyline::S2Polyline() = default;
 
 S2Polyline::S2Polyline(vector<S2Point> const& vertices) : vertices_(nullptr) {
   Init(vertices);

@@ -528,8 +528,8 @@ bool S2Polygon::DecodeInternal(Decoder* const decoder, bool within_scope) {
 //     underlying data with the resulting two indices.
 class S2LoopSequenceIndex : public S2EdgeIndex {
  public:
-  S2LoopSequenceIndex() {}
-  ~S2LoopSequenceIndex() override {}
+  S2LoopSequenceIndex() = default;
+  ~S2LoopSequenceIndex() override = default;
 
   void AddLoop(int num_vertices) {
     int vertices_so_far = num_edges_;
@@ -596,7 +596,7 @@ class S2PolygonIndex : public S2LoopSequenceIndex {
     }
   }
 
-  ~S2PolygonIndex() override {}
+  ~S2PolygonIndex() override = default;
 
   void EdgeFromTo(int index, S2Point const** from,
                   S2Point const** to) const override {
@@ -628,8 +628,8 @@ class S2PolygonIndex : public S2LoopSequenceIndex {
 // the vector<S2Point>'s.
 class S2LoopsAsVectorsIndex : public S2LoopSequenceIndex {
  public:
-  S2LoopsAsVectorsIndex() {}
-  ~S2LoopsAsVectorsIndex() override {}
+  S2LoopsAsVectorsIndex() = default;
+  ~S2LoopsAsVectorsIndex() override = default;
 
   void AddVector(vector<S2Point> const* v) {
     loops_.push_back(v);

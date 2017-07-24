@@ -445,7 +445,7 @@ bool S2Loop::DecodeInternal(Decoder* const decoder, bool within_scope) {
 // AreBoundariesCrossing.
 class WedgeProcessor {
  public:
-  virtual ~WedgeProcessor() {}
+  virtual ~WedgeProcessor() = default;
 
   virtual bool ProcessWedge(S2Point const& a0, S2Point const& ab1,
                             S2Point const& a2, S2Point const& b0,
@@ -488,7 +488,7 @@ bool S2Loop::AreBoundariesCrossing(S2Loop const* b,
 // contained in loop A).
 class ContainsWedgeProcessor : public WedgeProcessor {
  public:
-  ContainsWedgeProcessor() {}
+  ContainsWedgeProcessor() = default;
   bool DoesntContain() { return doesnt_contain_; }
 
  protected:
@@ -548,7 +548,7 @@ bool S2Loop::Contains(S2Loop const* b) const {
 // of associated wedges that intersect.
 class IntersectsWedgeProcessor : public WedgeProcessor {
  public:
-  IntersectsWedgeProcessor() {}
+  IntersectsWedgeProcessor() = default;
   bool Intersects() { return intersects_; }
 
  protected:
@@ -602,7 +602,7 @@ bool S2Loop::Intersects(S2Loop const* b) const {
 // not possible for A to contain B, and 1 otherwise.
 class ContainsOrCrossesProcessor : public WedgeProcessor {
  public:
-  ContainsOrCrossesProcessor() {}
+  ContainsOrCrossesProcessor() = default;
 
   int CrossesOrMayContain() {
     if (has_boundary_crossing_) return -1;

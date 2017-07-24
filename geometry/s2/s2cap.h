@@ -63,7 +63,7 @@ class S2Cap : public S2Region {
   // Return a full cap, i.e. a cap that contains all points.
   static S2Cap Full() { return S2Cap(S2Point(1, 0, 0), 2); }
 
-  ~S2Cap() override {}
+  ~S2Cap() override = default;
 
   // Accessor methods.
   S2Point const& axis() const { return axis_; }

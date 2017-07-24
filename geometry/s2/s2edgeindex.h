@@ -85,7 +85,7 @@ class S2EdgeIndex {
  public:
   S2EdgeIndex() { Reset(); }
 
-  virtual ~S2EdgeIndex() {}
+  virtual ~S2EdgeIndex() = default;
 
   // An iterator on data edges that may cross a query edge (a,b).
   // Create the iterator, call GetCandidates(), then Done()/Next()

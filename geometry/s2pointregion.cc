@@ -11,7 +11,7 @@
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 
-S2PointRegion::~S2PointRegion() {}
+S2PointRegion::~S2PointRegion() = default;
 
 S2PointRegion* S2PointRegion::Clone() const {
   return new S2PointRegion(point_);

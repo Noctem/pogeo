@@ -23,7 +23,7 @@ class S2Cell : public S2Region {
  public:
   // The default constructor is required in order to use freelists.
   // Cells should otherwise always be constructed explicitly.
-  S2Cell() {}
+  S2Cell() = default;
 
   // An S2Cell always corresponds to a particular S2CellId.  The other
   // constructors are just convenience methods.
