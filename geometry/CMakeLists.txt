@@ -101,6 +101,10 @@ set(s2includes_util_coding
 	util/coding/varint.h
 )
 
+set(s2includes_util_endian
+	util/endian/endian.h
+)
+
 set(s2includes_util_hash
 	util/hash/hash_jenkins_lookup2.h
 )
@@ -137,5 +141,6 @@ install(FILES ${s2includes} DESTINATION include/s2)
 install(FILES ${s2includes_base} DESTINATION include/s2/base)
 install(FILES ${s2includes_strings} DESTINATION include/s2/strings)
 install(FILES ${s2includes_util_coding} DESTINATION include/s2/util/coding)
+install(FILES ${s2includes_util_endian} DESTINATION include/s2/util/endian)
 install(FILES ${s2includes_util_hash} DESTINATION include/s2/util/hash)
 install(FILES ${s2includes_util_math} DESTINATION include/s2/util/math)
