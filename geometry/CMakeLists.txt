@@ -94,10 +94,6 @@ set(s2includes_strings
 	strings/strutil.h
 )
 
-set(s2includes_util_endian
-	util/endian/endian.h
-)
-
 set(s2includes_util_hash
 	util/hash/hash_jenkins_lookup2.h
 )
@@ -133,9 +129,5 @@ install(TARGETS s2util s2cellid s2
 install(FILES ${s2includes} DESTINATION include/s2)
 install(FILES ${s2includes_base} DESTINATION include/s2/base)
 install(FILES ${s2includes_strings} DESTINATION include/s2/strings)
-install(FILES ${s2includes_util_endian} DESTINATION include/s2/util/endian)
 install(FILES ${s2includes_util_hash} DESTINATION include/s2/util/hash)
 install(FILES ${s2includes_util_math} DESTINATION include/s2/util/math)
-install(FILES ${CMAKE_BINARY_DIR}/s2.pc DESTINATION lib/pkgconfig)
-install(FILES ${CMAKE_BINARY_DIR}/s2cellid.pc DESTINATION lib/pkgconfig)
-

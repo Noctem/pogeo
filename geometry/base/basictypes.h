@@ -7,7 +7,6 @@
 
 #include "base/casts.h"
 #include "base/integral_types.h"
-#include "base/port.h"
 
 // We *do* expect Hash<i> values to collide from time to time
 // (although we obviously prefer them not to).  Also note that
