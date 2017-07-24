@@ -309,12 +309,12 @@ const VType *Vector4<VType>::Data() const {
 }
 
 template <typename VType>
-VType Vector4<VType>::Norm2(void) const {
+VType Vector4<VType>::Norm2() const {
   return c_[0] * c_[0] + c_[1] * c_[1] + c_[2] * c_[2] + c_[3] * c_[3];
 }
 
 template <typename VType>
-typename Vector4<VType>::FloatType Vector4<VType>::Norm(void) const {
+typename Vector4<VType>::FloatType Vector4<VType>::Norm() const {
   return sqrt(Norm2());
 }
 
