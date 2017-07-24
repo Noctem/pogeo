@@ -70,32 +70,32 @@ static void dump(const string &value, string &out) {
   for (size_t i = 0; i < value.length(); i++) {
     const char ch = value[i];
     if (ch == '\\') {
-      out += "\\\\";
+      out += R"(\\)";
     } else if (ch == '"') {
-      out += "\\\"";
+      out += R"(\")";
     } else if (ch == '\b') {
-      out += "\\b";
+      out += R"(\b)";
     } else if (ch == '\f') {
-      out += "\\f";
+      out += R"(\f)";
     } else if (ch == '\n') {
-      out += "\\n";
+      out += R"(\n)";
     } else if (ch == '\r') {
-      out += "\\r";
+      out += R"(\r)";
     } else if (ch == '\t') {
-      out += "\\t";
+      out += R"(\t)";
     } else if (static_cast<uint8_t>(ch) <= 0x1f) {
       char buf[8];
-      snprintf(buf, sizeof buf, "\\u%04x", ch);
+      snprintf(buf, sizeof buf, R"(\u%04x)", ch);
       out += buf;
     } else if (static_cast<uint8_t>(ch) == 0xe2 &&
                static_cast<uint8_t>(value[i + 1]) == 0x80 &&
                static_cast<uint8_t>(value[i + 2]) == 0xa8) {
-      out += "\\u2028";
+      out += R"(\u2028)";
       i += 2;
     } else if (static_cast<uint8_t>(ch) == 0xe2 &&
                static_cast<uint8_t>(value[i + 1]) == 0x80 &&
                static_cast<uint8_t>(value[i + 2]) == 0xa9) {
-      out += "\\u2029";
+      out += R"(\u2029)";
       i += 2;
     } else {
       out += ch;
@@ -503,12 +503,12 @@ struct JsonParser final {
         // relies on std::string returning the terminating NUL when
         // accessing str[length]. Checking here reduces brittleness.
         if (esc.length() < 4) {
-          return fail("bad \\u escape: " + esc, "");
+          return fail(R"(bad \u escape: )" + esc, "");
         }
         for (size_t j = 0; j < 4; j++) {
           if (!in_range(esc[j], 'a', 'f') && !in_range(esc[j], 'A', 'F') &&
               !in_range(esc[j], '0', '9'))
-            return fail("bad \\u escape: " + esc, "");
+            return fail(R"(bad \u escape: )" + esc, "");
         }
 
         long codepoint = strtol(esc.data(), nullptr, 16);
@@ -655,8 +655,8 @@ struct JsonParser final {
       ch = get_next_token();
       if (ch == '}') return data;
 
-      while (1) {
-        if (ch != '"') return fail("expected '\"' in object, got " + esc(ch));
+      while (true) {
+        if (ch != '"') return fail(R"(expected '"' in object, got )" + esc(ch));
 
         string key = parse_string();
         if (failed) return Json();
@@ -681,7 +681,7 @@ struct JsonParser final {
       ch = get_next_token();
       if (ch == ']') return data;
 
-      while (1) {
+      while (true) {
         i--;
         data.push_back(parse_json(depth + 1));
         if (failed) return Json();
