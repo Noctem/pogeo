@@ -72,7 +72,7 @@ class S2CellId {
   inline explicit S2CellId(uint64 id) : id_(id) {}
 
   // The default constructor returns an invalid cell id.
-  inline S2CellId() {}
+  inline S2CellId() = default;
   inline static S2CellId None() { return S2CellId(); }
 
   // Returns an invalid cell id guaranteed to be larger than any

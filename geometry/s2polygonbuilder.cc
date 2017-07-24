@@ -59,7 +59,7 @@ S2PolygonBuilder::S2PolygonBuilder()
 S2PolygonBuilder::S2PolygonBuilder(S2PolygonBuilderOptions const& options)
     : options_(options), edges_(new EdgeSet) {}
 
-S2PolygonBuilder::~S2PolygonBuilder() {}
+S2PolygonBuilder::~S2PolygonBuilder() = default;
 
 bool S2PolygonBuilder::HasEdge(S2Point const& v0, S2Point const& v1) {
   EdgeSet::const_iterator candidates = edges_->find(v0);

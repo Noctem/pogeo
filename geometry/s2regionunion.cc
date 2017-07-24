@@ -7,7 +7,7 @@
 #include "s2cap.h"
 #include "s2latlngrect.h"
 
-S2RegionUnion::S2RegionUnion() {}
+S2RegionUnion::S2RegionUnion() = default;
 
 S2RegionUnion::S2RegionUnion(vector<S2Region*>* regions) { Init(regions); }
 

@@ -42,7 +42,7 @@ class S1Angle {
 
   // The default constructor yields a zero angle.  This is useful for STL
   // containers and class methods with output arguments.
-  inline S1Angle() {}
+  inline S1Angle() = default;
 
   // Return the angle between two points, which is also equal to the distance
   // between these points on the unit sphere.  The points do not need to be

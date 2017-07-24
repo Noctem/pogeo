@@ -121,12 +121,12 @@ class Encoder {
 class Decoder {
  public:
   // Empty constructor to create uninitialized decoder
-  inline Decoder() {}
+  inline Decoder() = default;
 
   // NOTE: for efficiency reasons, this is not virtual.  so don't add
   // any members that really need to be destructed, and be careful about
   // inheritance.
-  ~Decoder() {}
+  ~Decoder() = default;
 
   // Initialize decoder to decode from "buf"
   explicit Decoder(const void* buf, int maxn);

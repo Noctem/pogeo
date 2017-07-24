@@ -27,7 +27,7 @@ class S2CellUnion : public S2Region {
  public:
   // The default constructor does nothing.  The cell union cannot be used
   // until one of the Init() methods is called.
-  S2CellUnion() {}
+  S2CellUnion() = default;
 
   // Populates a cell union with the given S2CellIds or 64-bit cells ids, and
   // then calls Normalize().  The InitSwap() version takes ownership of the

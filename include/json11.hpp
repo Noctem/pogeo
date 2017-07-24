@@ -232,7 +232,7 @@ class JsonValue {
   virtual const Json &operator[](size_t i) const;
   virtual const Json::object_ &object_items() const;
   virtual const Json &operator[](const std::string &key) const;
-  virtual ~JsonValue() {}
+  virtual ~JsonValue() = default;
 };
 
 }  // namespace json11

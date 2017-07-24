@@ -7,7 +7,7 @@
 #include "s2cap.h"
 #include "s2latlngrect.h"
 
-S2RegionIntersection::S2RegionIntersection() {}
+S2RegionIntersection::S2RegionIntersection() = default;
 
 S2RegionIntersection::S2RegionIntersection(vector<S2Region*>* regions) {
   Init(regions);

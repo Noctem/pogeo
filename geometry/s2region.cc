@@ -2,4 +2,4 @@
 
 #include "s2region.h"
 
-S2Region::~S2Region() {}
+S2Region::~S2Region() = default;
