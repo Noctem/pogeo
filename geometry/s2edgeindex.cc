@@ -147,8 +147,7 @@ void S2EdgeIndex::GetEdgesInParentCells(const vector<S2CellId>& cover,
   for (auto parent_cell : parent_cells) {
     pair<CellEdgeMultimap::const_iterator, CellEdgeMultimap::const_iterator>
         range = mapping.equal_range(parent_cell);
-    for (CellEdgeMultimap::const_iterator it2 = range.first;
-         it2 != range.second; ++it2) {
+    for (auto it2 = range.first; it2 != range.second; ++it2) {
       candidate_crossings->push_back(it2->second);
     }
   }

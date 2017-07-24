@@ -53,7 +53,7 @@ S2Polygon::S2Polygon(S2Cell const& cell)
       owns_loops_(true),
       has_holes_(false),
       num_vertices_(4) {
-  S2Loop* loop = new S2Loop(cell);
+  auto* loop = new S2Loop(cell);
   bound_ = loop->GetRectBound();
   loops_.push_back(loop);
 }
@@ -78,7 +78,7 @@ void S2Polygon::Copy(S2Polygon const* src) {
 }
 
 S2Polygon* S2Polygon::Clone() const {
-  S2Polygon* result = new S2Polygon;
+  auto* result = new S2Polygon;
   result->Copy(this);
   return result;
 }
@@ -828,7 +828,7 @@ vector<S2Point>* SimplifyLoopAsPolyline(S2Loop const* loop, S1Angle tolerance) {
   line.SubsampleVertices(tolerance, &indices);
   if (indices.size() <= 2) return nullptr;
   // Add them all except the last: it is the same as the first.
-  vector<S2Point>* simplified_line = new vector<S2Point>(indices.size() - 1);
+  auto* simplified_line = new vector<S2Point>(indices.size() - 1);
   VLOG(4) << "Now simplified to: ";
   for (size_t i = 0; i + 1 < indices.size(); ++i) {
     (*simplified_line)[i] = line.vertex(indices[i]);
@@ -1006,7 +1006,7 @@ S2Polygon* S2Polygon::DestructiveUnionSloppy(vector<S2Polygon*>* polygons,
 
   while (queue.size() > 1) {
     // Pop two simplest polygons from queue.
-    QueueType::iterator smallest_it = queue.begin();
+    auto smallest_it = queue.begin();
     int a_size = smallest_it->first;
     S2Polygon* a_polygon = smallest_it->second;
     queue.erase(smallest_it);
@@ -1016,7 +1016,7 @@ S2Polygon* S2Polygon::DestructiveUnionSloppy(vector<S2Polygon*>* polygons,
     queue.erase(smallest_it);
 
     // Union and add result back to queue.
-    S2Polygon* union_polygon = new S2Polygon();
+    auto* union_polygon = new S2Polygon();
     union_polygon->InitToUnionSloppy(a_polygon, b_polygon, vertex_merge_radius);
     delete a_polygon;
     delete b_polygon;

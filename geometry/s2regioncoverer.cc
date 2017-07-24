@@ -110,7 +110,7 @@ S2RegionCoverer::Candidate* S2RegionCoverer::NewCandidate(S2Cell const& cell) {
   }
   void* candidateStorage = malloc(size);
   memset(candidateStorage, 0, size);
-  Candidate* candidate = new (candidateStorage) Candidate;
+  auto* candidate = new (candidateStorage) Candidate;
   candidate->cell = cell;
   candidate->is_terminal = is_terminal;
   ++candidates_created_counter_;

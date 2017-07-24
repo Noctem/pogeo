@@ -75,7 +75,7 @@ void S2CellUnion::Pack(int excess) {
 }
 
 S2CellUnion* S2CellUnion::Clone() const {
-  S2CellUnion* copy = new S2CellUnion;
+  auto* copy = new S2CellUnion;
   copy->InitRaw(cell_ids_);
   return copy;
 }
@@ -243,8 +243,7 @@ bool S2CellUnion::Contains(S2CellId const& id) const {
   // surround the given cell id (using binary search).  There is containment
   // if and only if one of these two cell ids contains this cell.
 
-  vector<S2CellId>::const_iterator i =
-      lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
+  auto i = lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
   if (i != cell_ids_.end() && i->range_min() <= id) return true;
   return i != cell_ids_.begin() && (--i)->range_max() >= id;
 }
@@ -253,8 +252,7 @@ bool S2CellUnion::Intersects(S2CellId const& id) const {
   // This function requires that Normalize has been called first.
   // This is an exact test; see the comments for Contains() above.
 
-  vector<S2CellId>::const_iterator i =
-      lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
+  auto i = lower_bound(cell_ids_.begin(), cell_ids_.end(), id);
   if (i != cell_ids_.end() && i->range_min() <= id.range_max()) return true;
   return i != cell_ids_.begin() && (--i)->range_max() >= id.range_min();
 }
@@ -294,7 +292,7 @@ void S2CellUnion::GetIntersection(S2CellUnion const* x, S2CellId const& id) {
   if (x->Contains(id)) {
     cell_ids_.push_back(id);
   } else {
-    vector<S2CellId>::const_iterator i =
+    auto i =
         lower_bound(x->cell_ids_.begin(), x->cell_ids_.end(), id.range_min());
     S2CellId idmax = id.range_max();
     while (i != x->cell_ids_.end() && *i <= idmax) cell_ids_.push_back(*i++);
@@ -310,8 +308,8 @@ void S2CellUnion::GetIntersection(S2CellUnion const* x, S2CellUnion const* y) {
   // cells of "x" come before or after all the cells of "y" in S2CellId order.
 
   cell_ids_.clear();
-  vector<S2CellId>::const_iterator i = x->cell_ids_.begin();
-  vector<S2CellId>::const_iterator j = y->cell_ids_.begin();
+  auto i = x->cell_ids_.begin();
+  auto j = y->cell_ids_.begin();
   while (i != x->cell_ids_.end() && j != y->cell_ids_.end()) {
     S2CellId imin = i->range_min();
     S2CellId jmin = j->range_min();

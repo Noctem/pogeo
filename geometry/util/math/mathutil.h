@@ -418,7 +418,7 @@ class MathUtil {
   // to a constant.
   // Precondition: 1 <= bits <= 23, f != NaN
   static float RoundOffBits(const float f, const int bits) {
-    const int32 f_rep = bit_cast<int32>(f);
+    const auto f_rep = bit_cast<int32>(f);
 
     // Set low-order "bits" bits to zero.
     int32 g_rep = f_rep & ~((1 << bits) - 1);
@@ -438,7 +438,7 @@ class MathUtil {
   }
   // Same, but for doubles.  1 <= bits <= 52, error at most 2^(bits - 53).
   static double RoundOffBits(const double f, const int bits) {
-    const int64 f_rep = bit_cast<int64>(f);
+    const auto f_rep = bit_cast<int64>(f);
     int64 g_rep = f_rep & ~((1LL << bits) - 1);
     const int64 lowbits = f_rep & ((1LL << bits) - 1);
     if (lowbits > (1LL << (bits - 1)) ||

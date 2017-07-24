@@ -53,7 +53,7 @@ void StringAppendV(string* dst, const char* format, va_list ap) {
       // We need exactly "result+1" characters
       length = result + 1;
     }
-    char* buf = new char[length];
+    auto* buf = new char[length];
 
     // Restore the va_list before we use it again
     va_copy(backup_ap, ap);

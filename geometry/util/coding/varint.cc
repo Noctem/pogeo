@@ -17,7 +17,7 @@ char* Varint::Encode64(char* sptr, uint64 v) {
     return Varint::Encode32(sptr, v);
   } else {
     // Operate on characters as unsigneds
-    unsigned char* ptr = reinterpret_cast<unsigned char*>(sptr);
+    auto* ptr = reinterpret_cast<unsigned char*>(sptr);
     static const int B = 128;
     uint32 v32 = v;
     *(ptr++) = v32 | B;
@@ -39,7 +39,7 @@ const char* Varint::Parse32Fallback(const char* ptr, uint32* OUTPUT) {
 }
 
 const char* Varint::Parse64Fallback(const char* p, uint64* OUTPUT) {
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
   // Fast path: need to accumulate data in upto three result fragments
   //    res1    bits 0..27
   //    res2    bits 28..55
@@ -123,8 +123,8 @@ const char* Varint::Parse64WithLimit(const char* p, const char* l,
   if (p + kMax64 <= l) {
     return Parse64(p, OUTPUT);
   } else {
-    const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
-    const unsigned char* limit = reinterpret_cast<const unsigned char*>(l);
+    const auto* ptr = reinterpret_cast<const unsigned char*>(p);
+    const auto* limit = reinterpret_cast<const unsigned char*>(l);
     uint64 b, result;
     if (ptr >= limit) return nullptr;
     b = *(ptr++);
@@ -174,8 +174,8 @@ const char* Varint::Parse64WithLimit(const char* p, const char* l,
 }
 
 const char* Varint::Skip32BackwardSlow(const char* p, const char* b) {
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
-  const unsigned char* base = reinterpret_cast<const unsigned char*>(b);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* base = reinterpret_cast<const unsigned char*>(b);
   assert(ptr >= base);
 
   // If the initial pointer is at the base or if the previous byte is not
@@ -192,8 +192,8 @@ const char* Varint::Skip32BackwardSlow(const char* p, const char* b) {
 }
 
 const char* Varint::Skip64BackwardSlow(const char* p, const char* b) {
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
-  const unsigned char* base = reinterpret_cast<const unsigned char*>(b);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* base = reinterpret_cast<const unsigned char*>(b);
   assert(ptr >= base);
 
   // If the initial pointer is at the base or if the previous byte is not

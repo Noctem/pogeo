@@ -155,7 +155,7 @@ class Varint {
 inline const char* Varint::Parse32FallbackInline(const char* p,
                                                  uint32* OUTPUT) {
   // Fast path
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
   uint32 byte, result;
   byte = *(ptr++);
   result = byte & 127;
@@ -180,7 +180,7 @@ done:
 
 inline const char* Varint::Parse32(const char* p, uint32* OUTPUT) {
   // Fast path for inlining
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
   uint32 byte = *ptr;
   if (byte < 128) {
     *OUTPUT = byte;
@@ -192,7 +192,7 @@ inline const char* Varint::Parse32(const char* p, uint32* OUTPUT) {
 
 inline const char* Varint::Parse32Inline(const char* p, uint32* OUTPUT) {
   // Fast path for inlining
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
   uint32 byte = *ptr;
   if (byte < 128) {
     *OUTPUT = byte;
@@ -203,7 +203,7 @@ inline const char* Varint::Parse32Inline(const char* p, uint32* OUTPUT) {
 }
 
 inline const char* Varint::Skip32(const char* p) {
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
   if (*ptr++ < 128) return reinterpret_cast<const char*>(ptr);
   if (*ptr++ < 128) return reinterpret_cast<const char*>(ptr);
   if (*ptr++ < 128) return reinterpret_cast<const char*>(ptr);
@@ -216,7 +216,7 @@ inline const char* Varint::Parse32Backward(const char* p, const char* base,
                                            uint32* OUTPUT) {
   if (p > base + kMax32) {
     // Fast path
-    const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+    const auto* ptr = reinterpret_cast<const unsigned char*>(p);
     uint32 byte, result;
     byte = *(--ptr);
     if (byte > 127) return nullptr;
@@ -250,7 +250,7 @@ inline const char* Varint::Parse32Backward(const char* p, const char* base,
 
 inline const char* Varint::Skip32Backward(const char* p, const char* base) {
   if (p > base + kMax32) {
-    const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+    const auto* ptr = reinterpret_cast<const unsigned char*>(p);
     if (*(--ptr) > 127) return nullptr;
     if (*(--ptr) < 128) return reinterpret_cast<const char*>(ptr + 1);
     if (*(--ptr) < 128) return reinterpret_cast<const char*>(ptr + 1);
@@ -269,8 +269,8 @@ inline const char* Varint::Parse32WithLimit(const char* p, const char* l,
     return Parse32(p, OUTPUT);
   } else {
     // Slow version with bounds checks
-    const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
-    const unsigned char* limit = reinterpret_cast<const unsigned char*>(l);
+    const auto* ptr = reinterpret_cast<const unsigned char*>(p);
+    const auto* limit = reinterpret_cast<const unsigned char*>(l);
     uint32 b, result;
     if (ptr >= limit) return nullptr;
     b = *(ptr++);
@@ -300,7 +300,7 @@ inline const char* Varint::Parse32WithLimit(const char* p, const char* l,
 }
 
 inline const char* Varint::Parse64(const char* p, uint64* OUTPUT) {
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
   uint32 byte = *ptr;
   if (byte < 128) {
     *OUTPUT = byte;
@@ -311,7 +311,7 @@ inline const char* Varint::Parse64(const char* p, uint64* OUTPUT) {
 }
 
 inline const char* Varint::Skip64(const char* p) {
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
   if (*ptr++ < 128) return reinterpret_cast<const char*>(ptr);
   if (*ptr++ < 128) return reinterpret_cast<const char*>(ptr);
   if (*ptr++ < 128) return reinterpret_cast<const char*>(ptr);
@@ -329,7 +329,7 @@ inline const char* Varint::Parse64Backward(const char* p, const char* b,
                                            uint64* OUTPUT) {
   if (p > b + kMax64) {
     // Fast path
-    const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+    const auto* ptr = reinterpret_cast<const unsigned char*>(p);
     uint32 byte;
     uint64 res;
 
@@ -389,7 +389,7 @@ inline const char* Varint::Parse64Backward(const char* p, const char* b,
 inline const char* Varint::Skip64Backward(const char* p, const char* b) {
   if (p > b + kMax64) {
     // Fast path
-    const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+    const auto* ptr = reinterpret_cast<const unsigned char*>(p);
     if (*(--ptr) > 127) return nullptr;
     if (*(--ptr) < 128) return reinterpret_cast<const char*>(ptr + 1);
     if (*(--ptr) < 128) return reinterpret_cast<const char*>(ptr + 1);
@@ -409,7 +409,7 @@ inline const char* Varint::Skip64Backward(const char* p, const char* b) {
 
 inline const char* Varint::DecodeTwo32Values(const char* p, uint32* a,
                                              uint32* b) {
-  const unsigned char* ptr = reinterpret_cast<const unsigned char*>(p);
+  const auto* ptr = reinterpret_cast<const unsigned char*>(p);
   if (*ptr < 128) {
     // Special case for small values
     *a = (*ptr & 0xf);
@@ -503,7 +503,7 @@ inline void Varint::Append64(string* s, uint64 value) {
 
 inline char* Varint::Encode32Inline(char* sptr, uint32 v) {
   // Operate on characters as unsigneds
-  unsigned char* ptr = reinterpret_cast<unsigned char*>(sptr);
+  auto* ptr = reinterpret_cast<unsigned char*>(sptr);
   static const int B = 128;
   if (v < (1 << 7)) {
     *(ptr++) = v;
