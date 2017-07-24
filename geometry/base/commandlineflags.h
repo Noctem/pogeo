@@ -14,8 +14,6 @@
 #ifndef BASE_COMMANDLINEFLAGS_H
 #define BASE_COMMANDLINEFLAGS_H
 
-// All the gflags are moved here.
-
 #define FLAGS_s2debug DEBUG_MODE
 //, "Enable debugging checks in s2 code");
 #define FLAGS_always_recurse_on_children false

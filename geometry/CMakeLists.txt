@@ -144,6 +144,3 @@ install(FILES ${s2includes_util_coding} DESTINATION include/s2/util/coding)
 install(FILES ${s2includes_util_endian} DESTINATION include/s2/util/endian)
 install(FILES ${s2includes_util_hash} DESTINATION include/s2/util/hash)
 install(FILES ${s2includes_util_math} DESTINATION include/s2/util/math)
-install(FILES ${CMAKE_BINARY_DIR}/s2.pc DESTINATION lib/pkgconfig)
-install(FILES ${CMAKE_BINARY_DIR}/s2cellid.pc DESTINATION lib/pkgconfig)
-

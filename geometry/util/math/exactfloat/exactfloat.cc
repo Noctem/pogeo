@@ -6,6 +6,8 @@ using std::max;
 using std::swap;
 
 #include <cmath>
+using std::isinf;
+using std::isnan;
 using std::signbit;
 
 #include <cstring>
@@ -88,9 +90,9 @@ static int BN_ext_count_low_zero_bits(const BIGNUM* bn) {
 ExactFloat::ExactFloat(double v) {
   BN_init(&bn_);
   sign_ = signbit(v) ? -1 : 1;
-  if (std::isnan(v)) {
+  if (isnan(v)) {
     set_nan();
-  } else if (std::isinf(v)) {
+  } else if (isinf(v)) {
     set_inf(sign_);
   } else {
     // The following code is much simpler than messing about with bit masks,
