@@ -103,9 +103,9 @@ class Encoder {
  private:
   void EnsureSlowPath(int N);
 
-  unsigned char* orig_;
-  unsigned char* buf_;
-  unsigned char* limit_;
+  unsigned char* orig_{nullptr};
+  unsigned char* buf_{nullptr};
+  unsigned char* limit_{nullptr};
 
   // If constructed with the zero-argument constructor, we're allowed
   // to use Ensure; otherwise we're not.  If Ensure is allowed,

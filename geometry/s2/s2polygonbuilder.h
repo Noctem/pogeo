@@ -55,12 +55,7 @@ class S2Polygon;
 //    collection of directed edges and then assembling them into loops.
 class S2PolygonBuilderOptions {
  public:
-  S2PolygonBuilderOptions()
-      : undirected_edges_(false),
-        xor_edges_(true),
-        validate_(false),
-        vertex_merge_radius_(S1Angle::Radians(0)),
-        edge_splice_fraction_(0.866) {}
+  S2PolygonBuilderOptions() : vertex_merge_radius_(S1Angle::Radians(0)) {}
 
   // These are the options that should be used for assembling well-behaved
   // input data into polygons.  All edges should be directed such that
@@ -163,11 +158,11 @@ class S2PolygonBuilderOptions {
   void set_edge_splice_fraction(double edge_splice_fraction);
 
  private:
-  bool undirected_edges_;
-  bool xor_edges_;
-  bool validate_;
+  bool undirected_edges_{false};
+  bool xor_edges_{true};
+  bool validate_{false};
   S1Angle vertex_merge_radius_;
-  double edge_splice_fraction_;
+  double edge_splice_fraction_{0.866};
 };
 
 class S2PolygonBuilder {

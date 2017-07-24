@@ -42,7 +42,7 @@ class S1Angle {
 
   // The default constructor yields a zero angle.  This is useful for STL
   // containers and class methods with output arguments.
-  inline S1Angle() : radians_(0) {}
+  inline S1Angle() {}
 
   // Return the angle between two points, which is also equal to the distance
   // between these points on the unit sphere.  The points do not need to be
@@ -92,7 +92,7 @@ class S1Angle {
 
  private:
   explicit S1Angle(double radians) : radians_(radians) {}
-  double radians_;
+  double radians_{0};
 };
 
 inline bool operator==(S1Angle const& x, S1Angle const& y) {

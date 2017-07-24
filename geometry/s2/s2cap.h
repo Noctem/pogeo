@@ -40,7 +40,7 @@ class S2Cell;
 class S2Cap : public S2Region {
  public:
   // The default constructor returns an empty S2Cap.
-  S2Cap() : axis_(1, 0, 0), height_(-1) {}
+  S2Cap() : axis_(1, 0, 0) {}
 
   // Create a cap given its axis and the cap height, i.e. the maximum
   // projected distance along the cap axis from the cap center.
@@ -158,7 +158,7 @@ class S2Cap : public S2Region {
   bool Intersects(S2Cell const& cell, S2Point const* vertices) const;
 
   S2Point axis_;
-  double height_;
+  double height_{-1};
 };
 
 inline S2Cap S2Cap::FromAxisHeight(S2Point const& axis, double height) {

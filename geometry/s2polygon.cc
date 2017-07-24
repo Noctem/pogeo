@@ -36,12 +36,7 @@ static const unsigned char kCurrentEncodingVersionNumber = 1;
 
 typedef pair<S2Point, S2Point> S2Edge;
 
-S2Polygon::S2Polygon()
-    : loops_(),
-      bound_(S2LatLngRect::Empty()),
-      owns_loops_(true),
-      has_holes_(false),
-      num_vertices_(0) {}
+S2Polygon::S2Polygon() : loops_(), bound_(S2LatLngRect::Empty()) {}
 
 S2Polygon::S2Polygon(vector<S2Loop*>* loops)
     : bound_(S2LatLngRect::Empty()), owns_loops_(true) {
@@ -533,7 +528,7 @@ bool S2Polygon::DecodeInternal(Decoder* const decoder, bool within_scope) {
 //     underlying data with the resulting two indices.
 class S2LoopSequenceIndex : public S2EdgeIndex {
  public:
-  S2LoopSequenceIndex() : num_edges_(0), num_loops_(0) {}
+  S2LoopSequenceIndex() {}
   ~S2LoopSequenceIndex() override {}
 
   void AddLoop(int num_vertices) {
@@ -585,10 +580,10 @@ class S2LoopSequenceIndex : public S2EdgeIndex {
   vector<int> loop_to_first_index_;
 
   // Total number of edges.
-  int num_edges_;
+  int num_edges_{0};
 
   // Total number of loops.
-  int num_loops_;
+  int num_loops_{0};
 };
 
 // Indexing structure for an S2Polygon.

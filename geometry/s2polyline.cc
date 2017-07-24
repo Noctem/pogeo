@@ -28,15 +28,13 @@ using std::vector;
 
 static const unsigned char kCurrentEncodingVersionNumber = 1;
 
-S2Polyline::S2Polyline() : num_vertices_(0), vertices_(nullptr) {}
+S2Polyline::S2Polyline() {}
 
-S2Polyline::S2Polyline(vector<S2Point> const& vertices)
-    : num_vertices_(0), vertices_(nullptr) {
+S2Polyline::S2Polyline(vector<S2Point> const& vertices) : vertices_(nullptr) {
   Init(vertices);
 }
 
-S2Polyline::S2Polyline(vector<S2LatLng> const& vertices)
-    : num_vertices_(0), vertices_(nullptr) {
+S2Polyline::S2Polyline(vector<S2LatLng> const& vertices) : vertices_(nullptr) {
   Init(vertices);
 }
 

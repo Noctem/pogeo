@@ -72,7 +72,7 @@ class S2CellId {
   inline explicit S2CellId(uint64 id) : id_(id) {}
 
   // The default constructor returns an invalid cell id.
-  inline S2CellId() : id_(0) {}
+  inline S2CellId() {}
   inline static S2CellId None() { return S2CellId(); }
 
   // Returns an invalid cell id guaranteed to be larger than any
@@ -316,7 +316,7 @@ class S2CellId {
   // or FromFaceIJWrap if "same_face" is false.
   inline static S2CellId FromFaceIJSame(int face, int i, int j, bool same_face);
 
-  uint64 id_;
+  uint64 id_{0};
 } PACKED;  // Necessary so that structures containing S2CellId's can be PACKED.
 
 inline bool operator==(S2CellId const& x, S2CellId const& y) {
