@@ -35,8 +35,8 @@ class S2PointRegion : public S2Region {
     return Contains(p);
   }
   bool Contains(S2Point const& p) const { return (point_ == p); }
-  void Encode(Encoder* const encoder) const override;
-  bool Decode(Decoder* const decoder) override;
+  void Encode(Encoder* const encoder) const;
+  bool Decode(Decoder* const decoder);
 
  private:
   S2Point point_;

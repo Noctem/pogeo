@@ -172,7 +172,6 @@ class Decoder {
   const unsigned char* buf_;
   const unsigned char* limit_;
 };
-DECLARE_POD(Decoder);  // so then we might as well be a POD
 
 /***** Implementation details.  Clients should ignore them. *****/
 

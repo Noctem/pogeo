@@ -260,9 +260,9 @@ class S2Polygon : public S2Region {
   // The point 'p' does not need to be normalized.
   bool Contains(S2Point const& p) const;
 
-  void Encode(Encoder* const encoder) const override;
-  bool Decode(Decoder* const decoder) override;
-  bool DecodeWithinScope(Decoder* const decoder) override;
+  void Encode(Encoder* const encoder) const;
+  bool Decode(Decoder* const decoder);
+  bool DecodeWithinScope(Decoder* const decoder);
 
  private:
   // Internal constructor that does *not* take ownership of its argument.

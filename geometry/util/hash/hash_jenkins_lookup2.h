@@ -4,9 +4,15 @@
 // This file contains the core of Bob Jenkins lookup2 algorithm.
 //
 // This file contains the basic hash "mix" code which is widely referenced.
+//
+// This file also contains routines used to load an unaligned little-endian
+// word from memory.  This relatively generic functionality probably
+// shouldn't live in this file.
 
 #ifndef UTIL_HASH_JENKINS_LOOKUP2_H__
 #define UTIL_HASH_JENKINS_LOOKUP2_H__
+
+#include "base/port.h"
 
 // ----------------------------------------------------------------------
 // mix()
