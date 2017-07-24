@@ -730,10 +730,10 @@ static void ClipBoundary(S2Polygon const* a, bool reverse_a, S2Polygon const* b,
       intersections.clear();
       ClipEdge(a0, a1, &b_index, add_shared_edges, &intersections);
 
-      if (inside) intersections.push_back(make_pair(0, a0));
+      if (inside) intersections.emplace_back(0., a0);
       inside = (intersections.size() & 1);
       DCHECK_EQ((b->Contains(a1) ^ invert_b), inside);
-      if (inside) intersections.push_back(make_pair(1, a1));
+      if (inside) intersections.emplace_back(1., a1);
       sort(intersections.begin(), intersections.end());
       for (size_t k = 0; k < intersections.size(); k += 2) {
         if (intersections[k] == intersections[k + 1]) continue;
@@ -844,11 +844,11 @@ void BreakEdgesAndAddToBuilder(S2LoopsAsVectorsIndex* edge_index,
     edge_index->EdgeFromTo(i, &from, &to);
 
     IntersectionSet intersections;
-    intersections.push_back(make_pair(0, *from));
+    intersections.emplace_back(0., *from);
     // add_shared_edges can be false or true: it makes no difference
     // due to the way we call ClipEdge.
     ClipEdge(*from, *to, edge_index, false, &intersections);
-    intersections.push_back(make_pair(1, *to));
+    intersections.emplace_back(1., *to);
     sort(intersections.begin(), intersections.end());
     for (size_t k = 0; k + 1 < intersections.size(); ++k) {
       if (intersections[k] == intersections[k + 1]) continue;
@@ -929,10 +929,10 @@ void S2Polygon::InternalClipPolyline(bool invert, S2Polyline const* a,
     S2Point const& a0 = a->vertex(j);
     S2Point const& a1 = a->vertex(j + 1);
     ClipEdge(a0, a1, &poly_index, true, &intersections);
-    if (inside) intersections.push_back(make_pair(0, a0));
+    if (inside) intersections.emplace_back(0., a0);
     inside = (intersections.size() & 1);
     DCHECK_EQ((Contains(a1) ^ invert), inside);
-    if (inside) intersections.push_back(make_pair(1, a1));
+    if (inside) intersections.emplace_back(1., a1);
     sort(intersections.begin(), intersections.end());
     // At this point we have a sorted array of vertex pairs representing
     // the edge(s) obtained after clipping (a0,a1) against the polygon.
