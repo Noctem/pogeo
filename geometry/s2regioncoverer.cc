@@ -5,6 +5,8 @@ using std::min;
 using std::max;
 
 #include <cstddef>
+using std::size_t;
+
 #include <functional>
 using std::less;
 
@@ -247,14 +249,14 @@ void S2RegionCoverer::GetCoveringInternal(S2Region const& region) {
 
   GetInitialCandidates();
   while (!pq_->empty() &&
-         (!interior_covering_ || result_->size() < max_cells_)) {
+         (!interior_covering_ || (int)result_->size() < max_cells_)) {
     Candidate* candidate = pq_->top().second;
     pq_->pop();
     VLOG(2) << "Pop: " << candidate->cell.id();
     if (candidate->cell.level() < min_level_ || candidate->num_children == 1 ||
         result_->size() + (interior_covering_ ? 0 : pq_->size()) +
                 candidate->num_children <=
-            max_cells_) {
+            (size_t)max_cells_) {
       // Expand this candidate into its children.
       for (int i = 0; i < candidate->num_children; ++i) {
         AddCandidate(candidate->children[i]);

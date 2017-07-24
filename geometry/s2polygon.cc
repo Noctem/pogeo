@@ -649,8 +649,8 @@ class S2LoopsAsVectorsIndex : public S2LoopSequenceIndex {
     DecodeIndex(index, &loop_index, &vertex_in_loop);
     vector<S2Point> const* loop = loops_[loop_index];
     *from = &loop->at(vertex_in_loop);
-    *to =
-        &loop->at(vertex_in_loop == loop->size() - 1 ? 0 : vertex_in_loop + 1);
+    *to = &loop->at(
+        (size_t)vertex_in_loop == loop->size() - 1 ? 0 : vertex_in_loop + 1);
   }
 
  private:

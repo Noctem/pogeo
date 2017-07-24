@@ -25,9 +25,10 @@ else:
             from distutils import sysconfig
 
             sysconfig._init_posix()
-            sysconfig._config_vars['OPT'] = sysconfig._config_vars['OPT'].replace(' -Wstrict-prototypes', '')
+            sysconfig._config_vars['CFLAGS'] = sysconfig._config_vars['CFLAGS'].replace('-Wstrict-prototypes', '')
+            sysconfig._config_vars['OPT'] = sysconfig._config_vars['OPT'].replace('-Wstrict-prototypes', '')
     except Exception:
-            pass
+        pass
 
     c_args = ['-O3']
 
