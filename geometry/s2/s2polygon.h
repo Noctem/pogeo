@@ -296,11 +296,11 @@ class S2Polygon : public S2Region {
 
   vector<S2Loop*> loops_;
   S2LatLngRect bound_;
-  char owns_loops_;
-  char has_holes_;
+  char owns_loops_{true};
+  char has_holes_{false};
 
   // Cache for num_vertices().
-  int num_vertices_;
+  int num_vertices_{0};
 
   DISALLOW_EVIL_CONSTRUCTORS(S2Polygon);
 };

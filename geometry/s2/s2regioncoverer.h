@@ -180,15 +180,15 @@ class S2RegionCoverer {
   static void FloodFill(S2Region const& region, S2CellId const& start,
                         vector<S2CellId>* output);
 
-  int min_level_;
+  int min_level_{0};
   int max_level_;
-  int level_mod_;
+  int level_mod_{1};
   int max_cells_;
 
   // We save a temporary copy of the pointer passed to GetCovering() in order
   // to avoid passing this parameter around internally.  It is only used (and
   // only valid) for the duration of a single GetCovering() call.
-  S2Region const* region_;
+  S2Region const* region_{nullptr};
 
   // A temporary variable used by GetCovering() that holds the cell ids that
   // have been added to the covering so far.

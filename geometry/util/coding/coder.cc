@@ -12,11 +12,7 @@
 // An initialization value used when we are allowed to
 unsigned char Encoder::kEmptyBuffer = 0;
 
-Encoder::Encoder()
-    : orig_(nullptr),
-      buf_(nullptr),
-      limit_(nullptr),
-      underlying_buffer_(&kEmptyBuffer) {}
+Encoder::Encoder() : underlying_buffer_(&kEmptyBuffer) {}
 
 Encoder::~Encoder() {
   if (underlying_buffer_ != &kEmptyBuffer) {

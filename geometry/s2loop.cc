@@ -46,23 +46,10 @@ S2Point const* S2LoopIndex::edge_to(int index) const {
 
 int S2LoopIndex::num_edges() const { return loop_->num_vertices(); }
 
-S2Loop::S2Loop()
-    : num_vertices_(0),
-      vertices_(nullptr),
-      owns_vertices_(false),
-      bound_(S2LatLngRect::Empty()),
-      depth_(0),
-      index_(this),
-      num_find_vertex_calls_(0) {}
+S2Loop::S2Loop() : bound_(S2LatLngRect::Empty()), index_(this) {}
 
 S2Loop::S2Loop(vector<S2Point> const& vertices)
-    : num_vertices_(0),
-      vertices_(nullptr),
-      owns_vertices_(false),
-      bound_(S2LatLngRect::Full()),
-      depth_(0),
-      index_(this),
-      num_find_vertex_calls_(0) {
+    : vertices_(nullptr), bound_(S2LatLngRect::Full()), index_(this) {
   Init(vertices);
 }
 
@@ -209,8 +196,7 @@ void S2Loop::InitBound() {
   bound_ = b;
 }
 
-S2Loop::S2Loop(S2Cell const& cell)
-    : bound_(cell.GetRectBound()), index_(this), num_find_vertex_calls_(0) {
+S2Loop::S2Loop(S2Cell const& cell) : bound_(cell.GetRectBound()), index_(this) {
   num_vertices_ = 4;
   vertices_ = new S2Point[num_vertices_];
   depth_ = 0;
@@ -235,8 +221,7 @@ S2Loop::S2Loop(S2Loop const* src)
       bound_(src->bound_),
       origin_inside_(src->origin_inside_),
       depth_(src->depth_),
-      index_(this),
-      num_find_vertex_calls_(0) {
+      index_(this) {
   memcpy(vertices_, src->vertices_, num_vertices_ * sizeof(vertices_[0]));
 }
 
@@ -503,7 +488,7 @@ bool S2Loop::AreBoundariesCrossing(S2Loop const* b,
 // contained in loop A).
 class ContainsWedgeProcessor : public WedgeProcessor {
  public:
-  ContainsWedgeProcessor() : doesnt_contain_(false) {}
+  ContainsWedgeProcessor() {}
   bool DoesntContain() { return doesnt_contain_; }
 
  protected:
@@ -514,7 +499,7 @@ class ContainsWedgeProcessor : public WedgeProcessor {
   }
 
  private:
-  bool doesnt_contain_;
+  bool doesnt_contain_{false};
 };
 
 bool S2Loop::Contains(S2Loop const* b) const {
@@ -563,7 +548,7 @@ bool S2Loop::Contains(S2Loop const* b) const {
 // of associated wedges that intersect.
 class IntersectsWedgeProcessor : public WedgeProcessor {
  public:
-  IntersectsWedgeProcessor() : intersects_(false) {}
+  IntersectsWedgeProcessor() {}
   bool Intersects() { return intersects_; }
 
  protected:
@@ -574,7 +559,7 @@ class IntersectsWedgeProcessor : public WedgeProcessor {
   }
 
  private:
-  bool intersects_;
+  bool intersects_{false};
 };
 
 bool S2Loop::Intersects(S2Loop const* b) const {
@@ -617,11 +602,7 @@ bool S2Loop::Intersects(S2Loop const* b) const {
 // not possible for A to contain B, and 1 otherwise.
 class ContainsOrCrossesProcessor : public WedgeProcessor {
  public:
-  ContainsOrCrossesProcessor()
-      : has_boundary_crossing_(false),
-        a_has_strictly_super_wedge_(false),
-        b_has_strictly_super_wedge_(false),
-        has_disjoint_wedge_(false) {}
+  ContainsOrCrossesProcessor() {}
 
   int CrossesOrMayContain() {
     if (has_boundary_crossing_) return -1;
@@ -654,14 +635,14 @@ class ContainsOrCrossesProcessor : public WedgeProcessor {
 
  private:
   // True if any crossing on the boundary is discovered.
-  bool has_boundary_crossing_;
+  bool has_boundary_crossing_{false};
   // True if A (B) has a strictly superwedge on a pair of wedges that
   // share a common center point.
-  bool a_has_strictly_super_wedge_;
-  bool b_has_strictly_super_wedge_;
+  bool a_has_strictly_super_wedge_{false};
+  bool b_has_strictly_super_wedge_{false};
   // True if there is a pair of disjoint wedges with common center
   // point.
-  bool has_disjoint_wedge_;
+  bool has_disjoint_wedge_{false};
 };
 
 int S2Loop::ContainsOrCrosses(S2Loop const* b) const {

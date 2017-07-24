@@ -52,11 +52,8 @@ static once_flag init_once;
 inline static void MaybeInit() { call_once(init_once, Init); }
 
 S2RegionCoverer::S2RegionCoverer()
-    : min_level_(0),
-      max_level_(S2CellId::kMaxLevel),
-      level_mod_(1),
+    : max_level_(S2CellId::kMaxLevel),
       max_cells_(kDefaultMaxCells),
-      region_(nullptr),
       result_(new vector<S2CellId>),
       pq_(new CandidateQueue) {
   // Initialize the constants

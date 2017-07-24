@@ -317,20 +317,20 @@ class S2Loop : public S2Region {
   // When DecodeWithinScope is used to initialize the loop, we do not
   // take ownership of the memory for vertices_, and the owns_vertices_ field
   // is used to prevent deallocation and overwriting.
-  int num_vertices_;
-  S2Point* vertices_;
-  bool owns_vertices_;
+  int num_vertices_{0};
+  S2Point* vertices_{nullptr};
+  bool owns_vertices_{false};
 
   S2LatLngRect bound_;
   bool origin_inside_;
-  int depth_;
+  int depth_{0};
 
   // Quadtree index structure of this loop's edges.
   mutable S2LoopIndex index_;
 
   // Map for speeding up FindVertex: We will compute a map from vertex to
   // index in the vertex array as soon as there has been enough calls.
-  mutable int num_find_vertex_calls_;
+  mutable int num_find_vertex_calls_{0};
   mutable map<S2Point, int> vertex_to_index_;
 
   DISALLOW_EVIL_CONSTRUCTORS(S2Loop);

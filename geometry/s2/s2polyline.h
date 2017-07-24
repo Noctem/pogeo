@@ -184,8 +184,8 @@ class S2Polyline : public S2Region {
   // We store the vertices in an array rather than a vector because we don't
   // need any STL methods, and computing the number of vertices using size()
   // would be relatively expensive (due to division by sizeof(S2Point) == 24).
-  int num_vertices_;
-  S2Point* vertices_;
+  int num_vertices_{0};
+  S2Point* vertices_{nullptr};
 
   DISALLOW_EVIL_CONSTRUCTORS(S2Polyline);
 };
