@@ -84,7 +84,7 @@ class Json final {
   enum Type { NUL, NUMBER, BOOL, STRING, ARRAY, OBJECT };
 
   // Array and object typedefs
-  typedef std::vector<Json> array;
+  using array = std::vector<Json>;
   typedef std::map<std::string, Json> object_;
 
   // Constructors for the various types of JSON value.

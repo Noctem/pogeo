@@ -11,9 +11,9 @@
 // We *do* expect Hash<i> values to collide from time to time
 // (although we obviously prefer them not to).  Also note that
 // there is an illegal hash value for each size hash.
-typedef uint32 Hash32;
-typedef uint16 Hash16;
-typedef unsigned char Hash8;
+using Hash32 = uint32;
+using Hash16 = uint16;
+using Hash8 = unsigned char;
 
 const Hash32 kIllegalHash32 = static_cast<Hash32>(4294967295UL);  // 2^32-1
 const Hash16 kIllegalHash16 = static_cast<Hash16>(65535U);        // 2^16-1

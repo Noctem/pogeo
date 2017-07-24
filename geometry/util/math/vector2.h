@@ -43,8 +43,8 @@ class Vector2 {
       FloatType;
 
  public:
-  typedef Vector2<VType> Self;
-  typedef VType BaseType;
+  using Self = Vector2<VType>;
+  using BaseType = VType;
   // Create a new vector (0,0)
   Vector2();
   // Create a new vector (x,y)
@@ -185,9 +185,9 @@ ostream &operator<<(ostream &out,  // NOLINT
                     const Vector2<VType2> &va);
 
 // TODO(user): Declare extern templates for these types.
-typedef Vector2<uint8> Vector2_b;
-typedef Vector2<int> Vector2_i;
-typedef Vector2<float> Vector2_f;
-typedef Vector2<double> Vector2_d;
+using Vector2_b = Vector2<uint8>;
+using Vector2_i = Vector2<int>;
+using Vector2_f = Vector2<float>;
+using Vector2_d = Vector2<double>;
 
 #endif  // UTIL_MATH_VECTOR2_H__
