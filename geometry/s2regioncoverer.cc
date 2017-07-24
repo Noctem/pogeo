@@ -132,14 +132,14 @@ int S2RegionCoverer::ExpandChildren(Candidate* candidate, S2Cell const& cell,
   S2Cell child_cells[4];
   cell.Subdivide(child_cells);
   int num_terminals = 0;
-  for (int i = 0; i < 4; ++i) {
+  for (const auto& child_cell : child_cells) {
     if (num_levels > 0) {
-      if (region_->MayIntersect(child_cells[i])) {
-        num_terminals += ExpandChildren(candidate, child_cells[i], num_levels);
+      if (region_->MayIntersect(child_cell)) {
+        num_terminals += ExpandChildren(candidate, child_cell, num_levels);
       }
       continue;
     }
-    Candidate* child = NewCandidate(child_cells[i]);
+    Candidate* child = NewCandidate(child_cell);
     if (child) {
       candidate->children[candidate->num_children++] = child;
       if (child->is_terminal) ++num_terminals;
@@ -215,15 +215,15 @@ void S2RegionCoverer::GetInitialCandidates() {
       base.reserve(4);
       S2CellId id = S2CellId::FromPoint(cap.axis());
       id.AppendVertexNeighbors(level, &base);
-      for (size_t i = 0; i < base.size(); ++i) {
-        AddCandidate(NewCandidate(S2Cell(base[i])));
+      for (auto i : base) {
+        AddCandidate(NewCandidate(S2Cell(i)));
       }
       return;
     }
   }
   // Default: start with all six cube faces.
-  for (size_t face = 0; face < 6; ++face) {
-    AddCandidate(NewCandidate(face_cells[face]));
+  for (const auto& face_cell : face_cells) {
+    AddCandidate(NewCandidate(face_cell));
   }
 }
 
@@ -360,8 +360,7 @@ void S2RegionCoverer::FloodFill(S2Region const& region, S2CellId const& start,
 
     S2CellId neighbors[4];
     id.GetEdgeNeighbors(neighbors);
-    for (int edge = 0; edge < 4; ++edge) {
-      S2CellId nbr = neighbors[edge];
+    for (auto nbr : neighbors) {
       if (all.insert(nbr).second) {
         frontier.push_back(nbr);
       }

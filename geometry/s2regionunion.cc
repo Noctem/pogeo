@@ -12,8 +12,8 @@ S2RegionUnion::S2RegionUnion() {}
 S2RegionUnion::S2RegionUnion(vector<S2Region*>* regions) { Init(regions); }
 
 S2RegionUnion::~S2RegionUnion() {
-  for (size_t i = 0; i < regions_.size(); ++i) {
-    delete regions_[i];
+  for (auto& region : regions_) {
+    delete region;
   }
   regions_.clear();
 }

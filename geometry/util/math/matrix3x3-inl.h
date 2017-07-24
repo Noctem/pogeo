@@ -411,9 +411,9 @@ class Matrix3x3 {
   // Return the Frobenius norm of the matrix: sqrt(sum(aij^2))
   VType FrobeniusNorm() const {
     VType sum = VType();
-    for (int i = 0; i < 3; i++) {
+    for (auto &i : m_) {
       for (int j = 0; j < 3; j++) {
-        sum += m_[i][j] * m_[i][j];
+        sum += i[j] * i[j];
       }
     }
     return sqrt(sum);
@@ -502,9 +502,9 @@ class Matrix3x3 {
 
   // Return true is one of the elements of the matrix is NaN
   bool IsNaN() const {
-    for (int i = 0; i < 3; ++i) {
+    for (auto &i : m_) {
       for (int j = 0; j < 3; ++j) {
-        if (isnan(m_[i][j])) {
+        if (isnan(i[j])) {
           return true;
         }
       }

@@ -134,21 +134,19 @@ void S2EdgeIndex::GetEdgesInParentCells(const vector<S2CellId>& cover,
                                         vector<int>* candidate_crossings) {
   // Find all parent cells of covering cells.
   set<S2CellId> parent_cells;
-  for (vector<S2CellId>::const_iterator it = cover.begin(); it != cover.end();
-       ++it) {
-    for (int parent_level = it->level() - 1;
+  for (auto it : cover) {
+    for (int parent_level = it.level() - 1;
          parent_level >= minimum_s2_level_used; --parent_level) {
-      if (!parent_cells.insert(it->parent(parent_level)).second) {
+      if (!parent_cells.insert(it.parent(parent_level)).second) {
         break;  // cell is already in => parents are too.
       }
     }
   }
 
   // Put parent cell edge references into result.
-  for (set<S2CellId>::const_iterator it = parent_cells.begin();
-       it != parent_cells.end(); ++it) {
+  for (auto parent_cell : parent_cells) {
     pair<CellEdgeMultimap::const_iterator, CellEdgeMultimap::const_iterator>
-        range = mapping.equal_range(*it);
+        range = mapping.equal_range(parent_cell);
     for (CellEdgeMultimap::const_iterator it2 = range.first;
          it2 != range.second; ++it2) {
       candidate_crossings->push_back(it2->second);
@@ -236,7 +234,7 @@ void S2EdgeIndex::GetEdgesInChildrenCells(S2Point const& a, S2Point const& b,
           S2Cell children[4];
           S2Cell c(cell);
           c.Subdivide(children);
-          for (int i = 0; i < 4; ++i) {
+          for (const auto& child : children) {
             // TODO(user): Do the check for the four cells at once,
             // as it is enough to check the four edges between the cells.  At
             // this time, we are checking 16 edges, 4 times too many.
@@ -244,8 +242,8 @@ void S2EdgeIndex::GetEdgesInChildrenCells(S2Point const& a, S2Point const& b,
             // Note that given the guarantee of AppendCovering, it is enough
             // to check that the edge intersect with the cell boundary as it
             // cannot be fully contained in a cell.
-            if (EdgeIntersectsCellBoundary(a, b, children[i])) {
-              cover->push_back(children[i].id());
+            if (EdgeIntersectsCellBoundary(a, b, child)) {
+              cover->push_back(child.id());
             }
           }
         }

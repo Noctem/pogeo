@@ -360,9 +360,9 @@ bool DictionaryParse(const string& encoded_str,
                      vector<pair<string, string> >* items) {
   vector<string> entries;
   SplitStringUsing(encoded_str, ",", &entries);
-  for (size_t i = 0; i < entries.size(); ++i) {
+  for (const auto& entry : entries) {
     vector<string> fields;
-    SplitStringAllowEmpty(entries[i], ":", &fields);
+    SplitStringAllowEmpty(entry, ":", &fields);
     if (fields.size() != 2)  // parsing error
       return false;
     items->push_back(make_pair(fields[0], fields[1]));

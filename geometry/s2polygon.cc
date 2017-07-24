@@ -93,8 +93,8 @@ void S2Polygon::Release(vector<S2Loop*>* loops) {
 }
 
 static void DeleteLoopsInVector(vector<S2Loop*>* loops) {
-  for (size_t i = 0; i < loops->size(); ++i) {
-    delete loops->at(i);
+  for (auto& loop : *loops) {
+    delete loop;
   }
   loops->clear();
 }
@@ -171,8 +171,7 @@ bool S2Polygon::IsValid(bool check_loops, int max_adjacent) const {
 void S2Polygon::InsertLoop(S2Loop* new_loop, S2Loop* parent,
                            LoopMap* loop_map) {
   vector<S2Loop*>* children = &(*loop_map)[parent];
-  for (size_t i = 0; i < children->size(); ++i) {
-    S2Loop* child = (*children)[i];
+  for (auto child : *children) {
     if (child->ContainsNested(new_loop)) {
       InsertLoop(new_loop, child, loop_map);
       return;
@@ -203,8 +202,8 @@ void S2Polygon::InitLoop(S2Loop* loop, int depth, LoopMap* loop_map) {
     loops_.push_back(loop);
   }
   vector<S2Loop*> const& children = (*loop_map)[loop];
-  for (size_t i = 0; i < children.size(); ++i) {
-    InitLoop(children[i], depth + 1, loop_map);
+  for (auto child : children) {
+    InitLoop(child, depth + 1, loop_map);
   }
 }
 
@@ -214,8 +213,8 @@ bool S2Polygon::ContainsChild(S2Loop* a, S2Loop* b, LoopMap const& loop_map) {
 
   if (a == b) return true;
   vector<S2Loop*> const& children = loop_map.find(a)->second;
-  for (size_t i = 0; i < children.size(); ++i) {
-    if (ContainsChild(children[i], b, loop_map)) return true;
+  for (auto child : children) {
+    if (ContainsChild(child, b, loop_map)) return true;
   }
   return false;
 }
@@ -901,8 +900,8 @@ void S2Polygon::InitToSimplified(S2Polygon const* a, S1Angle tolerance) {
     }
   }
 
-  for (size_t i = 0; i < simplified_loops.size(); ++i) {
-    delete simplified_loops[i];
+  for (auto& simplified_loop : simplified_loops) {
+    delete simplified_loop;
   }
   simplified_loops.clear();
 }
@@ -1001,8 +1000,8 @@ S2Polygon* S2Polygon::DestructiveUnionSloppy(vector<S2Polygon*>* polygons,
   // to the queue until we have a single polygon to return.
   typedef multimap<int, S2Polygon*> QueueType;
   QueueType queue;  // Map from # of vertices to polygon.
-  for (size_t i = 0; i < polygons->size(); ++i)
-    queue.insert(make_pair((*polygons)[i]->num_vertices(), (*polygons)[i]));
+  for (auto& polygon : *polygons)
+    queue.insert(make_pair(polygon->num_vertices(), polygon));
   polygons->clear();
 
   while (queue.size() > 1) {
