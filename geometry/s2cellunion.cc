@@ -6,6 +6,9 @@
 using std::min;
 using std::max;
 
+#include <cstddef>
+using std::size_t;
+
 #include <vector>
 using std::vector;
 
@@ -65,7 +68,7 @@ void S2CellUnion::Detach(vector<S2CellId>* cell_ids) {
 }
 
 void S2CellUnion::Pack(int excess) {
-  if (cell_ids_.capacity() - cell_ids_.size() > excess) {
+  if ((int)(cell_ids_.capacity() - cell_ids_.size()) > excess) {
     vector<S2CellId> packed = cell_ids_;
     cell_ids_.swap(packed);
   }
@@ -123,7 +126,7 @@ bool S2CellUnion::Normalize() {
     }
     output.push_back(id);
   }
-  if (output.size() < num_cells()) {
+  if ((int)output.size() < num_cells()) {
     InitRawSwap(&output);
     return true;
   }
@@ -163,7 +166,7 @@ void S2CellUnion::Denormalize(int min_level, int level_mod,
 void S2CellUnion::GetCellIds(int min_level, vector<uint64_t>* output) const {
   output->clear();
   output->reserve(num_cells());
-  for (unsigned short i = 0; i < num_cells(); ++i) {
+  for (int i = 0; i < num_cells(); ++i) {
     S2CellId id = cell_id(i);
     int level = id.level();
     int new_level = max(min_level, level);
@@ -181,7 +184,7 @@ void S2CellUnion::GetCellIds(int min_level, vector<uint64_t>* output) const {
 void S2CellUnion::GetPoints(int min_level, vector<S2Point>* output) const {
   output->clear();
   output->reserve(num_cells());
-  for (unsigned int i = 0; i < num_cells(); ++i) {
+  for (int i = 0; i < num_cells(); ++i) {
     S2CellId id = cell_id(i);
     int level = id.level();
     int new_level = max(min_level, level);

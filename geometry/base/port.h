@@ -1,7 +1,6 @@
 //
 // Copyright (C) 1999 and onwards Google, Inc.
 
-
 #ifndef BASE_PORT_H_
 #define BASE_PORT_H_
 

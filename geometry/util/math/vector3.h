@@ -38,9 +38,8 @@ class Vector3 {
   // FloatType is the type returned by Norm() and Angle().  These methods are
   // special because they return floating-point values even when VType is an
   // integer.
-  typedef
-      typename conditional<is_integral<VType>::value, double, VType>::type
-          FloatType;
+  typedef typename conditional<is_integral<VType>::value, double, VType>::type
+      FloatType;
 
  public:
   typedef Vector3<VType> Self;
@@ -182,8 +181,7 @@ template <typename VType>
 Vector3<VType> Min(const Vector3<VType> &v1, const Vector3<VType> &v2);
 // debug printing
 template <typename VType>
-ostream &operator<<(ostream &out,
-                    const Vector3<VType> &va);
+ostream &operator<<(ostream &out, const Vector3<VType> &va);
 
 // TODO(user): Declare extern templates for these types.
 typedef Vector3<uint8> Vector3_b;
