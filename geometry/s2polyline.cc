@@ -524,7 +524,7 @@ bool S2Polyline::NearlyCoversPolyline(S2Polyline const& covered,
         covered.vertex(0), this->vertex(i), this->vertex(next_i));
     if (closest_point != this->vertex(next_i) &&
         S1Angle(closest_point, covered.vertex(0)) <= max_error) {
-      pending.push_back(SearchState(i, 0, true));
+      pending.emplace_back(i, 0, true);
     }
   }
 
@@ -554,11 +554,11 @@ bool S2Polyline::NearlyCoversPolyline(S2Polyline const& covered,
 
     if (S2EdgeUtil::IsEdgeBNearEdgeA(j_begin, covered.vertex(next_j), i_begin,
                                      this->vertex(next_i), max_error)) {
-      pending.push_back(SearchState(next_i, state.j, false));
+      pending.emplace_back(next_i, state.j, false);
     }
     if (S2EdgeUtil::IsEdgeBNearEdgeA(i_begin, this->vertex(next_i), j_begin,
                                      covered.vertex(next_j), max_error)) {
-      pending.push_back(SearchState(state.i, next_j, true));
+      pending.emplace_back(state.i, next_j, true);
     }
   }
   return false;
