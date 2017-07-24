@@ -60,6 +60,8 @@ libs = [('gzip', {
             'geometry/strings/stringprintf.cc',
             'geometry/strings/strtoint.cc',
             'geometry/strings/strutil.cc',
+            'geometry/util/coding/coder.cc',
+            'geometry/util/coding/varint.cc',
             'geometry/util/math/mathlimits.cc',
             'geometry/util/math/mathutil.cc',
             'geometry/s1angle.cc',

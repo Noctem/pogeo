@@ -20,6 +20,8 @@ set(s2util_files
 	strings/stringprintf.cc
 	strings/strtoint.cc
 	strings/strutil.cc
+	util/coding/coder.cc
+	util/coding/varint.cc
 	util/math/exactfloat/exactfloat.cc
 	util/math/mathlimits.cc
 	util/math/mathutil.cc
@@ -94,6 +96,11 @@ set(s2includes_strings
 	strings/strutil.h
 )
 
+set(s2includes_util_coding
+	util/coding/coder.h
+	util/coding/varint.h
+)
+
 set(s2includes_util_hash
 	util/hash/hash_jenkins_lookup2.h
 )
@@ -129,5 +136,6 @@ install(TARGETS s2util s2cellid s2
 install(FILES ${s2includes} DESTINATION include/s2)
 install(FILES ${s2includes_base} DESTINATION include/s2/base)
 install(FILES ${s2includes_strings} DESTINATION include/s2/strings)
+install(FILES ${s2includes_util_coding} DESTINATION include/s2/util/coding)
 install(FILES ${s2includes_util_hash} DESTINATION include/s2/util/hash)
 install(FILES ${s2includes_util_math} DESTINATION include/s2/util/math)
