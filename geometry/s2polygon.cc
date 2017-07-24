@@ -174,7 +174,7 @@ void S2Polygon::InsertLoop(S2Loop* new_loop, S2Loop* parent,
   }
   // No loop may contain the complement of another loop.  (Handling this case
   // is significantly more complicated.)
-  DCHECK(parent == NULL || !new_loop->ContainsNested(parent));
+  DCHECK(parent == nullptr || !new_loop->ContainsNested(parent));
 
   // Some of the children of the parent loop may now be children of
   // the new loop.

@@ -453,7 +453,7 @@ static inline uint64 strtou64_16(const char* source, char** end) {
     if (*end != '\0')                                                \
       *source = const_cast<const char*>(end + 1);                    \
     else                                                             \
-      *source = NULL;                                                \
+      *source = nullptr;                                             \
     return true;                                                     \
   }
 

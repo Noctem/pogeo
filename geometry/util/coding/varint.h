@@ -33,7 +33,7 @@ class Varint {
   // REQUIRES   "ptr" points to a buffer of length at least kMaxXX
   // EFFECTS    Scan next varint from "ptr" and store in OUTPUT.
   //            Returns pointer just past last read byte.  Returns
-  //            NULL if a valid varint value was not found.
+  //            nullptr if a valid varint value was not found.
   static const char* Parse32(const char* ptr, uint32* OUTPUT);
   static const char* Parse64(const char* ptr, uint64* OUTPUT);
 
@@ -49,7 +49,7 @@ class Varint {
   // EFFECTS    Scan backwards from "ptr" and store in OUTPUT. Stop at the last
   //            byte of the previous varint, OR at "base", whichever one comes
   //            first. Returns pointer to the first byte of the decoded varint
-  //            NULL if a valid varint value was not found.
+  //            nullptr if a valid varint value was not found.
   static const char* Parse32Backward(const char* ptr, const char* base,
                                      uint32* OUTPUT);
   static const char* Parse64Backward(const char* ptr, const char* base,
@@ -58,7 +58,7 @@ class Varint {
   // Attempts to parse a varint32 from a prefix of the bytes in [ptr,limit-1].
   // Never reads a character at or beyond limit.  If a valid/terminated varint32
   // was found in the range, stores it in *OUTPUT and returns a pointer just
-  // past the last byte of the varint32. Else returns NULL.  On success,
+  // past the last byte of the varint32. Else returns nullptr.  On success,
   // "result <= limit".
   static const char* Parse32WithLimit(const char* ptr, const char* limit,
                                       uint32* OUTPUT);
@@ -67,7 +67,7 @@ class Varint {
 
   // REQUIRES   "ptr" points to the first byte of a varint-encoded value.
   // EFFECTS     Scans until the end of the varint and returns a pointer just
-  //             past the last byte. Returns NULL if "ptr" does not point to
+  //             past the last byte. Returns nullptr if "ptr" does not point to
   //             a valid varint value.
   static const char* Skip32(const char* ptr);
   static const char* Skip64(const char* ptr);
@@ -80,7 +80,7 @@ class Varint {
   // EFFECTS    Scan backwards from "ptr" and stop at the last byte of the
   //            previous varint, OR at "base", whichever one comes first.
   //            Returns pointer to the first byte of the skipped varint or
-  //            NULL if a valid varint value was not found.
+  //            nullptr if a valid varint value was not found.
   static const char* Skip32Backward(const char* ptr, const char* base);
   static const char* Skip64Backward(const char* ptr, const char* base);
 

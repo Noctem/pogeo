@@ -33,7 +33,7 @@ using std::ostream;
 #define CHECK_GE(x, y) CHECK((x) >= (y))
 #define CHECK_EQ(x, y) CHECK((x) == (y))
 #define CHECK_NE(x, y) CHECK((x) != (y))
-#define CHECK_NOTNULL(x) CHECK((x) != NULL)
+#define CHECK_NOTNULL(x) CHECK((x) != nullptr)
 
 #ifndef NDEBUG
 // Debug-only checking.
