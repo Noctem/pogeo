@@ -14,8 +14,8 @@ S2RegionIntersection::S2RegionIntersection(vector<S2Region*>* regions) {
 }
 
 S2RegionIntersection::~S2RegionIntersection() {
-  for (size_t i = 0; i < regions_.size(); ++i) {
-    delete regions_[i];
+  for (auto& region : regions_) {
+    delete region;
   }
   regions_.clear();
 }

@@ -135,9 +135,9 @@ void S2PolygonBuilder::DumpEdges(S2Point const& v0) const {
   EdgeSet::const_iterator candidates = edges_->find(v0);
   if (candidates != edges_->end()) {
     VertexSet const& vset = candidates->second;
-    for (VertexSet::const_iterator i = vset.begin(); i != vset.end(); ++i) {
+    for (const auto& vertex : vset) {
       cout << "    ";
-      DumpVertex(*i);
+      DumpVertex(vertex);
       cout << "\n";
     }
   }
@@ -183,11 +183,11 @@ S2Loop* S2PolygonBuilder::AssembleLoop(S2Point const& v0, S2Point const& v1,
     EdgeSet::const_iterator candidates = edges_->find(v1);
     if (candidates != edges_->end()) {
       VertexSet const& vset = candidates->second;
-      for (VertexSet::const_iterator i = vset.begin(); i != vset.end(); ++i) {
+      for (const auto& vertex : vset) {
         // We prefer the leftmost outgoing edge, ignoring any reverse edges.
-        if (*i == v0) continue;
-        if (!v2_found || S2::OrderedCCW(v0, v2, *i, v1)) {
-          v2 = *i;
+        if (vertex == v0) continue;
+        if (!v2_found || S2::OrderedCCW(v0, v2, vertex, v1)) {
+          v2 = vertex;
         }
         v2_found = true;
       }
@@ -361,38 +361,35 @@ void S2PolygonBuilder::BuildMergeMap(PointIndex* index, MergeMap* merge_map) {
   for (EdgeSet::const_iterator i = edges_->begin(); i != edges_->end(); ++i) {
     vertices.insert(i->first);
     VertexSet const& vset = i->second;
-    for (VertexSet::const_iterator j = vset.begin(); j != vset.end(); ++j)
-      vertices.insert(*j);
+    for (const auto& vertex : vset) vertices.insert(vertex);
   }
 
   // Build a spatial index containing all the distinct vertices.
-  for (unordered_set<S2Point>::const_iterator i = vertices.begin();
-       i != vertices.end(); ++i) {
-    index->Insert(*i);
+  for (const auto& vertex : vertices) {
+    index->Insert(vertex);
   }
 
   // Next, we loop through all the vertices and attempt to grow a maximial
   // mergeable group starting from each vertex.
   vector<S2Point> frontier, mergeable;
-  for (unordered_set<S2Point>::const_iterator vstart = vertices.begin();
-       vstart != vertices.end(); ++vstart) {
+  for (const auto& vertex : vertices) {
     // Skip any vertices that have already been merged with another vertex.
-    if (merge_map->find(*vstart) != merge_map->end()) continue;
+    if (merge_map->find(vertex) != merge_map->end()) continue;
 
     // Grow a maximal mergeable component starting from "vstart", the
     // canonical representative of the mergeable group.
-    frontier.push_back(*vstart);
+    frontier.push_back(vertex);
     while (!frontier.empty()) {
       index->QueryCap(frontier.back(), &mergeable);
       frontier.pop_back();  // Do this before entering the loop below.
       for (int j = mergeable.size(); --j >= 0;) {
         S2Point const& v1 = mergeable[j];
-        if (v1 != *vstart) {
+        if (v1 != vertex) {
           // Erase from the index any vertices that will be merged.  This
           // ensures that we won't try to merge the same vertex twice.
           index->Erase(v1);
           frontier.push_back(v1);
-          (*merge_map)[v1] = *vstart;
+          (*merge_map)[v1] = vertex;
         }
       }
     }
@@ -408,8 +405,7 @@ void S2PolygonBuilder::MoveVertices(MergeMap const& merge_map) {
   for (EdgeSet::const_iterator i = edges_->begin(); i != edges_->end(); ++i) {
     S2Point const& v0 = i->first;
     VertexSet const& vset = i->second;
-    for (VertexSet::const_iterator j = vset.begin(); j != vset.end(); ++j) {
-      S2Point const& v1 = *j;
+    for (const auto& v1 : vset) {
       if (merge_map.find(v0) != merge_map.end() ||
           merge_map.find(v1) != merge_map.end()) {
         // We only need to modify one copy of each undirected edge.
@@ -423,9 +419,9 @@ void S2PolygonBuilder::MoveVertices(MergeMap const& merge_map) {
   // Now erase all the old edges, and add all the new edges.  This will
   // automatically take care of any XORing that needs to be done, because
   // EraseEdge also erases the sibling of undirected edges.
-  for (size_t i = 0; i < edges.size(); ++i) {
-    S2Point v0 = edges[i].first;
-    S2Point v1 = edges[i].second;
+  for (auto& edge : edges) {
+    S2Point v0 = edge.first;
+    S2Point v1 = edge.second;
     EraseEdge(v0, v1);
     MergeMap::const_iterator new0 = merge_map.find(v0);
     if (new0 != merge_map.end()) v0 = new0->second;
@@ -442,8 +438,7 @@ void S2PolygonBuilder::SpliceEdges(PointIndex* index) {
   for (EdgeSet::const_iterator i = edges_->begin(); i != edges_->end(); ++i) {
     S2Point const& v0 = i->first;
     VertexSet const& vset = i->second;
-    for (VertexSet::const_iterator j = vset.begin(); j != vset.end(); ++j) {
-      S2Point const& v1 = *j;
+    for (const auto& v1 : vset) {
       // We only need to modify one copy of each undirected edge.
       if (!options_.undirected_edges() || v0 < v1) {
         edges.push_back(make_pair(v0, v1));
@@ -531,20 +526,19 @@ bool S2PolygonBuilder::AssemblePolygon(S2Polygon* polygon,
   // If edges are undirected, then all loops are already CCW.  Otherwise we
   // need to make sure the loops are normalized.
   if (!options_.undirected_edges()) {
-    for (size_t i = 0; i < loops.size(); ++i) {
-      loops[i]->Normalize();
+    for (auto& loop : loops) {
+      loop->Normalize();
     }
   }
   if (options_.validate() && !S2Polygon::IsValid(loops)) {
     if (unused_edges != nullptr) {
-      for (size_t i = 0; i < loops.size(); ++i) {
-        RejectLoop(&loops[i]->vertex(0), loops[i]->num_vertices(),
-                   unused_edges);
+      for (auto& loop : loops) {
+        RejectLoop(&loop->vertex(0), loop->num_vertices(), unused_edges);
       }
     }
 
-    for (size_t i = 0; i < loops.size(); ++i) {
-      delete loops[i];
+    for (auto& loop : loops) {
+      delete loop;
     }
     loops.clear();
     return false;
