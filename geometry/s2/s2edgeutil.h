@@ -92,7 +92,7 @@ class S2EdgeUtil {
    public:
     // 'interval' is the longitude interval to be tested against, and
     // 'v0' is the first vertex of edge chain.
-    LongitudePruner(S1Interval const& interval, S2Point const& v0);
+    LongitudePruner(S1Interval interval, S2Point const& v0);
 
     // Returns true if the edge (v0, v1) intersects the given longitude
     // interval, and then saves 'v1' to be used as the next 'v0'.

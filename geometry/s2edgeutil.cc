@@ -8,6 +8,9 @@ using std::max;
 using std::cos;
 using std::sin;
 
+#include <utility>
+using std::move;
+
 #include "s2edgeutil.h"
 
 #include "base/logging.h"
@@ -444,6 +447,6 @@ void S2EdgeUtil::RectBounder::AddPoint(S2Point const* b) {
   a_latlng_ = b_latlng;
 }
 
-S2EdgeUtil::LongitudePruner::LongitudePruner(S1Interval const& interval,
+S2EdgeUtil::LongitudePruner::LongitudePruner(S1Interval interval,
                                              S2Point const& v0)
-    : interval_(interval), lng0_(S2LatLng::Longitude(v0).radians()) {}
+    : interval_(move(interval)), lng0_(S2LatLng::Longitude(v0).radians()) {}

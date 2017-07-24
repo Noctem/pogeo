@@ -6,6 +6,9 @@
 #include <ostream>
 using std::ostream;
 
+#include <utility>
+using std::move;
+
 #include "base/logging.h"
 #include "r1interval.h"
 #include "s2.h"
@@ -48,7 +51,7 @@ class S2R2Rect : public S2Region {
 
   // Construct a rectangle from the given intervals in x and y.  The two
   // intervals must either be both empty or both non-empty.
-  inline S2R2Rect(R1Interval const& x, R1Interval const& y);
+  inline S2R2Rect(R1Interval x, R1Interval y);
 
   // Construct a rectangle that corresponds to the boundary of the given cell
   // is (s,t)-space.  Such rectangles are always a subset of [0,1]x[0,1].
@@ -178,8 +181,8 @@ inline S2R2Rect::S2R2Rect(R2Point const& lo, R2Point const& hi)
   DCHECK(is_valid());
 }
 
-inline S2R2Rect::S2R2Rect(R1Interval const& x, R1Interval const& y)
-    : x_(x), y_(y) {
+inline S2R2Rect::S2R2Rect(R1Interval x, R1Interval y)
+    : x_(move(x)), y_(move(y)) {
   DCHECK(is_valid());
 }
 
