@@ -106,12 +106,24 @@
 //
 #define PACKED __attribute__((packed))
 
-#else  // not GCC
+#else  // not GCC, clang, or ICC
 
 #define PRINTF_ATTRIBUTE(string_index, first_to_check)
 #define PACKED
 
 #endif  // GCC
+
+// x86 and x86-64 can perform unaligned loads/stores directly;
+// modern PowerPC hardware can also do unaligned integer loads and stores;
+// but note: the FPU still sends unaligned loads and stores to a trap handler!
+
+#define UNALIGNED_LOAD16(_p) (*reinterpret_cast<const uint16*>(_p))
+#define UNALIGNED_LOAD32(_p) (*reinterpret_cast<const uint32*>(_p))
+#define UNALIGNED_LOAD64(_p) (*reinterpret_cast<const uint64*>(_p))
+
+#define UNALIGNED_STORE16(_p, _val) (*reinterpret_cast<uint16*>(_p) = (_val))
+#define UNALIGNED_STORE32(_p, _val) (*reinterpret_cast<uint32*>(_p) = (_val))
+#define UNALIGNED_STORE64(_p, _val) (*reinterpret_cast<uint64*>(_p) = (_val))
 
 // printf macros for size_t, in the style of inttypes.h
 #ifdef _LP64

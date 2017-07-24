@@ -13,6 +13,7 @@ using std::ostream;
 #include "s1interval.h"
 #include "s2latlng.h"
 #include "s2region.h"
+#include "util/coding/coder.h"
 
 // An S2LatLngRect represents a closed latitude-longitude rectangle.  It is
 // capable of representing the empty and full rectangles as well as
@@ -236,8 +237,8 @@ class S2LatLngRect : public S2Region {
   // The point 'p' does not need to be normalized.
   bool Contains(S2Point const& p) const;
 
-  void Encode(Encoder* const encoder) const override;
-  bool Decode(Decoder* const decoder) override;
+  void Encode(Encoder* const encoder) const;
+  bool Decode(Decoder* const decoder);
 
  private:
   // Return true if the edge AB intersects the given edge of constant

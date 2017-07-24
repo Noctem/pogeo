@@ -18,6 +18,8 @@ using std::unordered_map;
 #include <vector>
 using std::vector;
 
+#include "s2regioncoverer.h"
+
 #include <gtest/gtest.h>
 #include "base/commandlineflags.h"
 #include "base/logging.h"
