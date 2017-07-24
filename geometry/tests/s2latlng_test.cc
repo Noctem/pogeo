@@ -115,7 +115,7 @@ TEST(S2LatLng, TestToString) {
     const char *ptr = output.c_str();
     double lat, lng;
     EXPECT_TRUE(SplitOneDoubleToken(&ptr, ",", &lat));
-    ASSERT_TRUE(ptr != NULL);
+    ASSERT_TRUE(ptr != nullptr);
     EXPECT_TRUE(SplitOneDoubleToken(&ptr, ",", &lng));
     EXPECT_NEAR(values[i].expected_lat, lat, 1e-8);
     EXPECT_NEAR(values[i].expected_lng, lng, 1e-8);

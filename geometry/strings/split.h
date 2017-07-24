@@ -85,12 +85,12 @@ void SplitStringToHashmapUsing(const string& full, const char* delim,
 // SplitOneFloatToken()
 //   Parse a single "delim" delimited number from "*source" into "*value".
 //   Modify *source to point after the delimiter.
-//   If no delimiter is present after the number, set *source to NULL.
+//   If no delimiter is present after the number, set *source to nullptr.
 //
 //   If the start of *source is not an number, return false.
 //   If the int is followed by the null character, return true.
 //   If the int is not followed by a character from delim, return false.
-//   If *source is NULL, return false.
+//   If *source is nullptr, return false.
 //
 //   They cannot handle decimal numbers with leading 0s, since they will be
 //   treated as octal.

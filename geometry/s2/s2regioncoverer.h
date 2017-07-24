@@ -148,7 +148,7 @@ class S2RegionCoverer {
   };
 
   // If the cell intersects the given region, return a new candidate with no
-  // children, otherwise return NULL.  Also marks the candidate as "terminal"
+  // children, otherwise return nullptr.  Also marks the candidate as "terminal"
   // if it should not be expanded further.
   Candidate* NewCandidate(S2Cell const& cell);
 
@@ -160,7 +160,7 @@ class S2RegionCoverer {
 
   // Process a candidate by either adding it to the result_ vector or
   // expanding its children and inserting it into the priority queue.
-  // Passing an argument of NULL does nothing.
+  // Passing an argument of nullptr does nothing.
   void AddCandidate(Candidate* candidate);
 
   // Populate the children of "candidate" by expanding the given number of

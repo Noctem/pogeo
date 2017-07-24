@@ -10,7 +10,7 @@
 //
 // Examples:
 //   errno = 0;
-//   i = strtol("3147483647", NULL, 10);
+//   i = strtol("3147483647", nullptr, 10);
 //   printf("%d, errno %d\n", i, errno);
 //   //   32-bit platform: 2147483647, errno 34
 //   //   64-bit platform: -1147483649, errno 0

@@ -306,9 +306,9 @@ static void CheckEqual(S2Polygon const* a, S2Polygon const* b,
     S2PolygonBuilder builder(S2PolygonBuilderOptions::DIRECTED_XOR());
     S2Polygon a2, b2;
     builder.AddPolygon(a);
-    ASSERT_TRUE(builder.AssemblePolygon(&a2, NULL));
+    ASSERT_TRUE(builder.AssemblePolygon(&a2, nullptr));
     builder.AddPolygon(b);
-    ASSERT_TRUE(builder.AssemblePolygon(&b2, NULL));
+    ASSERT_TRUE(builder.AssemblePolygon(&b2, nullptr));
     ASSERT_TRUE(a2.BoundaryApproxEquals(&b2, max_error));
   }
 }
@@ -376,7 +376,7 @@ static void TestDisjoint(S2Polygon const* a, S2Polygon const* b) {
   builder.AddPolygon(a);
   builder.AddPolygon(b);
   S2Polygon ab;
-  ASSERT_TRUE(builder.AssemblePolygon(&ab, NULL));
+  ASSERT_TRUE(builder.AssemblePolygon(&ab, nullptr));
 
   S2Polygon c, d, e, f;
   c.InitToUnion(a, b);
@@ -704,7 +704,7 @@ TEST_F(S2PolygonTestBase, PolylineIntersection) {
     ClearPolylineVector(&polylines);
 
     S2Polygon a_and_b;
-    ASSERT_TRUE(builder.AssemblePolygon(&a_and_b, NULL));
+    ASSERT_TRUE(builder.AssemblePolygon(&a_and_b, nullptr));
     CheckEqual(&a_and_b, expected_a_and_b.get(), kMaxError);
   }
 }
@@ -721,7 +721,7 @@ static void SplitAndAssemble(S2Polygon const* polygon) {
   S2PolygonBuilder builder(S2PolygonBuilderOptions::DIRECTED_XOR());
   S2Polygon expected;
   builder.AddPolygon(polygon);
-  ASSERT_TRUE(builder.AssemblePolygon(&expected, NULL));
+  ASSERT_TRUE(builder.AssemblePolygon(&expected, nullptr));
 
   for (int iter = 0; iter < 10; ++iter) {
     S2RegionCoverer coverer;
@@ -959,8 +959,8 @@ double MaximumDistanceInDegrees(S2Polygon const& poly_a,
 class S2PolygonSimplifierTest : public ::testing::Test {
  protected:
   S2PolygonSimplifierTest() {
-    simplified = NULL;
-    original = NULL;
+    simplified = nullptr;
+    original = nullptr;
   }
 
   ~S2PolygonSimplifierTest() {

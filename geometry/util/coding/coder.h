@@ -109,7 +109,7 @@ class Encoder {
 
   // If constructed with the zero-argument constructor, we're allowed
   // to use Ensure; otherwise we're not.  If Ensure is allowed,
-  // underlying_buffer_ is non-NULL; otherwise it is set to NULL.
+  // underlying_buffer_ is non-NULL; otherwise it is set to nullptr.
   unsigned char* underlying_buffer_;
 
   static unsigned char kEmptyBuffer;

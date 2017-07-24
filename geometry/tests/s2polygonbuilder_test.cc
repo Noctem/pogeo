@@ -53,7 +53,7 @@ struct TestCase {
 
 TestCase test_cases[] = {
     // 0: No loops.
-    {0, 0, true, 0.0, 10.0, 90.0, {{NULL, false}}, {NULL}, 0},
+    {0, 0, true, 0.0, 10.0, 90.0, {{nullptr, false}}, {nullptr}, 0},
 
     // 1: One loop with some extra edges.
     {0,
@@ -83,7 +83,7 @@ TestCase test_cases[] = {
       {"20:18, 18:16, 16:14, 14:12", false},
       {"20:14, 18:14, 16:14", false},
       {"5:15, 0:10", false}},
-     {NULL},
+     {nullptr},
      21},
 
     // 3: Three loops (two shells and one hole) that combine into one.
@@ -209,7 +209,7 @@ TestCase test_cases[] = {
      2.0,
      45.0,
      {{"0:0, 0:12, 6:6", true}, {"3:6, 3:18, 9:12", true}},
-     {NULL},
+     {nullptr},
      6},
 
     // 11: Four squares that combine to make a big square.  The nominal edges of

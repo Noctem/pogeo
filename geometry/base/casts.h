@@ -75,7 +75,7 @@ inline To down_cast(From* f) {         // so we only accept pointers
   }
 
   // uses RTTI in dbg and fastbuild. asserts are disabled in opt builds.
-  assert(f == NULL || dynamic_cast<To>(f) != NULL);
+  assert(f == nullptr || dynamic_cast<To>(f) != nullptr);
   return static_cast<To>(f);
 }
 
@@ -96,7 +96,7 @@ inline To down_cast(From& f) {
     implicit_cast<From*, ToAsPointer>(0);
   }
 
-  assert(dynamic_cast<ToAsPointer>(&f) != NULL);  // RTTI: debug mode only
+  assert(dynamic_cast<ToAsPointer>(&f) != nullptr);  // RTTI: debug mode only
   return static_cast<To>(f);
 }
 

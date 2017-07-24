@@ -179,7 +179,7 @@ const char* Varint::Skip32BackwardSlow(const char* p, const char* b) {
   assert(ptr >= base);
 
   // If the initial pointer is at the base or if the previous byte is not
-  // the last byte of a varint, we return NULL since there is nothing to skip.
+  // the last byte of a varint, we return nullptr since there is nothing to skip.
   if (ptr == base) return nullptr;
   if (*(--ptr) > 127) return nullptr;
 
@@ -197,7 +197,7 @@ const char* Varint::Skip64BackwardSlow(const char* p, const char* b) {
   assert(ptr >= base);
 
   // If the initial pointer is at the base or if the previous byte is not
-  // the last byte of a varint, we return NULL since there is nothing to skip.
+  // the last byte of a varint, we return nullptr since there is nothing to skip.
   if (ptr == base) return nullptr;
   if (*(--ptr) > 127) return nullptr;
 

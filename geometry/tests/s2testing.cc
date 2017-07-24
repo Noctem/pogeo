@@ -63,7 +63,7 @@ int32 S2Testing::Random::PlusOrMinus(int32 value, float multiplier) {
 S2Testing::Random S2Testing::rnd;
 
 static double ParseDouble(const string& str) {
-  char* end_ptr = NULL;
+  char* end_ptr = nullptr;
   double value = strtod(str.c_str(), &end_ptr);
   CHECK(end_ptr && *end_ptr == 0) << ": str == \"" << str << "\"";
   return value;
