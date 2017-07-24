@@ -15,8 +15,8 @@
 #include <cstring>
 using std::memcpy;
 
-#include <typeinfo>  // for enumeration casts and tests
 #include <type_traits>
+#include <typeinfo>  // for enumeration casts and tests
 using std::is_reference;
 using std::remove_reference;
 

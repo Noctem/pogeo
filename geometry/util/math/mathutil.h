@@ -27,19 +27,19 @@ using std::vector;
 #include "util/math/mathlimits.h"
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846264338327950288
 #endif
 #ifndef M_PI_2
-#define M_PI_2 1.57079632679489661923
+#define M_PI_2 1.57079632679489661923132169163975144
 #endif
 #ifndef M_SQRT2
-#define M_SQRT2 1.41421356237309504880
+#define M_SQRT2 1.41421356237309504880168872420969808
 #endif
 #ifndef M_1_PI
-#define M_1_PI 0.31830988618379067154
+#define M_1_PI 0.318309886183790671537767526745028724
 #endif
 #ifndef M_PI_4
-#define M_PI_4 0.78539816339744830962
+#define M_PI_4 0.785398163397448309615660845819875721
 #endif
 
 // Returns the sign of x:
@@ -264,22 +264,6 @@ class MathUtil {
     DCHECK_LT(prob, 1.0);
     return prob / (1.0 - prob);
   }
-
-  // --------------------------------------------------------------------
-  // ShardsToRead
-  //   Resharding helper.  Suppose we have N input shards and M output
-  //   shards sharded by modulo of the same hash function.  If we want
-  //   to write a subset of the output shards, which input shards should
-  //   we read?
-  //
-  // Inputs:
-  //   shards_to_write gives the desired subset of the M output shards.
-  //   shards_to_read gives the number N of the input shards.
-  // Outputs:
-  //   shards_to_read gives the subset of the N input shards to read.
-  // --------------------------------------------------------------------
-  static void ShardsToRead(const vector<bool>& shards_to_write,
-                           vector<bool>* shards_to_read);
 
   // --------------------------------------------------------------------
   // Round, IntRound

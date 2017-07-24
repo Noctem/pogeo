@@ -81,7 +81,7 @@ before_install:
   Cython $CYTHON_OPTS; pip3 install -U setuptools cyrandom; fi
 install: if [[ -z "$DOCKER_IMAGE" ]]; then python3 setup.py install; else docker run
   --rm -v `pwd`:/io $DOCKER_IMAGE $PRE_CMD /io/travis/manylinux-build.sh; fi
-script: if [[ -z "$DOCKER_IMAGE" ]]; then python3 test/test_pogeo.py; else ls wheelhouse/*; fi
+script: if [[ -z "$DOCKER_IMAGE" ]]; then python3 test/test_pogeo.py; else du -b wheelhouse/*; fi
 deploy:
   provider: script
   script: travis/deploy.sh

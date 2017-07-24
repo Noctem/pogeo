@@ -34,9 +34,8 @@ class Vector4 {
 
   // FloatType is the type returned by Norm().  This method is special because
   // it returns floating-point values even when VType is an integer.
-  typedef
-      typename conditional<is_integral<VType>::value, double, VType>::type
-          FloatType;
+  typedef typename conditional<is_integral<VType>::value, double, VType>::type
+      FloatType;
 
  public:
   typedef Vector4<VType> Self;

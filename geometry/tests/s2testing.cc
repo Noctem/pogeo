@@ -1,8 +1,8 @@
 // Copyright 2005 Google Inc. All Rights Reserved.
 
+#include <sys/resource.h>  // for rusage, RUSAGE_SELF
 #include <climits>
 #include <cstdlib>
-#include <sys/resource.h>  // for rusage, RUSAGE_SELF
 
 #include <vector>
 using std::vector;

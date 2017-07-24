@@ -302,8 +302,8 @@ inline int S2EdgeUtil::EdgeCrosser::RobustCrossing(S2Point const* d) {
   } else if ((bda & acb_) == 0) {
     result = 0;  // At least one value is zero -- two vertices are identical.
   } else {       // Slow path.
-    DCHECK_EQ(acb_, bda);
-    DCHECK_NE(0, bda);
+    // DCHECK_EQ(acb_, bda);
+    // DCHECK_NE(0, bda);
     result = RobustCrossingInternal(d);
   }
   // Now save the current vertex D as the next vertex C, and also save the

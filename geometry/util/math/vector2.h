@@ -39,9 +39,8 @@ class Vector2 {
   // FloatType is the type returned by Norm() and Angle().  These methods are
   // special because they return floating-point values even when VType is an
   // integer.
-  typedef
-      typename conditional<is_integral<VType>::value, double, VType>::type
-          FloatType;
+  typedef typename conditional<is_integral<VType>::value, double, VType>::type
+      FloatType;
 
  public:
   typedef Vector2<VType> Self;

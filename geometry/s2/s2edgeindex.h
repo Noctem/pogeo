@@ -5,6 +5,9 @@
 #ifndef UTIL_GEOMETRY_S2EDGEINDEX_H_
 #define UTIL_GEOMETRY_S2EDGEINDEX_H_
 
+#include <cstddef>
+using std::size_t;
+
 #include <map>
 using std::map;
 using std::multimap;
@@ -127,7 +130,7 @@ class S2EdgeIndex {
 
     // Index within array above.
     // We have: current_index_ = candidates_[current_index_in_candidates_].
-    int current_index_in_candidates_;
+    size_t current_index_in_candidates_;
 
     DISALLOW_COPY_AND_ASSIGN(Iterator);
   };
