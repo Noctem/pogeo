@@ -262,7 +262,7 @@ char* FastUInt64ToBufferLeft(uint64 u64, char* buffer) {
   int digits;
   const char* ASCII_digits = nullptr;
 
-  uint32 u = static_cast<uint32>(u64);
+  auto u = static_cast<uint32>(u64);
   if (u == u64) return FastUInt32ToBufferLeft(u, buffer);
 
   uint64 top_11_digits = u64 / 1000000000;

@@ -212,7 +212,7 @@ S2Loop* S2PolygonBuilder::AssembleLoop(S2Point const& v0, S2Point const& v1,
       // This is guaranteed to assemble a loop that is interior to the previous
       // one and will therefore eventually terminate.
 
-      S2Loop* loop = new S2Loop(path);
+      auto* loop = new S2Loop(path);
       if (options_.validate() && !loop->IsValid()) {
         // We've constructed a loop that crosses itself, which can only
         // happen if there is bad input data.  Throw away the whole loop.
@@ -277,7 +277,7 @@ class S2PolygonBuilder::PointIndex {
   void Erase(S2Point const& p) {
     S2CellId::FromPoint(p).AppendVertexNeighbors(level_, &ids_);
     for (int i = ids_.size(); --i >= 0;) {
-      Map::iterator j = map_.lower_bound(ids_[i]);
+      auto j = map_.lower_bound(ids_[i]);
       for (; j->second != p; ++j) {
         DCHECK_EQ(ids_[i], j->first);
       }
@@ -423,9 +423,9 @@ void S2PolygonBuilder::MoveVertices(MergeMap const& merge_map) {
     S2Point v0 = edge.first;
     S2Point v1 = edge.second;
     EraseEdge(v0, v1);
-    MergeMap::const_iterator new0 = merge_map.find(v0);
+    auto new0 = merge_map.find(v0);
     if (new0 != merge_map.end()) v0 = new0->second;
-    MergeMap::const_iterator new1 = merge_map.find(v1);
+    auto new1 = merge_map.find(v1);
     if (new1 != merge_map.end()) v1 = new1->second;
     AddEdge(v0, v1);
   }

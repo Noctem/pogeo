@@ -37,7 +37,7 @@ void Encoder::EnsureSlowPath(int N) {
   int current_len = length();
   int new_capacity = max(current_len + N, 2 * current_len);
 
-  unsigned char* new_buffer = new unsigned char[new_capacity];
+  auto* new_buffer = new unsigned char[new_capacity];
   memcpy(new_buffer, underlying_buffer_, current_len);
   if (underlying_buffer_ != &kEmptyBuffer) {
     delete[] underlying_buffer_;

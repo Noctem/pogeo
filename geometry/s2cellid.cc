@@ -94,7 +94,7 @@ int S2CellId::level() const {
   // Fast path for leaf cells.
   if (is_leaf()) return kMaxLevel;
 
-  uint32 x = static_cast<uint32>(id_);
+  auto x = static_cast<uint32>(id_);
   int level = -1;
   if (x != 0) {
     level += 16;

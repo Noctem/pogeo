@@ -77,7 +77,7 @@ inline uint32 CollapseZero(uint32 bits) {
 
 size_t hash<S2Point>::operator()(S2Point const& p) const {
   // This function is significantly faster than calling HashTo32().
-  uint32 const* data = reinterpret_cast<uint32 const*>(p.Data());
+  auto const* data = reinterpret_cast<uint32 const*>(p.Data());
   DCHECK_EQ((6 * sizeof(*data)), sizeof(p));
 
   // We call CollapseZero() on every 32-bit chunk to avoid having endian
