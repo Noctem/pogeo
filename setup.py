@@ -229,7 +229,7 @@ if file_ext == 'pyx':
     exts = cythonize(exts)
 
 setup(name='pogeo',
-      version='0.4.0rc0',
+      version='0.4.0rc1',
       description='Fast geography package.',
       long_description="A Cython extension for geographic computation using Google's S2 library.",
       url="https://github.com/Noctem/pogeo",

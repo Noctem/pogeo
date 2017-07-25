@@ -76,7 +76,7 @@ cdef class Location:
 
     def __str__(self):
         return ("Location(%f, %f, %f)" % (self.latitude, self.longitude, self.altitude)
-            if self.altitude else "Location(%f, %f)" % (self.latitude, self.longitude))
+                if self.altitude else "Location(%f, %f)" % (self.latitude, self.longitude))
 
     def __len__(self):
         return 2 if self.altitude == 0.0 else 3
@@ -110,8 +110,8 @@ cdef class Location:
     @staticmethod
     cdef Location from_point(S2Point p):
         cdef Location loc = Location.__new__(Location,
-            s2point_to_lat(p),
-            s2point_to_lon(p))
+                                             s2point_to_lat(p),
+                                             s2point_to_lon(p))
         loc.point = p
         return loc
 

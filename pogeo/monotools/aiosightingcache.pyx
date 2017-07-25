@@ -35,13 +35,13 @@ cdef class AioSightingCache:
         self.int_id = conf.SPAWN_ID_INT
         self.extra = pybool(conf.ENCOUNTER)
 
-        self.names = {k: v.encode('utf-8') for k,v in names.POKEMON.items()}
+        self.names = {k: v.encode('utf-8') for k, v in names.POKEMON.items()}
 
         if self.extra:
             self.columns = (
                 'id, pokemon_id, spawn_id, expire_timestamp, move_1'
                 'move_2, atk_iv, def_iv, sta_iv')
-            self.moves = {k: v.encode('utf-8') for k,v in names.MOVES.items()}
+            self.moves = {k: v.encode('utf-8') for k, v in names.MOVES.items()}
             self.damage = dict(names.DAMAGE)
         else:
             self.columns = 'id, pokemon_id, spawn_id, expire_timestamp'

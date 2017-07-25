@@ -36,14 +36,14 @@ cdef class SightingCache:
         self.int_id = conf.SPAWN_ID_INT
         self.extra = pybool(conf.ENCOUNTER)
 
-        self.names = {k: v.encode('utf-8') for k,v in names.POKEMON.items()}
+        self.names = {k: v.encode('utf-8') for k, v in names.POKEMON.items()}
 
         s = db.Sighting
         if self.extra:
             self.columns = (
                 s.id, s.pokemon_id, s.spawn_id, s.expire_timestamp, s.move_1,
                 s.move_2, s.atk_iv, s.def_iv, s.sta_iv)
-            self.moves = {k: v.encode('utf-8') for k,v in names.MOVES.items()}
+            self.moves = {k: v.encode('utf-8') for k, v in names.MOVES.items()}
             self.damage = dict(names.DAMAGE)
         else:
             self.columns = s.id, s.pokemon_id, s.spawn_id, s.expire_timestamp

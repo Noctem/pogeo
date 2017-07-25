@@ -50,4 +50,3 @@ cdef extern from "s2.h" nogil:
         double LevelEdge(int level)
         @staticmethod
         double LevelArea(int level)
-

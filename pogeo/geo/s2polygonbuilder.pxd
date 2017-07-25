@@ -30,4 +30,3 @@ cdef extern from "s2polygonbuilder.h" nogil:
         ctypedef vector[pair[S2Point, S2Point]] EdgeList
         bool AssembleLoops(vector[S2Loop*]* loops, EdgeList* unused_edges)
         bool AssemblePolygon(S2Polygon* polygon, EdgeList* unused_edges)
-

@@ -149,5 +149,3 @@ cdef class Rectangle:
     def area(self):
         """Returns the square kilometers for configured area"""
         return self.shape.Area() * pow(EARTH_RADIUS_KILOMETERS, 2)
-
-
