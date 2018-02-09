@@ -201,20 +201,34 @@ class TestUtils(TestCase):
         self.assertAlmostEqual(level_area(14), 316690.58, places=2)
 
     def test_cellid_to_location(self):
-        loc = cellid_to_location(9299287131783)
-        lat, lon = cellid_to_coords(9299287131783)
-        self.assertAlmostEqual(loc[0], 40.72179, places=5)
-        self.assertAlmostEqual(loc[1], -111.93571, places=5)
-        self.assertAlmostEqual(lat, 40.72179, places=5)
-        self.assertAlmostEqual(lon, -111.93571, places=5)
+        points = { 0x88f59e063af: [34.10473128117596, -84.26026783287557],
+                   0x6b17ad4b94f: [-35.24408910515732, 149.10000526448906],
+                   0x6b164d6601f: [-35.2791334035791, 149.1325659063717],
+                   0x129ffffd9eb: [39.97381510237765, 0.0009107027455516518],
+                    0xd600002f4f: [39.97333379912704, -0.0012749899231934872],
+                    0xd600002375: [39.97509853968715, -0.001784997808055563]}
+        for cid, point in points.items():
+            loc = cellid_to_location(cid << 20)
+            lat, lon = cellid_to_coords(cid << 20)
+            self.assertAlmostEqual(loc[0], point[0], places=10)
+            self.assertAlmostEqual(loc[1], point[1], places=10)
+            self.assertAlmostEqual(lat, point[0], places=10)
+            self.assertAlmostEqual(lon, point[1], places=10)
 
     def test_token_to_location(self):
-        loc = token_to_location('8752f411ca9')
-        lat, lon = token_to_coords('8752f411ca9')
-        self.assertAlmostEqual(loc[0], 40.78931, places=5)
-        self.assertAlmostEqual(loc[1], -111.93888, places=5)
-        self.assertAlmostEqual(lat, 40.78931, places=5)
-        self.assertAlmostEqual(lon, -111.93888, places=5)
+        points = { '88f59e063af': [34.10473128117596, -84.26026783287557],
+                   '6b17ad4b94f': [-35.24408910515732, 149.10000526448906],
+                   '6b164d6601f': [-35.2791334035791, 149.1325659063717],
+                   '129ffffd9eb': [39.97381510237765, 0.0009107027455516518],
+                   '0d600002f4f': [39.97333379912704, -0.0012749899231934872],
+                   '0d600002375': [39.97509853968715, -0.001784997808055563]}
+        for token, point in points.items():
+            loc = token_to_location(token)
+            lat, lon = token_to_coords(token)
+            self.assertAlmostEqual(loc[0], point[0], places=10)
+            self.assertAlmostEqual(loc[1], point[1], places=10)
+            self.assertAlmostEqual(lat, point[0], places=10)
+            self.assertAlmostEqual(lon, point[1], places=10)
 
     def test_location_to_cellid(self):
         loc = Location(40.2637, -111.639794)
