@@ -108,11 +108,11 @@ def level_area(int level):
 
 
 def cellid_to_location(uint64_t cellid):
-    return Location.from_point(S2CellId(cellid << leadingZeros(cellid)).ToPointRaw())
+    return Location.from_point(S2CellId(cellid).ToPointRaw())
 
 
 def cellid_to_coords(uint64_t cellid):
-    cdef S2Point p = S2CellId(cellid << leadingZeros(cellid)).ToPointRaw()
+    cdef S2Point p = S2CellId(cellid).ToPointRaw()
     return s2point_to_lat(p), s2point_to_lon(p)
 
 
